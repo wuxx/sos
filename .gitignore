@@ -1,0 +1,6 @@
+*.elf
+*.o
+*.swp
+kernel.img
+kernel.map
+out.s
