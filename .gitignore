@@ -1,6 +1,8 @@
-*.elf
+*.elf*
 *.o
 *.swp
+*.disasm
 kernel.img
 kernel.map
-out.s
+.compiler/
+
