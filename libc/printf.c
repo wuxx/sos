@@ -8,5 +8,5 @@ void printf(const char *fmt, ...)
     va_start(args,fmt);
     vsnprintf(buf,sizeof(buf), fmt, args);
     va_end(args);
-    con_write(buf);
+    /*con_write(buf);*/
 }

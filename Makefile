@@ -1,7 +1,7 @@
 ############ by wuxx #############
 
-ROOT = $(shell pwd)
-#$(warning ROOT $(ROOT))
+#ROOT = $(shell pwd)
+ROOT = .
 TOOLCHAIN_DIR=$(ROOT)/.compiler
 CROSS_COMPILE=$(TOOLCHAIN_DIR)/bin/arm-none-eabi
 
@@ -40,8 +40,12 @@ ASM_SRCS = $(filter %.s, $(ALL_SRCS))
 C_OBJS   = $(patsubst %.c,%.o,$(C_SRCS))
 ASM_OBJS = $(patsubst %.s,%.o,$(ASM_SRCS))
 
-$(warning C_SRCS $(C_SRCS) ASM_SRCS $(ASM_SRCS))
-$(warning C_OBJS $(C_OBJS) ASM_OBJS $(ASM_OBJS))
+ALL_OBJS = $(addprefix $(BUILD)/,$(C_OBJS) $(ASM_OBJS))
+#$(warning ALL_SRCS $(ALL_SRCS))
+#$(warning ALL_OBJS $(ALL_OBJS))
+
+#$(warning C_SRCS $(C_SRCS) ASM_SRCS $(ASM_SRCS))
+#$(warning C_OBJS $(C_OBJS) ASM_OBJS $(ASM_OBJS))
 
 
 OBJ_PATHS = $(sort $(dir $(ALL_SRCS)))
@@ -49,11 +53,11 @@ OBJ_PATHS = $(sort $(dir $(ALL_SRCS)))
 
 
 
-TARGET_ELF = kernel.elf
-TARGET_BIN = kernel.bin
-TARGET_MAP = kernel.map
-TARGET_DISASM = kernel.disasm
-TARGET_ELFINFO = kernel.elfinfo
+TARGET_ELF = $(BUILD)/kernel.elf
+TARGET_BIN = $(BUILD)/kernel.bin
+TARGET_MAP = $(BUILD)/kernel.map
+TARGET_DISASM = $(BUILD)/kernel.disasm
+TARGET_ELFINFO = $(BUILD)/kernel.elfinfo
 
 LDS = kernel.ld
 
@@ -65,27 +69,26 @@ ASFLAGS =
 LIBGCC = $(TOOLCHAIN_DIR)/lib/gcc/arm-none-eabi/4.3.2/armv6-m/libgcc.a
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 
 
+build_all: all
 
 $(C_OBJS): %.o: %.c
-	echo hello,world
-	echo $< 111 $@
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $(BUILD)/$@
 
 $(ASM_OBJS): %.o: %.s
-	 $(AS) $(ASFLAGS) $< -o $@
+	$(AS) $(ASFLAGS) $< -o $(BUILD)/$@
 
-test: $(C_OBJS) $(ASM_OBJS)
-	echo hello,world
+build_objs: $(C_OBJS) $(ASM_OBJS)
 
-all: 
-	$(AS) $(ASFLAGS) ./system/init.s -o init.o
-	$(AS) $(ASFLAGS) ./system/arm_v6.s -o arm_v6.o
-	$(CC) $(CFLAGS) -c ./libc/vsprintf.c 
-	$(CC) $(CFLAGS) -c ./system/main.c  -o main.o
-	$(LD)  init.o arm_v6.o vsprintf.o main.o $(LDFLAGS) -o $(TARGET_ELF)
-	$(OBJCOPY) kernel.elf -O binary $(TARGET_BIN)
-	$(OBJDUMP) -d kernel.elf > $(TARGET_DISASM)
-	$(READELF) -a kernel.elf > $(TARGET_ELFINFO)
+init:
+	mkdir -p build
+	$(foreach d,$(OBJ_PATHS), mkdir -p $(BUILD)/$(d);)
+
+all:init build_objs
+	$(LD) $(ALL_OBJS) $(LDFLAGS) -o $(TARGET_ELF)
+	$(OBJCOPY) $(TARGET_ELF) -O binary $(TARGET_BIN)
+	$(OBJDUMP) -d $(TARGET_ELF) > $(TARGET_DISASM)
+	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
+
 
 clean: 
-	-rm -rf *.o *.bin *.elf* $(MAP) $(TARGET) $(DISASM)
+	-rm -rf build
