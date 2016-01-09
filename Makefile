@@ -1,14 +1,6 @@
-###############################################################################
-#	makefile
-#	 by Alex Chadwick
-#
-#	A makefile script for generation of raspberry pi kernel images.
-###############################################################################
 
-# The toolchain to use. arm-none-eabi works, but there does exist 
-# arm-bcm2708-linux-gnueabi.
 ROOT = $(shell pwd)
-$(warning ROOT $(ROOT))
+#$(warning ROOT $(ROOT))
 TOOLCHAIN_DIR=$(ROOT)/.compiler
 CROSS_COMPILE=$(TOOLCHAIN_DIR)/bin/arm-none-eabi
 
@@ -19,11 +11,10 @@ OBJCOPY = $(CROSS_COMPILE)-objcopy
 OBJDUMP = $(CROSS_COMPILE)-objdump
 READELF = $(CROSS_COMPILE)-readelf
 
-# The intermediate directory for compiled object files.
 BUILD = $(ROOT)/build/
 
 C_SRCS =  ./system/main.c ./libc/vsprintf.c 
-ASM_SRC_FILES = ./system/arm_v6.c ./system/setup.s 
+ASM_SRC_FILES = ./system/arm_v6.c ./system/init.s 
 
 SYSTEM_DIR  = $(ROOT)/system
 LIBC_DIR    = $(ROOT)/libc
@@ -33,7 +24,7 @@ INCLUDE_DIR = $(ROOT)/include
 SYSTEM_SRCS = \
 			  $(SYSTEM_DIR)/main.c 		\
 			  $(SYSTEM_DIR)/arm_v6.c 	\
-			  $(SYSTEM_DIR)/setup.s
+			  $(SYSTEM_DIR)/init.s
 
 LIBC_SRCS = \
 			$(LIBC_DIR)/printf.c	\
@@ -42,7 +33,23 @@ LIBC_SRCS = \
 DRIVER_SRCS = \
 		$(DRIVER_DIR)/uart/uart.c
 
-# The name of the output file to generate.
+ALL_SRCS = $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS)
+
+C_SRCS   = $(filter %.c, $(ALL_SRCS))
+ASM_SRCS = $(filter %.s, $(ALL_SRCS)) 
+
+C_OBJS   = $(patsubst %.c,%.o,$(C_SRCS))
+ASM_OBJS = $(patsubst %.s,%.o,$(C_SRCS))
+
+#$(warning C_SRCS $(C_SRCS) ASM_SRCS $(ASM_SRCS))
+#$(warning C_OBJS $(C_OBJS) ASM_OBJS $(ASM_OBJS))
+
+
+OBJ_PATHS = $(sort $(dir $(ALL_SRCS)))
+#$(warning OBJ_PATHS $(OBJ_PATHS))
+
+
+
 TARGET_ELF = kernel.elf
 TARGET_BIN = kernel.bin
 TARGET_MAP = kernel.map
@@ -59,12 +66,21 @@ ASFLAGS =
 LIBGCC = $(TOOLCHAIN_DIR)/lib/gcc/arm-none-eabi/4.3.2/armv6-m/libgcc.a
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 
 
+
+#$(C_OBJS): %.o : %.c
+	 #$(CC) $(CFLAGS) -c $< -o $@
+
+#$(ASM_OBJS): %.o : %.s
+	 #$(AS) $(ASFLAGS) $< -o $@
+
+#test: $(C_OBJS)
+
 all: 
-	$(AS) $(ASFLAGS) ./system/setup.s -o setup.o
+	$(AS) $(ASFLAGS) ./system/init.s -o init.o
 	$(AS) $(ASFLAGS) ./system/arm_v6.s -o arm_v6.o
 	$(CC) $(CFLAGS) -c ./libc/vsprintf.c 
 	$(CC) $(CFLAGS) -c ./system/main.c  -o main.o
-	$(LD)  setup.o arm_v6.o vsprintf.o main.o $(LDFLAGS) -o $(TARGET_ELF)
+	$(LD)  init.o arm_v6.o vsprintf.o main.o $(LDFLAGS) -o $(TARGET_ELF)
 	$(OBJCOPY) kernel.elf -O binary $(TARGET_BIN)
 	$(OBJDUMP) -d kernel.elf > $(TARGET_DISASM)
 	$(READELF) -a kernel.elf > $(TARGET_ELFINFO)
