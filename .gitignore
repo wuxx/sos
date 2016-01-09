@@ -3,6 +3,7 @@
 *.swp
 *.disasm
 kernel.img
+kernel.bin
 kernel.map
 .compiler/
 

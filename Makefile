@@ -7,54 +7,67 @@
 
 # The toolchain to use. arm-none-eabi works, but there does exist 
 # arm-bcm2708-linux-gnueabi.
-TOOLCHAIN_DIR=.compiler
+ROOT = $(shell pwd)
+$(warning ROOT $(ROOT))
+TOOLCHAIN_DIR=$(ROOT)/.compiler
+CROSS_COMPILE=$(TOOLCHAIN_DIR)/bin/arm-none-eabi
 
-CC = $(TOOLCHAIN_DIR)/bin/arm-none-eabi-gcc
-AS = $(TOOLCHAIN_DIR)/bin/arm-none-eabi-as
-LD = $(TOOLCHAIN_DIR)/bin/arm-none-eabi-ld
-OBJCOPY = $(TOOLCHAIN_DIR)/bin/arm-none-eabi-objcopy
-OBJDUMP = $(TOOLCHAIN_DIR)/bin/arm-none-eabi-objdump
-READELF = $(TOOLCHAIN_DIR)/bin/arm-none-eabi-readelf
+CC = $(CROSS_COMPILE)-gcc
+AS = $(CROSS_COMPILE)-as
+LD = $(CROSS_COMPILE)-ld
+OBJCOPY = $(CROSS_COMPILE)-objcopy
+OBJDUMP = $(CROSS_COMPILE)-objdump
+READELF = $(CROSS_COMPILE)-readelf
 
 # The intermediate directory for compiled object files.
-BUILD = build/
+BUILD = $(ROOT)/build/
 
-ROOT = .
-C_SRCS =  ./system/main.c ./lib/vsprintf.c 
+C_SRCS =  ./system/main.c ./libc/vsprintf.c 
 ASM_SRC_FILES = ./system/arm_v6.c ./system/setup.s 
 
+SYSTEM_DIR  = $(ROOT)/system
+LIBC_DIR    = $(ROOT)/libc
 DRIVER_DIR  = $(ROOT)/driver
-INCLUDE_DIR = ./include
+INCLUDE_DIR = $(ROOT)/include
+
+SYSTEM_SRCS = \
+			  $(SYSTEM_DIR)/main.c 		\
+			  $(SYSTEM_DIR)/arm_v6.c 	\
+			  $(SYSTEM_DIR)/setup.s
+
+LIBC_SRCS = \
+			$(LIBC_DIR)/printf.c	\
+			$(LIBC_DIR)/vsprintf.c	
 
 DRIVER_SRCS = \
 		$(DRIVER_DIR)/uart/uart.c
 
 # The name of the output file to generate.
-TARGET = kernel.img
+TARGET_ELF = kernel.elf
+TARGET_BIN = kernel.bin
+TARGET_MAP = kernel.map
+TARGET_DISASM = kernel.disasm
+TARGET_ELFINFO = kernel.elfinfo
 
-# The name of the map file to generate.
-MAP = kernel.map
-
-# The name of the linker script to use.
-LINKER = kernel.ld
+LDS = kernel.ld
 
 DISASM = kernel.disasm
 #-march=armv6
 CFLAGS = -mcpu=arm1176jzf-s -fno-builtin -I$(INCLUDE_DIR)
+ASFLAGS = 
 
-LIB = $(TOOLCHAIN_DIR)/lib/gcc/arm-none-eabi/4.3.2/armv6-m/libgcc.a
-LDFLAGS = -nostdlib -nostartfiles -T $(LINKER) -Map $(MAP) $(LIB)
+LIBGCC = $(TOOLCHAIN_DIR)/lib/gcc/arm-none-eabi/4.3.2/armv6-m/libgcc.a
+LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 
 
 all: 
-	$(AS) ./system/setup.s -o setup.o
-	$(AS) ./system/arm_v6.s -o arm_v6.o
-	$(CC) -c ./lib/vsprintf.c $(CFLAGS)
+	$(AS) $(ASFLAGS) ./system/setup.s -o setup.o
+	$(AS) $(ASFLAGS) ./system/arm_v6.s -o arm_v6.o
+	$(CC) $(CFLAGS) -c ./libc/vsprintf.c 
 	$(CC) $(CFLAGS) -c ./system/main.c  -o main.o
-	$(LD) setup.o arm_v6.o vsprintf.o main.o $(LDFLAGS) -o kernel.elf
-	$(OBJCOPY) kernel.elf -O binary $(TARGET)
-	$(OBJDUMP) -d kernel.elf > $(DISASM)
-	$(READELF) -a kernel.elf > kernel.elfinfo
+	$(LD)  setup.o arm_v6.o vsprintf.o main.o $(LDFLAGS) -o $(TARGET_ELF)
+	$(OBJCOPY) kernel.elf -O binary $(TARGET_BIN)
+	$(OBJDUMP) -d kernel.elf > $(TARGET_DISASM)
+	$(READELF) -a kernel.elf > $(TARGET_ELFINFO)
 
 clean: 
-	cd ./lib; make clean
-	-rm -rf *.o *.elf* $(MAP) $(TARGET) $(DISASM)
+	-rm -rf *.o *.bin *.elf* $(MAP) $(TARGET) $(DISASM)
