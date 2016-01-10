@@ -432,6 +432,7 @@ int main()
     uint32_t sp;
     uint32_t pc;
     uint32_t tid;
+    uart_init();
     uart_printf("system start\n");
     init_task();
     set_gpio_function(16, 1);
