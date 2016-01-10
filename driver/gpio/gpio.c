@@ -24,6 +24,14 @@ void set_gpio_function(u32 gpio, u32 function)
     *((u32*)GPIO_BASE + offset0) = tmp;
 }
 
+void bcm2835_gpio_fnsel(u32 gpio_pin, u32 gpio_fn)
+{
+    u32 gpfnbank = gpio_pin/10;
+    u32 offset = (gpio_pin - (gpfnbank * 10)) * 3;
+    volatile u32 *gpfnsel = GPIO_BASE + gpfnbank;
+    *gpfnsel &= ~(0x07 << offset);
+    *gpfnsel |= (gpio_fn << offset);
+}
 
 void set_gpio_value(u32 gpio, u32 val)
 {

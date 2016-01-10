@@ -4,5 +4,6 @@
 #include <stdarg.h>
 #include <vsprintf.h>
 #include <types.h>
+#include <assert.h>
 
 #endif /* __LIBC_H__ */
