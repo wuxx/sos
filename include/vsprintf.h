@@ -1,20 +1,9 @@
-#ifndef VSNPRINTF_H
-#define VSNPRINTF_H
+#ifndef __VSNPRINTF_H__
+#define __VSNPRINTF_H__
 
+#include <stdarg.h>
 
 typedef unsigned int size_t;
-typedef char* va_list;
-
-#define __va_size(type) \
-   (((sizeof(type) + sizeof(long) - 1) / sizeof (long)) * sizeof (long))
-
-#define va_start(ap, last) \
-   ((ap) = ((char*)&last) + __va_size(last))
-
-#define va_arg(ap, type) \
-   (*(type*)((ap)+= __va_size(type), (ap) - __va_size(type)))
-
-#define va_end(va_list) ((void)0)
 
 # define do_div(n,base) ({                  \
             unsigned int __base = (base);               \
@@ -80,4 +69,4 @@ int vsprintf(char *buf, const char *fmt, va_list args);
  */
 int sprintf(char * buf, const char *fmt, ...);
 
-#endif //VSNPRINTF_H
+#endif /* __VSNPRINTF_H__ */

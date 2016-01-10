@@ -22,6 +22,7 @@ INCLUDE_DIR = $(ROOT)/include
 
 SYSTEM_SRCS = \
 		$(SYSTEM_DIR)/main.c 	\
+		$(SYSTEM_DIR)/int.c 	\
 		$(SYSTEM_DIR)/arm_v6.s 	\
 		$(SYSTEM_DIR)/init.s
 
@@ -32,6 +33,7 @@ LIBC_SRCS = \
 DRIVER_SRCS = \
 		$(DRIVER_DIR)/gpio/gpio.c       \
 		$(DRIVER_DIR)/timer/timer.c     \
+		$(DRIVER_DIR)/log/log.c         \
 		$(DRIVER_DIR)/uart/uart.c
 
 ALL_SRCS = $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS)

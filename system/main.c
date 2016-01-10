@@ -5,10 +5,9 @@
 #include "mmio.h"
 #include "uart.h"
 #include "timer.h"
+#include "log.h"
 
-typedef void (*start_func)(u32 para);
-typedef void (*task_func)();
-extern void __switch_to(start_func);
+extern void __switch_to(func_1);
 
 /* task*/
 #define TASK_UNUSED -1
@@ -25,7 +24,7 @@ struct task
     u32 *stack;
     u32 stack_size;
     u32 state;
-    start_func func;
+    func_1 func;
 };
 
 u32 g_stack[5*1024];
@@ -57,7 +56,7 @@ void dump_task(u32 tid)
     struct task *tsk = &g_task[tid];
     int i;
     uart_printf("task_id: %d\n", tid);
-    uart_printf("task_func: 0x%x\n", tsk->func);
+    uart_printf("func_0: 0x%x\n", tsk->func);
     uart_printf("stack: 0x%x\n", tsk->stack);
     uart_printf("stack_size: %d\n", tsk->stack_size);
     uart_printf("sp: 0x%x\n", tsk->sp);
@@ -67,16 +66,17 @@ void dump_task(u32 tid)
     uart_printf("cpsr: 0x%x\n", ((int *)(tsk->sp))[15]);
 }
 
-void launch(u32 para)
+s32 launch(u32 para)
 {
     void (*func)(void);
     func = (void (*)(void))para;
     uart_printf("launch start,  func: 0x%x \n", func);
     func();
     uart_printf("launch end\n");
+    return 0;
 }
 
-u32 init_context(struct task *tsk, u32 task_id, task_func func)
+u32 init_context(struct task *tsk, u32 task_id, func_0 func)
 {
     u32 i = 0;
     u32 *context = NULL;
@@ -102,7 +102,7 @@ u32 init_context(struct task *tsk, u32 task_id, task_func func)
 
 
 
-u32 task_create(u32 task_prio, start_func func)
+u32 task_create(u32 task_prio, func_1 func)
 {
     u32 tid = get_free_task(task_prio);
     if (tid == -1) {
@@ -210,7 +210,7 @@ int main()
     u32 pc;
     u32 tid;
     uart_init();
-    uart_printf("system start\n");
+    PRINT_INFO("system start\n");
     set_gpio_function(16, 1);
     init_task();
 

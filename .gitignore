@@ -2,6 +2,7 @@
 *.o
 *.swp
 *.disasm
+tags
 kernel.img
 kernel.bin
 kernel.map
