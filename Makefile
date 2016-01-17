@@ -28,12 +28,14 @@ SYSTEM_SRCS = \
 
 LIBC_SRCS = \
 		$(LIBC_DIR)/printf.c	\
+		$(LIBC_DIR)/string.h	\
 		$(LIBC_DIR)/vsprintf.c	
 
 DRIVER_SRCS = \
 		$(DRIVER_DIR)/gpio/gpio.c       \
 		$(DRIVER_DIR)/timer/timer.c     \
 		$(DRIVER_DIR)/log/log.c         \
+		$(DRIVER_DIR)/shell/shell.c     \
 		$(DRIVER_DIR)/uart/uart.c
 
 ALL_SRCS = $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS)
@@ -94,7 +96,7 @@ all:init build_objs
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
 
 tags:
-	ctags -R ./drivers ./libc ./include ./system
+	ctags -R ./driver ./libc ./include ./system
 
 clean: 
 	-rm -rf build

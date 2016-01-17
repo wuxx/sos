@@ -3,8 +3,14 @@
 
 #include "mmio.h"
 #include "uart.h"
+#include "shell.h"
 
-char format_buf[1024] = {0};
+#define UART_IO_SIZE 256
+u32  uart_recv_buf_index = 0;
+char uart_recv_buf[UART_IO_SIZE] = {0};
+
+char uart_send_buf[UART_IO_SIZE] = {0};
+char format_buf[UART_IO_SIZE] = {0};
 
 void bcm2835_delay(u32 n)
 {
@@ -180,6 +186,48 @@ void uart_puts(const char *str) {
             uart_putc(*str++);
         }
     }
+}
+
+s8 uart_recv()
+{
+    while (1) {
+        if (!(readl(UART0_FR) & (1 << 4))) {
+            break;
+        }
+    }
+    return readl(UART0_DR);
+}
+
+void uart_irq_handler(u32 irq_nr)
+{
+    u8 ch;
+    while ((ch = uart_recv()) != -1) {
+
+        if (uart_recv_buf_index == (UART_IO_SIZE - 1) && ch != '\n') {
+            uart_puts("cmd too long!\n");
+            goto cleanup;
+            
+        }
+
+        if (ch == '\r') {
+            uart_recv_buf[uart_recv_buf_index] = '\0';  /* terminate the string. */
+            shell(uart_recv_buf);
+        }
+
+        uart_recv_buf_index++;
+        
+        /* echo */
+        if (ch == '\r') {
+            uart_putc('\r');
+            uart_putc('\n');
+        } else {
+            uart_putc(ch);
+        }
+    }
+
+cleanup:
+    uart_recv_buf_index = 0;
+    return;
 }
 
 void uart_printf(const char* fmt,...)

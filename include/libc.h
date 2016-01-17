@@ -2,6 +2,7 @@
 #define __LIBC_H__
 
 #include <stdarg.h>
+#include <string.h>
 #include <vsprintf.h>
 #include <types.h>
 #include <assert.h>

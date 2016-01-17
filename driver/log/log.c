@@ -2,7 +2,7 @@
 
 #include "log.h"
 
-PRIVATE u32 default_log_level = LOG_INFO;
+PRIVATE u32 default_log_level = LOG_DEBUG;
 PRIVATE u8  log_buf[LOG_BUF_SIZE] = {0};
 
 PUBLIC s32 set_log_level(u32 log_level)

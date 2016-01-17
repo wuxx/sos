@@ -5,6 +5,7 @@
 #include "mmio.h"
 #include "uart.h"
 #include "timer.h"
+#include "uart.h"
 #include "log.h"
 
 extern void __switch_to(func_1);
@@ -203,19 +204,48 @@ void init_vector_table()
     return;
 }
 
+u8 uart_recv1() {
+    // wait for UART to become ready to transmit
+    while (1) {
+        if (!(readl(UART0_FR) & (1 << 4))) {
+            break;
+        }
+    }
+    return readl(UART0_DR);
+}
+
 int main()
 {
     u32 cpsr;
     u32 sp;
     u32 pc;
     u32 tid;
+    u8  ch;
     /*uart_init();*/
     uart_printf("%s %s %d \n", __FILE__, __func__, __LINE__);
     uart_puts("abc\n");
     PRINT_INFO("system start\n");
     PRINT_INFO("system start1\n");
+    uart_init();
+    writel(UART0_IMSC, (1 << 1) | (1 << 4) |
+            (1 << 6) | (1 << 7) | (1 << 8) |
+            (1 << 9) | (1 << 10));
+    writel(0x2000B214, 0x1<<25);
     uart_puts("abc\n");
-    while(1);
+    while(1) {
+#if 1
+        uart_irq_handler(0);
+#else
+        ch = uart_recv1();
+        if (ch == '\r') {
+            uart_putc('\r');
+            uart_putc('\n');
+
+        } else {
+            uart_putc(ch);
+        }   
+#endif
+    }
     assert(1==2);
     set_gpio_function(16, 1);
     init_task();
@@ -245,7 +275,7 @@ int main()
         sp = __get_sp();
         pc = __get_pc();
         uart_printf("cpsr: 0x%x; sp: 0x%x; pc: 0x%x\n", cpsr, sp, pc);
-        
+
     }
 
     return 0;
