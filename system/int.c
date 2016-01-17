@@ -11,6 +11,7 @@ void General_Irq_Handler()
 
 void General_Exc_Handler()
 {
+    uart_puts("abab\r\n");
     PRINT_EMG("in %s \n", __func__);
     while(1);
 }

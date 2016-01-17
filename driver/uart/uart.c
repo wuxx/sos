@@ -4,7 +4,7 @@
 #include "mmio.h"
 #include "uart.h"
 
-char buf[1024] = {0};
+char format_buf[1024] = {0};
 
 void bcm2835_delay(u32 n)
 {
@@ -15,8 +15,9 @@ void bcm2835_delay(u32 n)
 /*
  * Initialize UART0.
  */
+#define UART1
 void uart_init() {
-#if 0
+#ifdef UART1
     // Disable UART0.
     writel(UART0_CR, 0x00000000);
     // Setup the GPIO pin 14 && 15.
@@ -52,12 +53,16 @@ void uart_init() {
     writel(UART0_IMSC, (1 << 1) | (1 << 4) | (1 << 5) |
             (1 << 6) | (1 << 7) | (1 << 8) |
             (1 << 9) | (1 << 10));
+    /*writel(UART0_IMSC, (1 << 5));*/
  
     // Enable UART0, receive & transfer part of UART.
     writel(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
-#endif
 
+    /*writel(0x2000B214, 0x1 << 25);*/
+    /*asm volatile ("msr     CPSR_c, #0x1F" : : : "memory");*/
+#else
 
+/* the mini uart */
 #define BCM2835_CLOCK_FREQ 250000000
 #define BAUD_RATE_COUNT(baudrate) ((BCM2835_CLOCK_FREQ / (8 * (baudrate))) - 1)
 #define REG(x) (*(volatile u32 *)(x))
@@ -137,8 +142,8 @@ void uart_init() {
     AUX_MU_CNTL_REG = 0x03;
 
     IRQ_ENABLE1 = BIT(29);
-    asm volatile ("msr     CPSR_c, #0x1F" : : : "memory")
-
+    asm volatile ("msr     CPSR_c, #0x1F" : : : "memory");
+#endif
 }
  
 /*
@@ -146,13 +151,18 @@ void uart_init() {
  * u8 Byte: byte to send.
  */
 void uart_putc(u8 byte) {
+#ifdef UART1
     // wait for UART to become ready to transmit
     while (1) {
         if (!(readl(UART0_FR) & (1 << 5))) {
-        break;
-    }
+            break;
+        }
     }
     writel(UART0_DR, byte);
+#else
+    while((AUX_MU_LSR_REG & 0x20) == 0);
+    AUX_MU_IO_REG = byte;
+#endif
 }
  
 /*
@@ -176,7 +186,7 @@ void uart_printf(const char* fmt,...)
 {
     va_list args;
     va_start(args,fmt);
-    vsnprintf(buf,sizeof(buf), fmt, args);
+    vsnprintf(format_buf,sizeof(format_buf), fmt, args);
     va_end(args);
-    uart_puts(buf);
+    uart_puts(format_buf);
 }

@@ -93,6 +93,8 @@ all:init build_objs
 	$(OBJDUMP) -d $(TARGET_ELF) > $(TARGET_DISASM)
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
 
+tags:
+	ctags -R ./drivers ./libc ./include ./system
 
 clean: 
 	-rm -rf build

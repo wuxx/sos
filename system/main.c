@@ -209,10 +209,12 @@ int main()
     u32 sp;
     u32 pc;
     u32 tid;
-    uart_init();
+    /*uart_init();*/
+    uart_printf("%s %s %d \n", __FILE__, __func__, __LINE__);
+    uart_puts("abc\n");
     PRINT_INFO("system start\n");
     PRINT_INFO("system start1\n");
-    /*uart_printf("%s %s %d \n", __FILE__, __func__, __LINE__);*/
+    uart_puts("abc\n");
     while(1);
     assert(1==2);
     set_gpio_function(16, 1);
