@@ -28,7 +28,7 @@ SYSTEM_SRCS = \
 
 LIBC_SRCS = \
 		$(LIBC_DIR)/printf.c	\
-		$(LIBC_DIR)/string.h	\
+		$(LIBC_DIR)/string.c	\
 		$(LIBC_DIR)/vsprintf.c	
 
 DRIVER_SRCS = \

@@ -14,10 +14,10 @@ enum LOG_LEVEL_E {
 
 s32 log(u32 log_level, char *format, ...);
 
-#define PRINT_EMG(fmt, ...)     log(LOG_EMG,   fmt, #__VA_ARGS__)
-#define PRINT_ERR(fmt, ...)     log(LOG_ERR,   fmt, #__VA_ARGS__)
-#define PRINT_WARN(fmt, ...)    log(LOG_WARN,  fmt, #__VA_ARGS__)
-#define PRINT_INFO(fmt, ...)    log(LOG_INFO,  fmt, #__VA_ARGS__)
-#define PRINT_DEBUG(fmt, ...)   log(LOG_DEBUG, fmt, #__VA_ARGS__)
+#define PRINT_EMG(fmt, ...)     log(LOG_EMG,   fmt, ##__VA_ARGS__)
+#define PRINT_ERR(fmt, ...)     log(LOG_ERR,   fmt, ##__VA_ARGS__)
+#define PRINT_WARN(fmt, ...)    log(LOG_WARN,  fmt, ##__VA_ARGS__)
+#define PRINT_INFO(fmt, ...)    log(LOG_INFO,  fmt, ##__VA_ARGS__)
+#define PRINT_DEBUG(fmt, ...)   log(LOG_DEBUG, fmt, ##__VA_ARGS__)
 
 #endif /* __LOG_H__ */

@@ -19,6 +19,8 @@ typedef s32 (*func_0)();
 typedef s32 (*func_1)(u32 arg1);
 typedef s32 (*func_2)(u32 arg1, u32 arg2);
 typedef s32 (*func_3)(u32 arg1, u32 arg2, u32 arg3);
+typedef s32 (*func_4)(u32 arg1, u32 arg2, u32 arg3, u32 arg4);
+typedef s32 (*func_5)(u32 arg1, u32 arg2, u32 arg3, u32 arg4, u32 arg5);
 
 enum {
     OK = 0,

@@ -9,6 +9,34 @@ u32 strlen(char *str)
     return i;
 }
 
+s32 strcmp(char *s1, char *s2)
+{
+    u32 i;
+    s32 delta;
+
+    if (s1 == NULL && s2 == NULL) {
+        return 0;
+    }
+
+    if (s1 == NULL && s2 != NULL) {
+        return 1;
+    }
+
+    if (s1 != NULL && s2 == NULL) {
+        return -1;
+    }
+
+    /* s1 != NULL && s2 != NULL */
+    for(i=0; s1[i]!= '\0' && s2[i] != '\0'; i++) {
+        delta = s1[i] - s2[i];
+        if (delta != 0) {
+            return delta;
+        }
+    }
+
+    return s1[i] - s2[i];
+}
+
 u32 atoi(char *str)
 {
     u32 i;
