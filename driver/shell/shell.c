@@ -158,8 +158,7 @@ s32 shell(char *cmd)
 
     parse_cmd(cmd);
     for(i=0;i<SHELL_ARGS_MAX;i++) {
-        uart_printf("\nargv[%d]: %x", i, argv[i]);
-        uart_puts(argv[i]);
+        uart_printf("\nargv[%d]: %x [%s]", i, argv[i], argv[i]);
     }
 
     if ((i=get_cmd_index(argv[0])) == -1) {
