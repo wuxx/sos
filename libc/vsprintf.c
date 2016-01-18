@@ -1,3 +1,4 @@
+#if 1
 /*
  *  linux/lib/vsprintf.c
  *
@@ -446,3 +447,4 @@ int sprintf(char * buf, const char *fmt, ...)
 	va_end(args);
 	return i;
 }
+#endif

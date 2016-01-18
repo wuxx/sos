@@ -201,21 +201,34 @@ s8 uart_recv()
 void uart_irq_handler(u32 irq_nr)
 {
     u8 ch;
-    while ((ch = uart_recv()) != -1) {
 
-        if (uart_recv_buf_index == (UART_IO_SIZE - 1) && ch != '\n') {
+    /* handle one cmd */
+    uart_puts("sos>");
+
+    while((ch = uart_recv())) {
+#if 0 
+        if (ch == 0x0) {
+            return;
+        }
+#endif
+        if (uart_recv_buf_index == (UART_IO_SIZE - 1) && ch != '\r') {
             uart_puts("cmd too long!\n");
-            goto cleanup;
-            
+            uart_recv_buf_index = 0;
+            return;
+
         }
 
         if (ch == '\r') {
             uart_recv_buf[uart_recv_buf_index] = '\0';  /* terminate the string. */
             shell(uart_recv_buf);
+            uart_recv_buf_index = 0;
+            return;
+        } else {
+            uart_recv_buf[uart_recv_buf_index] = ch;
+            uart_recv_buf_index++;
         }
 
-        uart_recv_buf_index++;
-        
+
         /* echo */
         if (ch == '\r') {
             uart_putc('\r');
@@ -224,9 +237,6 @@ void uart_irq_handler(u32 irq_nr)
             uart_putc(ch);
         }
     }
-
-cleanup:
-    uart_recv_buf_index = 0;
     return;
 }
 
@@ -237,4 +247,5 @@ void uart_printf(const char* fmt,...)
     vsnprintf(format_buf,sizeof(format_buf), fmt, args);
     va_end(args);
     uart_puts(format_buf);
+    memset(format_buf, 0, sizeof(format_buf));
 }
