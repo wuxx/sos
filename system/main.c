@@ -8,6 +8,7 @@
 #include "uart.h"
 #include "log.h"
 
+char sys_banner[] = {"sos  buildtime " __DATE__ " " __TIME__};
 extern void __switch_to(func_1);
 
 /* task*/
@@ -222,10 +223,10 @@ int main()
     u32 tid;
     u8  ch;
     /*uart_init();*/
+    PRINT_INFO("%s\n", sys_banner);
     uart_printf("%s %s %d \n", __FILE__, __func__, __LINE__);
     uart_puts("abc\n");
     PRINT_INFO("system start\n");
-    PRINT_INFO("system start1\n");
     uart_init();
     writel(UART0_IMSC, (1 << 1) | (1 << 4) |
             (1 << 6) | (1 << 7) | (1 << 8) |

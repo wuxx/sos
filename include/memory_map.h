@@ -5,14 +5,49 @@
 
 enum {
     GPIO_BASE = 0x20200000,
- 
-        // Controls actuation of pull up/down to ALL GPIO pins.
-        GPPUD = (GPIO_BASE + 0x94),
-        // Controls actuation of pull up/down for specific GPIO pin.
+        GPFSEL0 = (GPIO_BASE + 0x00),
+        GPFSEL1 = (GPIO_BASE + 0x04),
+        GPFSEL2 = (GPIO_BASE + 0x08),
+        GPFSEL3 = (GPIO_BASE + 0x0C),
+        GPFSEL4 = (GPIO_BASE + 0x10),
+        GPFSEL5 = (GPIO_BASE + 0x14),
+    
+        GPSET0  = (GPIO_BASE + 0x1C),
+        GPSET1  = (GPIO_BASE + 0x20),
+    
+        GPCLR0  = (GPIO_BASE + 0x28),
+        GPCLR1  = (GPIO_BASE + 0x2C),
+
+        GPLEV0  = (GPIO_BASE + 0x34),
+        GPLEV1  = (GPIO_BASE + 0x38),
+
+        GPEDS0  = (GPIO_BASE + 0x40),
+        GPEDS1  = (GPIO_BASE + 0x44), 
+
+        GPREN0  = (GPIO_BASE + 0x4C),
+        GPREN1  = (GPIO_BASE + 0x50),
+
+        GPFEN0  = (GPIO_BASE + 0x58),
+        GPFEN1  = (GPIO_BASE + 0x5C),
+
+        GPHEN0  = (GPIO_BASE + 0x64),
+        GPHEN1  = (GPIO_BASE + 0x68),
+
+        GPLEN0  = (GPIO_BASE + 0x70),
+        GPLEN1  = (GPIO_BASE + 0x74),
+
+        GPAREN0 = (GPIO_BASE + 0x7C),
+        GPAREN1 = (GPIO_BASE + 0x80),
+
+        GPAFEN0 = (GPIO_BASE + 0x88),
+        GPAFEN1 = (GPIO_BASE + 0x8C),
+
+        GPPUD   = (GPIO_BASE + 0x94),
+
         GPPUDCLK0 = (GPIO_BASE + 0x98),
-     
+        GPPUDCLK1 = (GPIO_BASE + 0x9C),
+
     UART0_BASE = 0x20201000,
- 
         UART0_DR     = (UART0_BASE + 0x00),
         UART0_RSRECR = (UART0_BASE + 0x04),
         UART0_FR     = (UART0_BASE + 0x18),

@@ -203,14 +203,13 @@ void uart_irq_handler(u32 irq_nr)
     u8 ch;
 
     /* handle one cmd */
-    uart_puts("sos>");
+    uart_puts("\nsos>");
 
     while((ch = uart_recv())) {
-#if 0 
-        if (ch == 0x0) {
-            return;
+
+        if (ch == '\n') {   /* sscom will send '\r\n' */
+            continue;
         }
-#endif
         if (uart_recv_buf_index == (UART_IO_SIZE - 1) && ch != '\r') {
             uart_puts("cmd too long!\n");
             uart_recv_buf_index = 0;
