@@ -136,7 +136,6 @@ __switch_to:
 __die:
     svc #0x3
 
-
 .data
 
 tmp1:

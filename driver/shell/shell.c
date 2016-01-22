@@ -44,19 +44,19 @@ s32 cmd_read()
 s32 cmd_write()
 {
     u32 addr, data;
-    u32 old_data, new_data;
 
     addr = atoi(argv[1]);
     data = atoi(argv[2]);
 
     uart_printf("[0x%x]\n", addr);
     uart_printf("[0x%x]\n", data);
+
+    (*((u32*)addr) = data);
+
 #if 0
-    old_data = readl(addr);
     writel(addr, data);
-    new_data = readl(addr);
-    uart_printf("[0x%x]: [0x%x]->[0x%x] [0x%x]\n", addr, old_data, data, new_data);
 #endif
+    uart_printf("(0x%x) ->[0x%x]\n", data, addr);
     return 0;
 }
 
@@ -163,9 +163,11 @@ s32 shell(char *cmd)
     uart_printf("\n");   
 
     parse_cmd(cmd);
+#if 0
     for(i=0;i<len;i++) {
         uart_printf("[0x%x]: %x\n", &cmd[i], cmd[i]);
     }
+#endif
 
     for(i=0;i<SHELL_ARGS_MAX;i++) {
         uart_printf("argv[%d]: 0x%x [%s]\n", i, argv[i], argv[i]);

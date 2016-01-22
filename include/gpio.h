@@ -57,7 +57,7 @@ enum {
 enum {
     INPUT = 0,
     OUTPUT,
-    ALT_FUNC_0,
+    ALT_FUNC_0 = 4,
     ALT_FUNC_1,
     ALT_FUNC_2,
     ALT_FUNC_3,
@@ -66,9 +66,7 @@ enum {
     ALT_FUNC_MAX,
 };
 
-union gpio_fsel_reg {
-    u32 value;
-    struct _reg {
+struct _gpio_fsel_reg {
         u32 fsel0 : 3;
         u32 fsel1 : 3;
         u32 fsel2 : 3;
@@ -80,7 +78,11 @@ union gpio_fsel_reg {
         u32 fsel8 : 3;
         u32 fsel9 : 3;
         u32 reserved : 2;
-    }reg;
+}__attribute__((__packed__));
+
+union gpio_fsel_reg {
+    u32 value;
+    struct _gpio_fsel_reg reg;
 };
 
 #endif /* __GPIO_H__ */

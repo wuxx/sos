@@ -21,9 +21,9 @@ void bcm2835_delay(u32 n)
 /*
  * Initialize UART0.
  */
-#define UART1
+#define UART0
 void uart_init() {
-#ifdef UART1
+#ifdef UART0
     // Disable UART0.
     writel(UART0_CR, 0x00000000);
     // Setup the GPIO pin 14 && 15.
@@ -152,12 +152,21 @@ void uart_init() {
 #endif
 }
  
+void uart_wait_fifo_empty()
+{
+    while(1) {
+        if ((readl(UART0_FR) & (1 << 7))) {
+            break;
+        }
+    }
+}
+
 /*
  * Transmit a byte via UART0.
  * u8 Byte: byte to send.
  */
 void uart_putc(u8 byte) {
-#ifdef UART1
+#ifdef UART0
     // wait for UART to become ready to transmit
     while (1) {
         if (!(readl(UART0_FR) & (1 << 5))) {
@@ -165,6 +174,7 @@ void uart_putc(u8 byte) {
         }
     }
     writel(UART0_DR, byte);
+    uart_wait_fifo_empty();
 #else
     while((AUX_MU_LSR_REG & 0x20) == 0);
     AUX_MU_IO_REG = byte;
@@ -421,6 +431,5 @@ unsigned_common:
       width--;
     }
   }
-
 #endif
 }

@@ -19,7 +19,7 @@ s32 set_gpio_function(u32 gpio_index, u32 func_index)
     i = gpio_index % 10;
 
     fr.value = readl(fsel_addr);
-    uart_printf("%d %x\n", i, fr.value);
+    uart_printf("%d %x %x\n", i, fr.value, func_index);
     switch (i) {
         case (0):
             fr.reg.fsel0 = func_index;
@@ -55,7 +55,7 @@ s32 set_gpio_function(u32 gpio_index, u32 func_index)
             break;
     }
     uart_printf(" 0x%x -> [0x%x] \n", fr.value, fsel_addr);
-    writel(fr.value, fsel_addr);
+    writel(fsel_addr, fr.value);
     return 0;
 }
 
@@ -73,12 +73,12 @@ s32 set_gpio_output(u32 gpio_index, u32 bit)
     output_set_addr   = GPSET0 + gpio_index / 32;
     output_clear_addr = GPCLR0 + gpio_index / 32;
 
-    uart_printf(" 0x%x [0x%x] [0x%x]\n", bit, output_set_addr, output_clear_addr);
+    uart_printf(" 0x%x 0x%x [0x%x] [0x%x]\n", bit, bit_offset, output_set_addr, output_clear_addr);
 
     if (bit == 0) {
-        writel(0x1 << bit_offset, output_clear_addr);
+        writel(output_clear_addr, 0x1 << bit_offset);
     } else {
-        writel(0x1 << bit_offset, output_set_addr);
+        writel(output_set_addr, 0x1 << bit_offset);
     }
 
     return 0;

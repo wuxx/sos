@@ -20,7 +20,7 @@ SECTIONS {
         *(.init)
     } 
 
-	.text : {
+	.text ALIGN(0x10): {
         __text_start__ = .;
 		*(.text)
         *(.rodata)
@@ -28,13 +28,13 @@ SECTIONS {
 	}
 
 
-	.data : {
+	.data ALIGN(0x10): {
         __data_start__ = .;
 		*(.data)
         __data_end__  = .;
 	}
 
-    .bss : {
+    .bss ALIGN(0x10): {
         __bss_start__ = .;
         *(.bss)
         *(COMMON)

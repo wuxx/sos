@@ -69,7 +69,7 @@ LDS = kernel.ld
 
 DISASM = kernel.disasm
 #-march=armv6
-CFLAGS = -mcpu=arm1176jzf-s -fno-builtin -I$(INCLUDE_DIR)
+CFLAGS = -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -fomit-frame-pointer -I$(INCLUDE_DIR)
 ASFLAGS = 
 
 LIBGCC = $(shell find $(TOOLCHAIN_DIR)/ | grep "armv6-m\/libgcc\.a")
@@ -95,8 +95,11 @@ all:init build_objs
 	$(OBJDUMP) -d $(TARGET_ELF) > $(TARGET_DISASM)
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
 
-tags:
+clean_tags:
+	-rm tags
+tags:clean_tags
 	ctags -R ./driver ./libc ./include ./system
+
 
 clean: 
 	-rm -rf build
