@@ -48,14 +48,7 @@ s32 cmd_write()
     addr = atoi(argv[1]);
     data = atoi(argv[2]);
 
-    uart_printf("[0x%x]\n", addr);
-    uart_printf("[0x%x]\n", data);
-
-    (*((u32*)addr) = data);
-
-#if 0
     writel(addr, data);
-#endif
     uart_printf("(0x%x) ->[0x%x]\n", data, addr);
     return 0;
 }
@@ -167,11 +160,11 @@ s32 shell(char *cmd)
     for(i=0;i<len;i++) {
         uart_printf("[0x%x]: %x\n", &cmd[i], cmd[i]);
     }
-#endif
-
     for(i=0;i<SHELL_ARGS_MAX;i++) {
         uart_printf("argv[%d]: 0x%x [%s]\n", i, argv[i], argv[i]);
     }
+#endif
+
 
     if ((i=get_cmd_index(argv[0])) == -1) {
         uart_printf("illegal cmd [%s] \n", argv[0]);

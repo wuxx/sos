@@ -8,9 +8,11 @@
 #include "uart.h"
 #include "log.h"
 
-char sys_banner[] = {"sos  buildtime " __DATE__ " " __TIME__};
+char sys_banner[] = {"sos system buildtime " __DATE__ " " __TIME__};
 extern void __switch_to(func_1);
 
+extern u32 __get_sp();
+extern u32 __get_cpsr();
 /* task*/
 #define TASK_UNUSED -1
 #define TASK_RUNNING 0
@@ -215,6 +217,15 @@ u8 uart_recv1() {
     return readl(UART0_DR);
 }
 
+void dump_mem(u32 addr, u32 word_nr)
+{
+    u32 i;
+    u32 *p = (u32 *)addr;
+    for(i=0;i<word_nr;i++) {
+        uart_printf("[0x%x]: 0x%x\n", &p[i], p[i]);
+    }
+}
+
 int main()
 {
     u32 cpsr;
@@ -223,29 +234,21 @@ int main()
     u32 tid;
     u8  ch;
     /*uart_init();*/
-    PRINT_INFO("%s\n", sys_banner);
-    uart_printf("%s %s %d \n", __FILE__, __func__, __LINE__);
-    uart_puts("abc\n");
-    PRINT_INFO("system start\n");
+    uart_printf("%s\n", sys_banner);
+    uart_printf("sp: 0x%x; cpsr: 0x%x\n", __get_sp(), __get_cpsr());
+    uart_printf("");
+    dump_mem(0x2000B200, 10);   /* interrupt registers */
+
     uart_init();
-    writel(UART0_IMSC, (1 << 1) | (1 << 4) |
+    writel(UART0_IMSC, (1 << 1) | (1 << 4) | 1 << 5 |
             (1 << 6) | (1 << 7) | (1 << 8) |
             (1 << 9) | (1 << 10));
-    writel(0x2000B214, 0x1<<25);
-    uart_puts("abc\n");
+    /*writel(0x2000B214, 0x1<<25);*/    /* uart irq */
+    set_gpio_function(16, 1);
+    set_gpio_output(16, 0);
+    lock_irq();
     while(1) {
-#if 1
         uart_irq_handler(0);
-#else
-        ch = uart_recv1();
-        if (ch == '\r') {
-            uart_putc('\r');
-            uart_putc('\n');
-
-        } else {
-            uart_putc(ch);
-        }   
-#endif
     }
     assert(1==2);
     set_gpio_function(16, 1);

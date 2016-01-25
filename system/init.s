@@ -55,20 +55,29 @@ PrefetchHandler:
 AbortHandler:
     bl General_Exc_Handler
 
-IrqHandler:
-    bl General_Exc_Handler
-
 FiqHandler:
-    bl General_Exc_Handler
-    bl General_Exc_Handler
-    bl General_Exc_Handler
-    bl General_Exc_Handler
-    bl General_Exc_Handler
     bl General_Exc_Handler
 
 
 .global ResetHandler
 ResetHandler:
+    mov r0,#0x8000
+    mov r1,#0x0000
+    /*  branch instructions 8 words */
+    ldmia r0!,{r2,r3,r4,r5,r6,r7,r8,r9}
+    stmia r1!,{r2,r3,r4,r5,r6,r7,r8,r9}
+    /* vector table 8 words */
+    ldmia r0!,{r2,r3,r4,r5,r6,r7,r8,r9}
+    stmia r1!,{r2,r3,r4,r5,r6,r7,r8,r9}
+
+    mov     r0, #0
+    ldr     r1, =__bss_start__
+    ldr     r2, =__bss_end__
+clear_bss:
+    cmp     r1, r2
+    strlo   r0, [r1], #4
+    blo     clear_bss
+
     ldr     r0, =__ram_end__
     msr     CPSR_c, #MODE_UND | I_BIT | F_BIT
     mov     sp, r0

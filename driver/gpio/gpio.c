@@ -19,7 +19,9 @@ s32 set_gpio_function(u32 gpio_index, u32 func_index)
     i = gpio_index % 10;
 
     fr.value = readl(fsel_addr);
+#if 0
     uart_printf("%d %x %x\n", i, fr.value, func_index);
+#endif
     switch (i) {
         case (0):
             fr.reg.fsel0 = func_index;
@@ -54,7 +56,9 @@ s32 set_gpio_function(u32 gpio_index, u32 func_index)
         default:
             break;
     }
+#if 0
     uart_printf(" 0x%x -> [0x%x] \n", fr.value, fsel_addr);
+#endif
     writel(fsel_addr, fr.value);
     return 0;
 }

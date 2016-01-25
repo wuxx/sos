@@ -1,6 +1,11 @@
 #ifndef __INT_H__
 #define __INT_H__
 #include <types.h>
+#include <mmio.h>
+
+#define FIQ_DISABLE_BIT 6
+#define IRQ_DISABLE_BIT 7
+
 s32 request_irq(u32 irq_nr, func_1 irq_handler);
 s32 release_irq(u32 irq_nr);
 s32 enable_irq(u32 irq_nr);
