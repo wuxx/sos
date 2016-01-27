@@ -240,13 +240,17 @@ int main()
     dump_mem(0x2000B200, 10);   /* interrupt registers */
 
     uart_init();
+#if 0
     writel(UART0_IMSC, (1 << 1) | (1 << 4) | 1 << 5 |
             (1 << 6) | (1 << 7) | (1 << 8) |
             (1 << 9) | (1 << 10));
     /*writel(0x2000B214, 0x1<<25);*/    /* uart irq */
+#endif
     set_gpio_function(16, 1);
     set_gpio_output(16, 0);
-    lock_irq();
+    unlock_irq();
+    dump_mem(0x2000B200, 10);   /* interrupt registers */
+    while(1);
     while(1) {
         uart_irq_handler(0);
     }
