@@ -130,6 +130,41 @@ s32 enable_irq(u32 irq_nr)
 
 s32 disable_irq(u32 irq_nr)
 {
+    u32 i, offset, disable_base;
+    u32 rv;
+
+    if (irq_nr >= IRQ_MAX) {
+        return -1;
+    }
+
+    i      = irq_nr / 32; 
+    offset = irq_nr % 32;
+
+    switch (i) {
+        case (0):
+            disable_base = IRQ_DISABLE_BASIC;
+            break;
+        case (1):
+            disable_base = IRQ_DISABLE1;
+            break;
+        case (2):
+            disable_base = IRQ_DISABLE2;
+            break;
+        default:
+            uart_printf("%s: illegal index %d\n", __func__, i);
+            return -1;
+    }
+    
+    rv = readl(disable_base);
+    set_bit(&rv, offset, 1);
+    writel(disable_base, rv);
+}
+
+s32 disable_irq_all()
+{
+    writel(IRQ_DISABLE_BASIC, 0xFFFFFFFF);
+    writel(IRQ_DISABLE1, 0xFFFFFFFF);
+    writel(IRQ_DISABLE2, 0xFFFFFFFF);
 }
 
 void lock_irq()   
@@ -171,6 +206,8 @@ s32 int_init()
     for(i=0;i<IRQ_MAX;i++) {
         request_irq(i, unexpect_irq_handler);
     }
+
+    disable_irq_all();
 
     return 0;
 }

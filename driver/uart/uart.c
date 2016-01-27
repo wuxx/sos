@@ -308,6 +308,9 @@ unsigned_common:
  */
 void uart_init() {
 #ifdef UART0
+    set_gpio_function(14, ALT_FUNC_5);
+    set_gpio_function(15, ALT_FUNC_5);
+
     // Disable UART0.
     writel(UART0_CR, 0x00000000);
     // Setup the GPIO pin 14 && 15.
@@ -340,16 +343,19 @@ void uart_init() {
     writel(UART0_LCRH, (1 << 4) | (1 << 5) | (1 << 6));
  
     // Mask all interrupts.
+#if 0
     writel(UART0_IMSC, (1 << 1) | (1 << 4) | (1 << 5) |
             (1 << 6) | (1 << 7) | (1 << 8) |
             (1 << 9) | (1 << 10));
-    /*writel(UART0_IMSC, (1 << 5));*/
+#else
+    writel(UART0_IMSC, (1 << 1) | (1 << 4) |
+            (1 << 6) | (1 << 7) | (1 << 8) |
+            (1 << 9) | (1 << 10));
+#endif
  
     // Enable UART0, receive & transfer part of UART.
     writel(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
 
-    /*writel(0x2000B214, 0x1 << 25);*/
-    /*asm volatile ("msr     CPSR_c, #0x1F" : : : "memory");*/
     request_irq(IRQ_UART, uart_irq_handler);
     enable_irq(IRQ_UART);
 #else

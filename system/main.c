@@ -233,13 +233,10 @@ int main()
     u32 pc;
     u32 tid;
     u8  ch;
-    /*uart_init();*/
     uart_printf("%s\n", sys_banner);
     uart_printf("sp: 0x%x; cpsr: 0x%x\n", __get_sp(), __get_cpsr());
-    uart_printf("");
     dump_mem(0x2000B200, 10);   /* interrupt registers */
 
-    uart_init();
 #if 0
     writel(UART0_IMSC, (1 << 1) | (1 << 4) | 1 << 5 |
             (1 << 6) | (1 << 7) | (1 << 8) |
@@ -248,6 +245,9 @@ int main()
 #endif
     set_gpio_function(16, 1);
     set_gpio_output(16, 0);
+    int_init();
+    uart_init();
+    timer_init();
     unlock_irq();
     dump_mem(0x2000B200, 10);   /* interrupt registers */
     while(1);
