@@ -6,66 +6,8 @@
 #include "shell.h"
 #include "gpio.h"
 
-#if 1
-#define PL011_UART
-#else
-#define MINI_UART
-
-/* the mini uart */
-#define BCM2835_CLOCK_FREQ 250000000
-#define BAUD_RATE_COUNT(baudrate) ((BCM2835_CLOCK_FREQ / (8 * (baudrate))) - 1)
-#define REG(x) (*(volatile u32 *)(x))
-#define BIT(n) (1 << (n))
-#define AUX_ENABLES     REG(0x20215004)
-
-// --- Mini UART Registers -----
-#define AUX_MU_IO_REG   REG(0x20215040)
-#define AUX_MU_IER_REG  REG(0x20215044)
-#define AUX_MU_IIR_REG  REG(0x20215048)
-#define AUX_MU_LCR_REG  REG(0x2021504C)
-#define AUX_MU_MCR_REG  REG(0x20215050)
-#define AUX_MU_LSR_REG  REG(0x20215054)
-#define AUX_MU_MSR_REG  REG(0x20215058)
-#define AUX_MU_SCRATCH  REG(0x2021505C)
-#define AUX_MU_CNTL_REG REG(0x20215060)
-#define AUX_MU_STAT_REG REG(0x20215064)
-#define AUX_MU_BAUD_REG REG(0x20215068)
-
-#define AUX_MU_IER_TX_IRQEN  BIT(1)
-
-#define AUX_MU_IIR_RX_IRQ     ((AUX_MU_IIR_REG & 0x07) == 0x04)
-#define AUX_MU_IIR_TX_IRQ     ((AUX_MU_IIR_REG & 0x07) == 0x02)
-
-#define AUX_MU_LSR_RX_RDY     (AUX_MU_LSR_REG & BIT(0))
-#define AUX_MU_LSR_TX_RDY     (AUX_MU_LSR_REG & BIT(5))
-
-// *****************************************************************************
-//                        Interrupts
-// *****************************************************************************
-
-#define IRQ_BASIC         REG(0x2000B200)
-#define IRQ_PEND1         REG(0x2000B204)
-#define IRQ_PEND2         REG(0x2000B208)
-#define IRQ_FIQ_CONTROL   REG(0x2000B210)
-#define IRQ_ENABLE1       REG(0x2000B210)
-#define IRQ_ENABLE2       REG(0x2000B214)
-#define IRQ_ENABLE_BASIC  REG(0x2000B218)
-/*#define IRQ_DISABLE1      REG(0x2000B21C)*/
-#define IRQ_DISABLE2      REG(0x2000B220)
-#define IRQ_DISABLE_BASIC REG(0x2000B220)
-#define GPFN_IN     0x00
-#define GPFN_OUT    0x01
-#define GPFN_ALT0   0x04
-#define GPFN_ALT1   0x05
-#define GPFN_ALT2   0x06
-#define GPFN_ALT3   0x07
-#define GPFN_ALT4   0x03
-#define GPFN_ALT5   0x02
-
-#define GPPUDD           REG(0x20200094)
-/*#define GPPUDCLK0       REG(0x20200098)*/
-#define GPPUDCLK1       REG(0x2020009C)
-#endif
+#define UART0       /* pl011 uart */
+/*#define UART1*/   /* mini uart */
 
 #define UART_IO_SIZE 256
 
@@ -91,25 +33,6 @@ void uart_wait_fifo_empty()
     }
 }
 
-/*
- * Transmit a byte via UART.
- * u8 Byte: byte to send.
- */
-void uart_putc(u8 byte) {
-#if defined(PL011_UART)
-    // wait for UART to become ready to transmit
-    while (1) {
-        if (!(readl(UART0_FR) & (1 << 5))) {
-            break;
-        }
-    }
-    writel(UART0_DR, byte);
-    uart_wait_fifo_empty();
-#elif defined(MINI_UART)
-    while((AUX_MU_LSR_REG & 0x20) == 0);
-    AUX_MU_IO_REG = byte;
-#endif
-}
  
 /*
  * print a string to the UART one character at a time
@@ -368,7 +291,7 @@ unsigned_common:
  * Initialize UART.
  */
 void uart_init() {
-#if defined(PL011_UART)
+#ifdef UART0
     set_gpio_function(14, ALT_FUNC_0);
     set_gpio_function(15, ALT_FUNC_0);
 
@@ -419,7 +342,65 @@ void uart_init() {
 
     request_irq(IRQ_UART, uart_irq_handler);
     enable_irq(IRQ_UART);
-#elif defined(MINI_UART)
+#else
+
+/* the mini uart */
+#define BCM2835_CLOCK_FREQ 250000000
+#define BAUD_RATE_COUNT(baudrate) ((BCM2835_CLOCK_FREQ / (8 * (baudrate))) - 1)
+#define REG(x) (*(volatile u32 *)(x))
+#define BIT(n) (1 << (n))
+#define AUX_ENABLES     REG(0x20215004)
+
+// --- Mini UART Registers -----
+#define AUX_MU_IO_REG   REG(0x20215040)
+#define AUX_MU_IER_REG  REG(0x20215044)
+#define AUX_MU_IIR_REG  REG(0x20215048)
+#define AUX_MU_LCR_REG  REG(0x2021504C)
+#define AUX_MU_MCR_REG  REG(0x20215050)
+#define AUX_MU_LSR_REG  REG(0x20215054)
+#define AUX_MU_MSR_REG  REG(0x20215058)
+#define AUX_MU_SCRATCH  REG(0x2021505C)
+#define AUX_MU_CNTL_REG REG(0x20215060)
+#define AUX_MU_STAT_REG REG(0x20215064)
+#define AUX_MU_BAUD_REG REG(0x20215068)
+
+#define AUX_MU_IER_TX_IRQEN  BIT(1)
+
+#define AUX_MU_IIR_RX_IRQ     ((AUX_MU_IIR_REG & 0x07) == 0x04)
+#define AUX_MU_IIR_TX_IRQ     ((AUX_MU_IIR_REG & 0x07) == 0x02)
+
+#define AUX_MU_LSR_RX_RDY     (AUX_MU_LSR_REG & BIT(0))
+#define AUX_MU_LSR_TX_RDY     (AUX_MU_LSR_REG & BIT(5))
+
+// *****************************************************************************
+//                        Interrupts
+// *****************************************************************************
+
+#define IRQ_BASIC         REG(0x2000B200)
+#define IRQ_PEND1         REG(0x2000B204)
+#define IRQ_PEND2         REG(0x2000B208)
+#define IRQ_FIQ_CONTROL   REG(0x2000B210)
+#define IRQ_ENABLE1       REG(0x2000B210)
+#define IRQ_ENABLE2       REG(0x2000B214)
+#define IRQ_ENABLE_BASIC  REG(0x2000B218)
+#define IRQ_DISABLE1      REG(0x2000B21C)
+#define IRQ_DISABLE2      REG(0x2000B220)
+#define IRQ_DISABLE_BASIC REG(0x2000B220)
+#define GPFN_IN     0x00
+#define GPFN_OUT    0x01
+#define GPFN_ALT0   0x04
+#define GPFN_ALT1   0x05
+#define GPFN_ALT2   0x06
+#define GPFN_ALT3   0x07
+#define GPFN_ALT4   0x03
+#define GPFN_ALT5   0x02
+
+#define GPPUDD           REG(0x20200094)
+#define GPPUDCLK00       REG(0x20200098)
+#define GPPUDCLK1       REG(0x2020009C)
+
+
+    IRQ_DISABLE1 = BIT(29);
 
     AUX_ENABLES = 1;
 
@@ -433,19 +414,35 @@ void uart_init() {
 
     bcm2835_gpio_fnsel(14, GPFN_ALT5);
     bcm2835_gpio_fnsel(15, GPFN_ALT5);
-    set_gpio_function(14, ALT_FUNC_5);
-    set_gpio_function(15, ALT_FUNC_5);
 
     GPPUDD = 0;
     bcm2835_delay(150);
-    writel(GPPUDCLK0, (1<<14)|(1<<15));
+    GPPUDCLK00 = (1<<14)|(1<<15);
     bcm2835_delay(150);
-    writel(GPPUDCLK0, 0x0);
+    GPPUDCLK00 = 0;
 
     AUX_MU_CNTL_REG = 0x03;
 
     IRQ_ENABLE1 = BIT(29);
-    request_irq(IRQ_AUX, uart_irq_handler);
-    enable_irq(IRQ_AUX);
+#endif
+}
+
+/*
+ * Transmit a byte via UART0.
+ * u8 Byte: byte to send.
+ */
+void uart_putc(u8 byte) {
+#ifdef UART0
+    // wait for UART to become ready to transmit
+    while (1) {
+        if (!(readl(UART0_FR) & (1 << 5))) {
+            break;
+        }
+    }
+    writel(UART0_DR, byte);
+    uart_wait_fifo_empty();
+#else
+    while((AUX_MU_LSR_REG & 0x20) == 0);
+    AUX_MU_IO_REG = byte;
 #endif
 }

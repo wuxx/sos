@@ -17,7 +17,8 @@ char *mode[32] =  {"unknown mode", "unknown mode", "unknown mode",    "unknown m
 
 void General_Irq_Handler()
 {
-    u32 i, pend, cpsr;
+    u32 i, j, cpsr;
+    u32 pend[3], enable[3];
     u32 irq_nr;
     func_1 irq_func = NULL;
     cpsr = __get_cpsr();
@@ -25,34 +26,25 @@ void General_Irq_Handler()
     uart_printf("in %s 0x%x %s\n", __func__, cpsr, mode[cpsr & 0x1f]);
     dump_mem(0x2000B200, 10);
 
-    pend = readl(IRQ_PEND_BASIC);
-    for(i=0;i<32;i++) {
-        if (get_bit(pend, i) == 1) {
-            irq_nr = i;
-            uart_printf("irq_nr: %d \n", i);
-        }
-    }
+    pend[0]   = readl(IRQ_PEND_BASIC);
+    pend[1]   = readl(IRQ_PEND1);
+    pend[2]   = readl(IRQ_PEND2);
 
-    pend = readl(IRQ_PEND1);
-    for(i=0;i<32;i++) {
-        if (get_bit(pend, i) == 1) {
-            irq_nr = 32+i;
-            uart_printf("irq_nr: %d \n", 32+i);
-        }
-    }
+    enable[0] = readl(IRQ_ENABLE_BASIC);
+    enable[1] = readl(IRQ_ENABLE1);
+    enable[2] = readl(IRQ_ENABLE2);
 
-    pend = readl(IRQ_PEND2);
-    for(i=0;i<32;i++) {
-        if (get_bit(pend, i) == 1) {
-            irq_nr = 64+i;
-            uart_printf("irq_nr: %d \n", 64+i);
+    for(i=0;i<3;i++) {
+        for(j=0;j<32;j++) {
+            if (get_bit(pend[i], j) && get_bit(enable[i], j)) {
+                irq_nr = i * 32 + j;
+                uart_printf("irq_nr: %d\n", irq_nr);
+                irq_func = irq_table[irq_nr];
+                if (irq_func != NULL) {
+                    irq_func(irq_nr);
+                }
+            }
         }
-    }
-
-    dump_mem(0x2000B200, 10);
-    irq_func = irq_table[irq_nr];
-    if (irq_func != NULL) {
-        irq_func(irq_nr);
     }
 }
 
