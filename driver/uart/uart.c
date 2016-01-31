@@ -78,7 +78,7 @@ void uart_irq_handler(u32 irq_nr)
             uart_recv_buf[uart_recv_buf_index] = '\0';  /* terminate the string. */
             shell(uart_recv_buf);
             uart_recv_buf_index = 0;
-            return;
+            break;
         } else {
             uart_recv_buf[uart_recv_buf_index] = ch;
             uart_recv_buf_index++;

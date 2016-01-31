@@ -102,7 +102,7 @@ init:
 	mkdir -p build
 	$(foreach d,$(OBJ_PATHS), mkdir -p $(d);)
 
-all:init build_objs $(TARGET_ELF) $(TARGET_IMG) $(TARGET_DISASM) $(TARGET_ELFINFO) $(ALL_OBJS)
+all:init build_objs
 	$(LD) $(ALL_OBJS) $(LDFLAGS) -o $(TARGET_ELF)
 	$(OBJCOPY) $(TARGET_ELF) -O binary $(TARGET_IMG)
 	$(OBJDUMP) -d $(TARGET_ELF) > $(TARGET_DISASM)

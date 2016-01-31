@@ -1,8 +1,24 @@
 #include <memory_map.h>
 #include <libc.h>
 #include "gpio.h"
+#include "log.h"
 
-/* */
+/* GPIO17 -> GPIO_GEN0 -> 11 */
+/* GPIO18 -> GPIO_GEN1 -> 12 */
+
+void test_gpio_irq_handler(u32 irq_nr)
+{
+    u32 stat;
+    PRINT_EMG("in %s %d\n", __func__, irq_nr);
+    dump_mem(GPIO_BASE, 40);
+
+    stat = readl(GPEDS0);
+    writel(GPEDS0, stat);
+
+    stat = readl(GPEDS1);
+    writel(GPEDS1, stat);
+}
+
 s32 test_gpio_all(u32 argc, char **argv)
 {
     s32 ret = 0;
@@ -19,6 +35,29 @@ s32 test_gpio_all(u32 argc, char **argv)
             break;
         case (2):
             ret = set_gpio_output(arg1, arg2);
+            break;
+        case (3):
+            set_gpio_function(17, OUTPUT);
+            set_gpio_output(17, 1);
+
+            set_gpio_function(18, INPUT);
+            writel(GPREN0,  1 << 18);   /* rise trigger int */
+#if 0
+            writel(GPHEN0,  1 << 18);   /* high trigger int */
+            writel(GPFEN0,  1 << 18);
+            writel(GPLEN0,  1 << 18);
+            writel(GPAREN0, 1 << 18);
+            writel(GPAFEN0, 1 << 18);
+#endif
+
+            request_irq(IRQ_GPIO0, test_gpio_irq_handler);
+            request_irq(IRQ_GPIO1, test_gpio_irq_handler);
+            request_irq(IRQ_GPIO2, test_gpio_irq_handler);
+            request_irq(IRQ_GPIO3, test_gpio_irq_handler);
+            enable_irq(IRQ_GPIO0);
+            enable_irq(IRQ_GPIO1);
+            enable_irq(IRQ_GPIO2);
+            enable_irq(IRQ_GPIO3);
             break;
         default:
             return -1;
