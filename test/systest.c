@@ -1,15 +1,19 @@
 #include <libc.h>
-#include <shell.h>
+#include "shell.h"
+#include "log.h"
 
 s32 test_cpu_all(u32 argc, char **argv);
 s32 test_timer_all(u32 argc, char **argv);
+s32 test_gpio_all(u32 argc, char **argv);
+s32 test_libc_all(u32 argc, char **argv);
 s32 sub_cmd_help();
 
 struct shell_cmd_info sub_ci[] =  {
-    { .name = "cpu",       .func = test_cpu_all,      .desc = ""},
-    { .name = "timer",       .func = test_timer_all,    .desc = ""},
-/*    { .name = "gpio",        .func = test_gpio_all,     .desc = ""},*/
-    { .name = "help",        .func = sub_cmd_help,      .desc = ""},
+    { .name = "cpu",   .func = test_cpu_all,   .desc = ""},
+    { .name = "timer", .func = test_timer_all, .desc = ""},
+    { .name = "gpio",  .func = test_gpio_all,  .desc = ""},
+    { .name = "libc",  .func = test_libc_all,  .desc = ""},
+    { .name = "help",  .func = sub_cmd_help,   .desc = ""},
 };
 
 void dump_mem(u32 addr, u32 word_nr)
@@ -17,7 +21,7 @@ void dump_mem(u32 addr, u32 word_nr)
     u32 i;
     u32 *p = (u32 *)addr;
     for(i=0;i<word_nr;i++) {
-        uart_printf("[0x%x]: 0x%x\n", &p[i], p[i]);
+        PRINT_EMG("[0x%x]: 0x%x\n", &p[i], p[i]);
     }   
 }
 

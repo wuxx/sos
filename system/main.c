@@ -228,27 +228,16 @@ int main()
     int_init();
     uart_init();
 
-    uart_putc('A');
-    uart_putc('B');
-    uart_printf("%s\n", sys_banner);
-    uart_putc('C');
-    uart_putc('D');
-    uart_printf("sp: 0x%x; cpsr: 0x%x\n", __get_sp(), __get_cpsr());
+    PRINT_INFO("%s\n", sys_banner);
+    PRINT_INFO("sp: 0x%x; cpsr: 0x%x\n", __get_sp(), __get_cpsr());
     dump_mem(0x2000B200, 10);   /* interrupt registers */
 
-#if 0
-    writel(UART0_IMSC, (1 << 1) | (1 << 4) | 1 << 5 |
-            (1 << 6) | (1 << 7) | (1 << 8) |
-            (1 << 9) | (1 << 10));
-    /*writel(0x2000B214, 0x1<<25);*/    /* uart irq */
-#endif
     set_gpio_function(16, 1);
     set_gpio_output(16, 0);
-    timer_init();
     unlock_irq();
-    dump_mem(0x2000B200, 10);   /* interrupt registers */
     while(1);
     while(1) {
+        timer_init();
         uart_irq_handler(0);
     }
     assert(1==2);
