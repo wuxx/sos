@@ -1,5 +1,11 @@
 #!/bin/bash
 
+help() {
+    echo "usage: $0 "
+    echo -e "\t\t[--debug] CFLAGS+=-DDEBUG"
+    echo -e "\t\t[--help]"
+}
+
 #default build config
 cflags=""
 
@@ -8,6 +14,17 @@ while [ ! -z "$1" ]; do
         "--debug")
         cflag="-DDEBUG"
         shift
+        ;;
+        "--help")
+        help
+        shift
+        exit 0
+        ;;
+        *)
+        echo "illegal param $1"
+        shift
+        help
+        exit 1
         ;;
     esac
 done

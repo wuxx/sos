@@ -7,7 +7,7 @@
 #include "gpio.h"
 
 #define UART0       /* pl011 uart */
-/*#define UART1*/   /* mini uart */
+/*#define UART1*/   /* mini uart, need debug. */
 
 #define UART_IO_SIZE 256
 

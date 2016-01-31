@@ -110,6 +110,8 @@ all:init build_objs
 
 tags:
 	ctags -R ./driver ./libc ./include ./system ./test
+	find ./driver ./libc ./include ./system ./test | grep ".*\.[ch]$$" | xargs wc -l
+
 
 clean: 
 	-rm -rf build
