@@ -97,7 +97,7 @@ void uart_irq_handler(u32 irq_nr)
     return;
 }
 
-void uart_printf(const char* fmt,...)
+void PRINT_EMG(const char* fmt,...)
 {
     va_list args;
     va_start(args,fmt);

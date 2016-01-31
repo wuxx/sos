@@ -1,6 +1,6 @@
 #include <memory_map.h>
 #include <libc.h>
-#include <timer.h>
+#include "timer.h"
 
 s32 test_timer_all(u32 argc, char **argv)
 {

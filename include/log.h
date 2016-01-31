@@ -6,7 +6,7 @@
 enum LOG_LEVEL_E {
     LOG_EMG = 0,
     LOG_ERR,
-    LOG_WARNING,
+    LOG_WARN,
     LOG_INFO,
     LOG_DEBUG,
     LOG_MAX,

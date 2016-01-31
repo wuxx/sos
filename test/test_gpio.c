@@ -1,6 +1,6 @@
 #include <memory_map.h>
 #include <libc.h>
-#include <gpio.h>
+#include "gpio.h"
 
 s32 test_gpio_all(u32 argc, char **argv)
 {

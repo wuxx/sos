@@ -32,7 +32,7 @@ s32 cmd_read()
 
     addr = atoi(argv[1]);
     data = readl(addr);
-    uart_printf("[0x%x]: 0x%x\n", addr, data);
+    PRINT_EMG("[0x%x]: 0x%x\n", addr, data);
     return 0;
 }
 
@@ -44,7 +44,7 @@ s32 cmd_write()
     data = atoi(argv[2]);
 
     writel(addr, data);
-    uart_printf("(0x%x) ->[0x%x]\n", data, addr);
+    PRINT_EMG("(0x%x) ->[0x%x]\n", data, addr);
     return 0;
 }
 
@@ -63,7 +63,7 @@ s32 cmd_exec()
     func = (func_4)addr;
 
     ret = func(para1, para2, para3, para4);
-    uart_printf("execute 0x%x (0x%x 0x%x 0x%x 0x%x)return 0x%x\n", addr, para1, para2, para3, para4, ret);
+    PRINT_EMG("execute 0x%x (0x%x 0x%x 0x%x 0x%x)return 0x%x\n", addr, para1, para2, para3, para4, ret);
     return ret;
 }
 
@@ -79,7 +79,7 @@ s32 cmd_dump()
     p       = (u32*)addr;
 
     for(i=0;i<word_nr;i++) {
-        uart_printf("[0x%x]: 0x%x\r\n", &p[i], p[i]);
+        PRINT_EMG("[0x%x]: 0x%x\r\n", &p[i], p[i]);
     }   
 
     return 0;
@@ -94,7 +94,7 @@ s32 cmd_help()
 {
     u32 i;
     for(i=0; i<(sizeof(ci)/sizeof(ci[0])); i++) {
-        uart_printf("%s:\t\t\t%s\n", ci[i].name, ci[i].desc);
+        PRINT_EMG("%s:\t\t\t%s\n", ci[i].name, ci[i].desc);
     }
     return 0;
 }
@@ -153,24 +153,24 @@ s32 shell(char *cmd)
         return 0;
     }
 
-    uart_printf("\n");   
+    PRINT_EMG("\n");   
 
     parse_cmd(cmd);
 #if 0
     for(i=0;i<len;i++) {
-        uart_printf("[0x%x]: %x\n", &cmd[i], cmd[i]);
+        PRINT_EMG("[0x%x]: %x\n", &cmd[i], cmd[i]);
     }
     for(i=0;i<SHELL_ARGS_MAX;i++) {
-        uart_printf("argv[%d]: 0x%x [%s]\n", i, argv[i], argv[i]);
+        PRINT_EMG("argv[%d]: 0x%x [%s]\n", i, argv[i], argv[i]);
     }
 #endif
 
 
     if ((i=get_cmd_index(argv[0])) == -1) {
-        uart_printf("illegal cmd [%s] \n", argv[0]);
+        PRINT_EMG("illegal cmd [%s] \n", argv[0]);
         return -1;
     }
 
     ret = ci[i].func();
-    uart_printf("return 0x%x\n", ret);
+    PRINT_EMG("return 0x%x\n", ret);
 }

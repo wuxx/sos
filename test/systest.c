@@ -29,7 +29,7 @@ s32 sub_cmd_help()
 {
     u32 i;
     for(i=0; i<(sizeof(sub_ci)/sizeof(sub_ci[0])); i++) {
-        uart_printf("%s:\t\t\t%s\n", sub_ci[i].name, sub_ci[i].desc);
+        PRINT_EMG("%s:\t\t\t%s\n", sub_ci[i].name, sub_ci[i].desc);
     }
     return 0;
 }
@@ -51,7 +51,7 @@ s32 systest(u32 argc, char **argv)
     s32 ret;
 
     if ((i = get_cmd_index(argv[1])) == -1) {
-        uart_printf("illegal sub-cmd [%s]\n", argv[1]);
+        PRINT_EMG("illegal sub-cmd [%s]\n", argv[1]);
         sub_cmd_help();
         return -1;
     }

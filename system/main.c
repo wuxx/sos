@@ -40,16 +40,16 @@ u32 init_task()
         g_task[i].task_id = -1;
     }
 
-    uart_printf("in init_task, g_task: 0x%x; g_stack: 0x%x\n", g_task, g_stack);
+    PRINT_EMG("in init_task, g_task: 0x%x; g_stack: 0x%x\n", g_task, g_stack);
 }
 
 /* 得到一个空闲的TCB, 偏移 == prio == task_id */
 u32 get_free_task(u32 prio)
 {
-    uart_printf("prio: %d\n", prio);
+    PRINT_EMG("prio: %d\n", prio);
     if (g_task[prio].task_id == -1)
     {
-        uart_printf("in get_free_task: %d\n", prio);
+        PRINT_EMG("in get_free_task: %d\n", prio);
         return prio;
     }
     return -1;
@@ -59,24 +59,24 @@ void dump_task(u32 tid)
 {
     struct task *tsk = &g_task[tid];
     int i;
-    uart_printf("task_id: %d\n", tid);
-    uart_printf("func_0: 0x%x\n", tsk->func);
-    uart_printf("stack: 0x%x\n", tsk->stack);
-    uart_printf("stack_size: %d\n", tsk->stack_size);
-    uart_printf("sp: 0x%x\n", tsk->sp);
+    PRINT_EMG("task_id: %d\n", tid);
+    PRINT_EMG("func_0: 0x%x\n", tsk->func);
+    PRINT_EMG("stack: 0x%x\n", tsk->stack);
+    PRINT_EMG("stack_size: %d\n", tsk->stack_size);
+    PRINT_EMG("sp: 0x%x\n", tsk->sp);
     for(i=0;i<15;i++) {
-        uart_printf("sp[%d]: 0x%x\n", i, ((int *)(tsk->sp))[i]);
+        PRINT_EMG("sp[%d]: 0x%x\n", i, ((int *)(tsk->sp))[i]);
     }
-    uart_printf("cpsr: 0x%x\n", ((int *)(tsk->sp))[15]);
+    PRINT_EMG("cpsr: 0x%x\n", ((int *)(tsk->sp))[15]);
 }
 
 s32 launch(u32 para)
 {
     void (*func)(void);
     func = (void (*)(void))para;
-    uart_printf("launch start,  func: 0x%x \n", func);
+    PRINT_EMG("launch start,  func: 0x%x \n", func);
     func();
-    uart_printf("launch end\n");
+    PRINT_EMG("launch end\n");
     return 0;
 }
 
@@ -112,17 +112,17 @@ u32 task_create(u32 task_prio, func_1 func)
     if (tid == -1) {
         return -1;
     }
-    uart_printf("task_create 0\n");
+    PRINT_EMG("task_create 0\n");
     tid = init_context(&g_task[tid], tid, func);
     dump_task(tid);
-    uart_printf("task_create 1\n");
+    PRINT_EMG("task_create 1\n");
     return tid;
 }
 
 void start_first_task(u32 tid)
 {
     struct task *tsk = &g_task[tid];
-    uart_printf("in start_first_task, tsk: 0x%x\n", tsk);
+    PRINT_EMG("in start_first_task, tsk: 0x%x\n", tsk);
     g_running_task = tsk;
     __start_first_task(tsk);
 }
@@ -135,10 +135,10 @@ void task_switch(u32 tid)
     struct task *tmp = g_running_task;
     g_running_task->state = TASK_READY;
     new->state = TASK_RUNNING;
-//    uart_printf("task_switch 0\n");
+//    PRINT_EMG("task_switch 0\n");
     g_running_task = new;
     __switch_context(tmp, new);
-//    uart_printf("task_switch 1\n");
+//    PRINT_EMG("task_switch 1\n");
 }
 
 /* tid 1 */
@@ -181,7 +181,7 @@ void disable_int()
 
 void panic(const char *str)
 {
-    uart_printf("%s\n", str);
+    PRINT_EMG("%s\n", str);
     while(1);
 }
 
@@ -202,7 +202,7 @@ void init_vector_table()
     u32 *base = (u32 *)vector_table_base;
     for(i=0;i<48;i++) {
         base[i] = (u32)ee[i];
-        uart_printf("[%d]: 0x%x\n", i, base[i]);
+        PRINT_EMG("[%d]: 0x%x\n", i, base[i]);
     }
     return;
 }
@@ -245,20 +245,20 @@ int main()
     init_task();
 
     //tid = task_create(0, testA);
-    //uart_printf("get tid %d\n", tid);
+    //PRINT_EMG("get tid %d\n", tid);
     //dump_task(0);
 
     //tid = task_create(1, testB);
-    //uart_printf("get tid %d\n", tid);
+    //PRINT_EMG("get tid %d\n", tid);
     //dump_task(1);
 
     //start_first_task(0);
 
     init_vector_table();
     enable_int();
-    uart_printf("call __die...");
+    PRINT_EMG("call __die...");
     __die();
-    uart_printf("after call __die...");
+    PRINT_EMG("after call __die...");
     while(1) {
         set_gpio_value(16, 0);  /* LED ON */
         delay_gpio();
@@ -268,7 +268,7 @@ int main()
         cpsr = __get_cpsr();
         sp = __get_sp();
         pc = __get_pc();
-        uart_printf("cpsr: 0x%x; sp: 0x%x; pc: 0x%x\n", cpsr, sp, pc);
+        PRINT_EMG("cpsr: 0x%x; sp: 0x%x; pc: 0x%x\n", cpsr, sp, pc);
 
     }
 

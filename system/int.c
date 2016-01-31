@@ -23,8 +23,7 @@ void General_Irq_Handler()
     func_1 irq_func = NULL;
     cpsr = __get_cpsr();
 
-    uart_printf("in %s 0x%x %s\n", __func__, cpsr, mode[cpsr & 0x1f]);
-    dump_mem(0x2000B200, 10);
+    PRINT_DEBUG("in %s 0x%x %s\n", __func__, cpsr, mode[cpsr & 0x1f]);
 
     pend[0]   = readl(IRQ_PEND_BASIC);
     pend[1]   = readl(IRQ_PEND1);
@@ -38,7 +37,7 @@ void General_Irq_Handler()
         for(j=0;j<32;j++) {
             if (get_bit(pend[i], j) && get_bit(enable[i], j)) {
                 irq_nr = i * 32 + j;
-                uart_printf("irq_nr: %d\n", irq_nr);
+                PRINT_DEBUG("irq_nr: %d\n", irq_nr);
                 irq_func = irq_table[irq_nr];
                 if (irq_func != NULL) {
                     irq_func(irq_nr);
@@ -63,8 +62,8 @@ void General_Exc_Handler()
 {
     u32 lr, cpsr;
     cpsr = __get_cpsr();
-    uart_printf("in %s \n", __func__);
-    uart_printf("cpsr %x; %s\n", cpsr, mode[cpsr & 0x1f]);
+    PRINT_EMG("in %s \n", __func__);
+    PRINT_EMG("cpsr %x; %s\n", cpsr, mode[cpsr & 0x1f]);
     while(1);
 }
 
@@ -122,7 +121,7 @@ s32 enable_irq(u32 irq_nr)
             enable_base = IRQ_ENABLE2;
             break;
         default:
-            uart_printf("%s: illegal index %d\n", __func__, i);
+            PRINT_EMG("%s: illegal index %d\n", __func__, i);
             return -1;
     }
     
@@ -154,7 +153,7 @@ s32 disable_irq(u32 irq_nr)
             disable_base = IRQ_DISABLE2;
             break;
         default:
-            uart_printf("%s: illegal index %d\n", __func__, i);
+            PRINT_EMG("%s: illegal index %d\n", __func__, i);
             return -1;
     }
     
@@ -192,14 +191,14 @@ void unlock_irq()
 
 s32 lockup(char *file_name, char *func_name, u32 line_num, char *desc)
 {
-    uart_printf("lockup!\n");
-    uart_printf("%s-%s-%d: %s\n", file_name, func_name, line_num, desc);
+    PRINT_EMG("lockup!\n");
+    PRINT_EMG("%s-%s-%d: %s\n", file_name, func_name, line_num, desc);
     while(1);
 }
 
 s32 unexpect_irq_handler(u32 irq_nr)
 {
-    uart_printf("in %s %d\n", __func__, irq_nr);
+    PRINT_EMG("in %s %d\n", __func__, irq_nr);
     while(1);
 }
 

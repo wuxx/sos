@@ -17,7 +17,7 @@ void delay(s32 count) {
 
 void timer_irq_handler(u32 irq_nr)
 {
-    uart_printf("in %s %d\n", __func__, irq_nr);
+    PRINT_EMG("in %s %d\n", __func__, irq_nr);
     writel(CORETMCLR, 0x0);
 }
 

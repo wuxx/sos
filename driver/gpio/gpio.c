@@ -10,7 +10,7 @@ s32 set_gpio_function(u32 gpio_index, u32 func_index)
 
 
     if ((gpio_index >= GPIO_NR_MAX) || func_index >= ALT_FUNC_MAX) { 
-        uart_printf("invalid para %d %d\n", gpio_index, func_index);
+        PRINT_EMG("invalid para %d %d\n", gpio_index, func_index);
         return -1;
     }
 
@@ -20,7 +20,7 @@ s32 set_gpio_function(u32 gpio_index, u32 func_index)
 
     fr.value = readl(fsel_addr);
 #if 0
-    uart_printf("%d %x %x\n", i, fr.value, func_index);
+    PRINT_EMG("%d %x %x\n", i, fr.value, func_index);
 #endif
     switch (i) {
         case (0):
@@ -57,7 +57,7 @@ s32 set_gpio_function(u32 gpio_index, u32 func_index)
             break;
     }
 #if 0
-    uart_printf(" 0x%x -> [0x%x] \n", fr.value, fsel_addr);
+    PRINT_EMG(" 0x%x -> [0x%x] \n", fr.value, fsel_addr);
 #endif
     writel(fsel_addr, fr.value);
     return 0;
@@ -69,7 +69,7 @@ s32 set_gpio_output(u32 gpio_index, u32 bit)
     u32 bit_offset;
 
     if ((gpio_index >= GPIO_NR_MAX) || bit > 1) { 
-        uart_printf("invalid para %d %d\n", gpio_index, bit);
+        PRINT_EMG("invalid para %d %d\n", gpio_index, bit);
         return -1;
     }
 
@@ -77,7 +77,7 @@ s32 set_gpio_output(u32 gpio_index, u32 bit)
     output_set_addr   = GPSET0 + gpio_index / 32;
     output_clear_addr = GPCLR0 + gpio_index / 32;
 
-    uart_printf("%s 0x%x 0x%x [0x%x] [0x%x]\n", __func__, bit, bit_offset, output_set_addr, output_clear_addr);
+    PRINT_EMG("%s 0x%x 0x%x [0x%x] [0x%x]\n", __func__, bit, bit_offset, output_set_addr, output_clear_addr);
 
     if (bit == 0) {
         writel(output_clear_addr, 0x1 << bit_offset);

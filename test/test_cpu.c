@@ -7,7 +7,7 @@ s32 test_cpu_all(u32 argc, char **argv)
     i = atoi(argv[2]);
     switch(i) {
         case (0):
-            uart_printf("cpsr: 0x%x\n", __get_cpsr());
+            PRINT_EMG("cpsr: 0x%x\n", __get_cpsr());
             break;
         default:
             return -1;
