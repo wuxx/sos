@@ -61,8 +61,7 @@ void uart_irq_handler(u32 irq_nr)
     u8 ch;
 
     /* handle one cmd */
-    uart_puts("\nsos>");
-
+    /* wait characters forever, until get a '\r' */
     while((ch = uart_recv())) {
 
         if (ch == '\n') {   /* sscom will send '\r\n' */
@@ -94,10 +93,13 @@ void uart_irq_handler(u32 irq_nr)
             uart_putc(ch);
         }
     }
+
+    uart_puts("\nsos>");
     return;
 }
 
-void PRINT_EMG(const char* fmt,...)
+#if 0
+void uart_printf(const char* fmt,...)
 {
     va_list args;
     va_start(args,fmt);
@@ -106,6 +108,7 @@ void PRINT_EMG(const char* fmt,...)
     uart_puts(format_buf);
     memset(format_buf, 0, sizeof(format_buf));
 }
+#endif
 
 /*
  * Initialize UART.

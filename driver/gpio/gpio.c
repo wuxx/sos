@@ -1,6 +1,7 @@
 #include <libc.h>
 #include <memory_map.h>
 #include "mmio.h"
+#include "log.h"
 #include "gpio.h"
 
 s32 set_gpio_function(u32 gpio_index, u32 func_index)

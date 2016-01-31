@@ -2,6 +2,7 @@
 #include <int.h>
 #include <memory_map.h>
 
+#include "log.h"
 #include "timer.h"
 
 #define CORETM_HZ (1000000) /* 1M, may be not very precise */

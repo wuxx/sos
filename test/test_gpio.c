@@ -2,6 +2,7 @@
 #include <libc.h>
 #include "gpio.h"
 
+/* */
 s32 test_gpio_all(u32 argc, char **argv)
 {
     s32 ret = 0;

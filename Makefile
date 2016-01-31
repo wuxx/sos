@@ -53,10 +53,10 @@ ALL_SRCS = $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS)
 C_SRCS   = $(filter %.c, $(ALL_SRCS))
 ASM_SRCS = $(filter %.s, $(ALL_SRCS)) 
 
-C_OBJS   = $(patsubst %.c,%.o,$(C_SRCS))
-ASM_OBJS = $(patsubst %.s,%.o,$(ASM_SRCS))
+C_OBJS   = $(addprefix $(BUILD)/, $(patsubst %.c,%.o,$(C_SRCS)))
+ASM_OBJS = $(addprefix $(BUILD)/, $(patsubst %.s,%.o,$(ASM_SRCS)))
 
-ALL_OBJS = $(addprefix $(BUILD)/,$(C_OBJS) $(ASM_OBJS))
+ALL_OBJS = $(C_OBJS) $(ASM_OBJS)
 #$(warning ALL_SRCS $(ALL_SRCS))
 #$(warning ALL_OBJS $(ALL_OBJS))
 
@@ -64,7 +64,7 @@ ALL_OBJS = $(addprefix $(BUILD)/,$(C_OBJS) $(ASM_OBJS))
 #$(warning C_OBJS $(C_OBJS) ASM_OBJS $(ASM_OBJS))
 
 
-OBJ_PATHS = $(sort $(dir $(ALL_SRCS)))
+OBJ_PATHS = $(addprefix $(BUILD)/, $(sort $(dir $(ALL_SRCS))))
 #$(warning OBJ_PATHS $(OBJ_PATHS))
 
 
@@ -85,32 +85,30 @@ ASFLAGS +=
 LIBGCC = $(shell find $(TOOLCHAIN_DIR)/ | grep "armv6-m\/libgcc\.a")
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 
 
-.PHONY: build_all clean
+.PHONY: build_all clean tags
 
 $(warning CFLAGS: $(CFLAGS))
 build_all: all
 
-$(C_OBJS): %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $(BUILD)/$@
+$(C_OBJS): $(BUILD)/%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(ASM_OBJS): %.o: %.s
-	$(AS) $(ASFLAGS) $< -o $(BUILD)/$@
+$(ASM_OBJS): $(BUILD)/%.o: %.s
+	$(AS) $(ASFLAGS) $< -o $@
 
 build_objs: $(C_OBJS) $(ASM_OBJS)
 
 init:
 	mkdir -p build
-	$(foreach d,$(OBJ_PATHS), mkdir -p $(BUILD)/$(d);)
+	$(foreach d,$(OBJ_PATHS), mkdir -p $(d);)
 
-all:init build_objs
+all:init build_objs $(TARGET_ELF) $(TARGET_IMG) $(TARGET_DISASM) $(TARGET_ELFINFO) $(ALL_OBJS)
 	$(LD) $(ALL_OBJS) $(LDFLAGS) -o $(TARGET_ELF)
 	$(OBJCOPY) $(TARGET_ELF) -O binary $(TARGET_IMG)
 	$(OBJDUMP) -d $(TARGET_ELF) > $(TARGET_DISASM)
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
 
-clean_tags:
-	-rm tags
-tags:clean_tags
+tags:
 	ctags -R ./driver ./libc ./include ./system ./test
 
 clean: 

@@ -135,10 +135,10 @@ void task_switch(u32 tid)
     struct task *tmp = g_running_task;
     g_running_task->state = TASK_READY;
     new->state = TASK_RUNNING;
-//    PRINT_EMG("task_switch 0\n");
+/*    PRINT_EMG("task_switch 0\n");*/
     g_running_task = new;
     __switch_context(tmp, new);
-//    PRINT_EMG("task_switch 1\n");
+/*    PRINT_EMG("task_switch 1\n");*/
 }
 
 /* tid 1 */
@@ -149,7 +149,7 @@ void testB()
         uart_puts("in testB\n");           
         delay_gpio();
         task_switch(0); /* switch to testA */
-        //__switch_context(g_running_task, &g_task[0]);
+        /*__switch_context(g_running_task, &g_task[0]);*/
     }
 }
 
@@ -208,7 +208,7 @@ void init_vector_table()
 }
 
 u8 uart_recv1() {
-    // wait for UART to become ready to transmit
+    /* wait for UART to become ready to transmit*/
     while (1) {
         if (!(readl(UART0_FR) & (1 << 4))) {
             break;

@@ -1,4 +1,5 @@
 #include <libc.h>
+#include "log.h"
 
 s32 test_cpu_all(u32 argc, char **argv)
 {
