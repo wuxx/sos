@@ -44,19 +44,19 @@ _fiq:
 
 
 UndHandler:
-    bl General_Exc_Handler
+    b ExcHandler
 
 SwiHandler:
-    bl General_Exc_Handler
+    b ExcHandler
 
 PrefetchHandler:
-    bl General_Exc_Handler
+    b ExcHandler
 
 AbortHandler:
-    bl General_Exc_Handler
+    b ExcHandler
 
 FiqHandler:
-    bl General_Exc_Handler
+    b ExcHandler
 
 
 .global ResetHandler

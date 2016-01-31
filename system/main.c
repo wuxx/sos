@@ -217,15 +217,6 @@ u8 uart_recv1() {
     return readl(UART0_DR);
 }
 
-void dump_mem(u32 addr, u32 word_nr)
-{
-    u32 i;
-    u32 *p = (u32 *)addr;
-    for(i=0;i<word_nr;i++) {
-        uart_printf("[0x%x]: 0x%x\n", &p[i], p[i]);
-    }
-}
-
 int main()
 {
     u32 cpsr;

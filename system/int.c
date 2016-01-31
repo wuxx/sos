@@ -68,6 +68,17 @@ void General_Exc_Handler()
     while(1);
 }
 
+__attribute__((naked)) void ExcHandler()
+{
+    asm volatile ("stmfd    sp!, {r0-r3, r12, lr}" : : : "memory");
+    General_Irq_Handler();
+    __asm__ volatile (  \
+            "ldmfd sp!, {r0-r3, r12, lr}\n\t"   \
+            "subs pc, lr, #4\n\t"               \
+            "NOP\n\t"                           \
+    );
+}
+
 s32 request_irq(u32 irq_nr, func_1 irq_handler)
 {
     if (irq_nr >= IRQ_MAX) {

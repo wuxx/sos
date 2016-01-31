@@ -3,30 +3,25 @@
 #include "uart.h"
 #include "log.h"
 #include "mmio.h"
-
-#define SHELL_ARGS_MAX  (5)
+#include "shell.h"
 
 u32 argc;
 char *argv[SHELL_ARGS_MAX] = {NULL};
-
-struct shell_cmd_info {
-    char *name;
-    func_0 func;
-    char *desc;
-};
 
 s32 cmd_read();
 s32 cmd_write();
 s32 cmd_exec();
 s32 cmd_dump();
 s32 cmd_help();
+s32 cmd_systest();
 
 struct shell_cmd_info ci[] = {
-    { .name = "r",    .func = cmd_read,  .desc = "r [addr]                  read any addr"   },
-    { .name = "w",    .func = cmd_write, .desc = "w [addr] [data]           write any addr"  },
-    { .name = "x",    .func = cmd_exec,  .desc = "x [addr]                  execute any addr"},
-    { .name = "dump", .func = cmd_dump,  .desc = "dump [addr] [word_num]    dump any addr"   },
-    { .name = "help", .func = cmd_help,  .desc = "help                      print cmd info"  },
+    { .name = "r",       .func = cmd_read,    .desc = "r [addr]                  read any addr"   },
+    { .name = "w",       .func = cmd_write,   .desc = "w [addr] [data]           write any addr"  },
+    { .name = "x",       .func = cmd_exec,    .desc = "x [addr]                  execute any addr"},
+    { .name = "dump",    .func = cmd_dump,    .desc = "dump [addr] [word_num]    dump any addr"   },
+    { .name = "systest", .func = cmd_systest, .desc = "systest [module] [i]      system test"     },
+    { .name = "help",    .func = cmd_help,    .desc = "help                      print cmd info"  },
 };
 
 
@@ -90,6 +85,11 @@ s32 cmd_dump()
     return 0;
 }
 
+s32 cmd_systest()
+{
+    return systest(argc, argv);
+}
+
 s32 cmd_help()
 {
     u32 i;
@@ -132,7 +132,7 @@ s32 parse_cmd(char *cmd)
     }
 }
 
-s32 get_cmd_index(char *cmd)
+static s32 get_cmd_index(char *cmd)
 {
     u32 i;
     for(i=0; i<(sizeof(ci)/sizeof(ci[0])); i++) {

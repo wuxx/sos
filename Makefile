@@ -1,5 +1,7 @@
 ############ by wuxx #############
 
+CFLAGS = $(cflags)
+
 #ROOT = $(shell pwd)
 ROOT = .
 TOOLCHAIN_DIR=$(ROOT)/.compiler
@@ -14,10 +16,10 @@ READELF = $(CROSS_COMPILE)-readelf
 
 BUILD = $(ROOT)/build
 
-
 SYSTEM_DIR  = $(ROOT)/system
 LIBC_DIR    = $(ROOT)/libc
 DRIVER_DIR  = $(ROOT)/driver
+TEST_DIR    = $(ROOT)/test
 INCLUDE_DIR = $(ROOT)/include
 
 SYSTEM_SRCS = \
@@ -38,7 +40,13 @@ DRIVER_SRCS = \
 		$(DRIVER_DIR)/shell/shell.c     \
 		$(DRIVER_DIR)/uart/uart.c
 
-ALL_SRCS = $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS)
+TEST_SRCS = \
+		$(TEST_DIR)/systest.c           \
+		$(TEST_DIR)/test_cpu.c          \
+		$(TEST_DIR)/test_timer.c        \
+		$(TEST_DIR)/test_gpio.c
+
+ALL_SRCS = $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS)
 
 C_SRCS   = $(filter %.c, $(ALL_SRCS))
 ASM_SRCS = $(filter %.s, $(ALL_SRCS)) 
@@ -69,12 +77,15 @@ LDS = kernel.ld
 
 DISASM = kernel.disasm
 #-march=armv6
-CFLAGS = -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -fomit-frame-pointer -I$(INCLUDE_DIR)
-ASFLAGS = 
+CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -fomit-frame-pointer -I$(INCLUDE_DIR)
+ASFLAGS += 
 
 LIBGCC = $(shell find $(TOOLCHAIN_DIR)/ | grep "armv6-m\/libgcc\.a")
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 
 
+.PHONY: build_all clean
+
+$(warning CFLAGS: $(CFLAGS))
 build_all: all
 
 $(C_OBJS): %.o: %.c
@@ -98,8 +109,7 @@ all:init build_objs
 clean_tags:
 	-rm tags
 tags:clean_tags
-	ctags -R ./driver ./libc ./include ./system
-
+	ctags -R ./driver ./libc ./include ./system ./test
 
 clean: 
 	-rm -rf build
