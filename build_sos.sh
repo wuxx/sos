@@ -12,20 +12,20 @@ cflags=""
 while [ ! -z "$1" ]; do
     case "$1" in
         "--debug")
-        cflag="-DDEBUG"
-        shift
-        ;;
+            cflag="-DDEBUG"
+            shift
+            ;;
         "--help")
-        help
-        shift
-        exit 0
-        ;;
+            help
+            shift
+            exit 0
+            ;;
         *)
-        echo "illegal param $1"
-        shift
-        help
-        exit 1
-        ;;
+            echo "illegal param $1"
+            shift
+            help
+            exit 1
+            ;;
     esac
 done
 

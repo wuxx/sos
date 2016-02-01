@@ -15,6 +15,9 @@ typedef unsigned char u16;
 typedef signed   int s32;
 typedef unsigned int u32;
 
+typedef signed   long long s64;
+typedef unsigned long long u64;
+
 typedef s32 (*func_0)();
 typedef s32 (*func_1)(u32 arg1);
 typedef s32 (*func_2)(u32 arg1, u32 arg2);

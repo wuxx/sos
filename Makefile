@@ -75,9 +75,8 @@ TARGET_MAP = $(BUILD)/kernel.map
 TARGET_DISASM = $(BUILD)/kernel.disasm
 TARGET_ELFINFO = $(BUILD)/kernel.elfinfo
 
-LDS = kernel.ld
+LDS = $(ROOT)/kernel.ld
 
-DISASM = kernel.disasm
 #-march=armv6
 CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -fomit-frame-pointer -I$(INCLUDE_DIR)
 ASFLAGS += 
