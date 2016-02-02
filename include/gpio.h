@@ -57,12 +57,12 @@ enum {
 enum {
     INPUT = 0,
     OUTPUT,
-    ALT_FUNC_0 = 4,
+    ALT_FUNC_4, /* yes, the arrange is strange */
+    ALT_FUNC_5,
+    ALT_FUNC_0,
     ALT_FUNC_1,
     ALT_FUNC_2,
     ALT_FUNC_3,
-    ALT_FUNC_4,
-    ALT_FUNC_5,
     ALT_FUNC_MAX,
 };
 

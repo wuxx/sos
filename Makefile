@@ -68,14 +68,15 @@ OBJ_PATHS = $(addprefix $(BUILD)/, $(sort $(dir $(ALL_SRCS))))
 #$(warning OBJ_PATHS $(OBJ_PATHS))
 
 
+TARGET = sos
+TARGET_ELF = $(BUILD)/$(TARGET).elf
+TARGET_IMG = $(BUILD)/$(TARGET).img
+TARGET_MAP = $(BUILD)/$(TARGET).map
+TARGET_DISASM = $(BUILD)/$(TARGET).disasm
+TARGET_ELFINFO = $(BUILD)/$(TARGET).elfinfo
+TARGET_SECINFO = $(BUILD)/$(TARGET).secinfo #section info
 
-TARGET_ELF = $(BUILD)/kernel.elf
-TARGET_IMG = $(BUILD)/kernel.img
-TARGET_MAP = $(BUILD)/kernel.map
-TARGET_DISASM = $(BUILD)/kernel.disasm
-TARGET_ELFINFO = $(BUILD)/kernel.elfinfo
-
-LDS = $(ROOT)/kernel.ld
+LDS = $(ROOT)/$(TARGET).ld
 
 #-march=armv6
 CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -fomit-frame-pointer -I$(INCLUDE_DIR)
@@ -105,7 +106,9 @@ all:init build_objs
 	$(LD) $(ALL_OBJS) $(LDFLAGS) -o $(TARGET_ELF)
 	$(OBJCOPY) $(TARGET_ELF) -O binary $(TARGET_IMG)
 	$(OBJDUMP) -d $(TARGET_ELF) > $(TARGET_DISASM)
+	$(OBJDUMP) -s $(TARGET_ELF) > $(TARGET_SECINFO)
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
+	cp $(TARGET_IMG) $(BUILD)/kernel.img
 
 tags:
 	ctags -R ./driver ./libc ./include ./system ./test
