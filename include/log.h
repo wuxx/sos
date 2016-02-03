@@ -14,6 +14,8 @@ enum LOG_LEVEL_E {
 
 s32 log(u32 log_level, char *format, ...);
 
+#define PRINT_STAMP()           log(LOG_EMG, "%s:%d\n", __func__, __LINE__)
+
 #define PRINT_EMG(fmt, ...)     log(LOG_EMG,   fmt, ##__VA_ARGS__)
 #define PRINT_ERR(fmt, ...)     log(LOG_ERR,   fmt, ##__VA_ARGS__)
 #define PRINT_WARN(fmt, ...)    log(LOG_WARN,  fmt, ##__VA_ARGS__)

@@ -5,14 +5,49 @@
 #include "log.h"
 #include "timer.h"
 
+/* increment syscounter */
 u64 get_syscounter()
 {
     u64 sc;
     u32 clo, chi;
     clo = readl(SYSTMCLO);
     chi = readl(SYSTMCHI);
-    sc = (chi << 32) | clo;
+    sc  = (chi << 32) | clo;
     return sc;
+}
+
+void udelay(u32 us)
+{
+    u64 sc_start, sc_end;
+    u32 ticks;
+
+    us = us > 1000 ? 1000 : us; /* max of 1ms */
+    ticks = US2TICK(us);
+
+    sc_start = get_syscounter();
+    sc_end   = get_syscounter();
+
+    while ((sc_end - sc_start) < ticks) {
+        sc_end = get_syscounter();
+    }
+
+}
+
+void mdelay(u32 ms)
+{
+    u64 sc_start, sc_end;
+    u32 ticks;
+
+    ms = ms > 100000 ? 100000 : ms; /* max of 100s */
+    ticks = MS2TICK(ms);
+
+    sc_start = get_syscounter();
+    sc_end   = get_syscounter();
+
+    while ((sc_end - sc_start) < ticks) {
+        sc_end = get_syscounter();
+    }
+
 }
 
 void delay(s32 count) {

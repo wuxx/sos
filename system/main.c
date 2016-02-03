@@ -7,8 +7,9 @@
 #include "timer.h"
 #include "uart.h"
 #include "log.h"
+#include "cpu.h"
 
-char sys_banner[] = {"sos system buildtime " __DATE__ " " __TIME__};
+char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
 extern void __switch_to(func_1);
 
 extern u32 __get_sp();
@@ -19,20 +20,7 @@ extern u32 __get_cpsr();
 #define TASK_SUSPEND 1
 #define TASK_READY   2
 
-struct task *g_running_task;
-struct task
-{
-    u32 sp;
-    //u32 context[15]; 
-    u32 task_id;
-    u32 *stack;
-    u32 stack_size;
-    u32 state;
-    func_1 func;
-};
-
-u32 g_stack[5*1024];
-struct task g_task[5];
+#if 0
 u32 init_task()
 {
     int i;
@@ -216,6 +204,34 @@ u8 uart_recv1() {
     }
     return readl(UART0_DR);
 }
+#endif
+
+char* get_cpu_mode()
+{
+    u32 cpsr, mode;
+    cpsr = __get_cpsr();
+    mode = cpsr & 0x1f;
+    switch (mode) {
+        case (16):
+            return "user mode";
+        case (17):
+            return "fiq mode";
+        case (18):
+            return "irq mode";
+        case (19):
+            return "supervisor mode";
+        case (22):
+            return "secmonitor mode";
+        case (23):
+            return "abort mode";
+        case (27):
+            return "undefined mode";
+        case (31):
+            return "system mode";
+        default:
+            return "unknown mode";
+    }
+}
 
 int main()
 {
@@ -229,17 +245,20 @@ int main()
     uart_init();
 
     PRINT_INFO("%s\n", sys_banner);
-    PRINT_INFO("sp: 0x%x; cpsr: 0x%x\n", __get_sp(), __get_cpsr());
-    dump_mem(0x2000B200, 10);   /* interrupt registers */
-
+    PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
+            get_cpu_mode(), __get_lr(), __get_sp(), __get_cpsr());
     set_gpio_function(16, 1);
     set_gpio_output(16, 0);
     unlock_irq();
-    while(1);
+
     while(1) {
-        timer_init();
-        uart_irq_handler(0);
+        set_gpio_output(16, 1);     /* led off */
+        mdelay(1000);
+        set_gpio_output(16, 0);     /* led on */
+        mdelay(1000);
+
     }
+#if 0
     assert(1==2);
     set_gpio_function(16, 1);
     init_task();
@@ -271,6 +290,6 @@ int main()
         PRINT_EMG("cpsr: 0x%x; sp: 0x%x; pc: 0x%x\n", cpsr, sp, pc);
 
     }
-
+#endif
     return 0;
 }

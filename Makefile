@@ -16,11 +16,15 @@ READELF = $(CROSS_COMPILE)-readelf
 
 BUILD = $(ROOT)/build
 
+KERNEL_DIR  = $(ROOT)/kernel
 SYSTEM_DIR  = $(ROOT)/system
 LIBC_DIR    = $(ROOT)/libc
 DRIVER_DIR  = $(ROOT)/driver
 TEST_DIR    = $(ROOT)/test
 INCLUDE_DIR = $(ROOT)/include
+
+KERNEL_SRCS = \
+		$(KERNEL_DIR)/task.c
 
 SYSTEM_SRCS = \
 		$(SYSTEM_DIR)/main.c 	\
@@ -48,7 +52,7 @@ TEST_SRCS = \
 		$(TEST_DIR)/test_log.c          \
 		$(TEST_DIR)/test_gpio.c
 
-ALL_SRCS = $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS)
+ALL_SRCS = $(KERNEL_SRCS) $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS)
 
 C_SRCS   = $(filter %.c, $(ALL_SRCS))
 ASM_SRCS = $(filter %.s, $(ALL_SRCS)) 

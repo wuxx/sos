@@ -5,14 +5,14 @@
 extern void dump_mem(u32 addr, u32 word_nr);
 
 func_1 irq_table[IRQ_MAX] = {0};
-char *mode[32] =  {"unknown mode", "unknown mode", "unknown mode",    "unknown mode",
-                   "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
-                   "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
-                   "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
-                   "user mode",    "fiq mode",     "irq mode",        "supervisor mode",
-                   "unknown mode", "unknown mode", "secmonitor mode", "abort mode",
-                   "unknown mode", "unknown mode", "unknown mode", "undefined mode",
-                   "unknown mode", "unknown mode", "unknown mode", "system mode",
+char *cpu_mode[32] =  { "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
+                        "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
+                        "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
+                        "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
+                        "user mode",    "fiq mode",     "irq mode",        "supervisor mode",
+                        "unknown mode", "unknown mode", "secmonitor mode", "abort mode",
+                        "unknown mode", "unknown mode", "unknown mode",    "undefined mode",
+                        "unknown mode", "unknown mode", "unknown mode",    "system mode",
 };
 
 void General_Irq_Handler()
@@ -23,7 +23,7 @@ void General_Irq_Handler()
     func_1 irq_func = NULL;
     cpsr = __get_cpsr();
 
-    PRINT_DEBUG("in %s 0x%x %s\n", __func__, cpsr, mode[cpsr & 0x1f]);
+    PRINT_DEBUG("in %s 0x%x %s\n", __func__, cpsr, cpu_mode[cpsr & 0x1f]);
 
     pend[0]   = readl(IRQ_PEND_BASIC);
     pend[1]   = readl(IRQ_PEND1);
@@ -63,7 +63,7 @@ void General_Exc_Handler()
     u32 lr, cpsr;
     cpsr = __get_cpsr();
     PRINT_EMG("in %s \n", __func__);
-    PRINT_EMG("cpsr %x; %s\n", cpsr, mode[cpsr & 0x1f]);
+    PRINT_EMG("cpsr %x; %s\n", cpsr, cpu_mode[cpsr & 0x1f]);
     while(1);
 }
 
