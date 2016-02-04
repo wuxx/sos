@@ -22,10 +22,22 @@ struct cpu_context {
     u32 pc;
 };
 
-static __inline__ __get_lr()
+#if 0
+static __inline__ u32 __get_lr()
 {
-    __asm__ volatile ("mov r0, lr");
-}
+    register u32 __r0 __asm("r0");
 
+    __asm__ volatile (
+            "mov r0, lr\n\t"
+            :   "=r" (__r0)
+            :
+            :
+        );
+    return __r0;
+}
+#endif
+
+extern u32 __get_pc();
+extern u32 __get_lr();
 extern u32 __get_sp();
 extern u32 __get_cpsr();

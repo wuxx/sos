@@ -6,6 +6,11 @@ __get_pc:
     mov r0, pc
     bx lr
 
+.global __get_lr
+.type __get_lr, %function
+__get_lr:
+    mov r0, lr
+    bx lr
 
 .global __get_cpsr
 .type __get_cpsr, %function
@@ -13,13 +18,11 @@ __get_cpsr:
     mrs r0, cpsr
     bx lr
 
-
 .global __get_sp
 .type __get_sp, %function
 __get_sp:
     mov r0, sp
     bx lr
-
 
 /*
 void __switch_context(old, new);

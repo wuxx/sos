@@ -1,19 +1,13 @@
 #include <libc.h>
 #include <memory_map.h>
 #include "log.h"
+#include "cpu.h"
 
 extern void dump_mem(u32 addr, u32 word_nr);
 
+struct cpu_context cpu_ctx;
+
 func_1 irq_table[IRQ_MAX] = {0};
-char *cpu_mode[32] =  { "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
-                        "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
-                        "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
-                        "unknown mode", "unknown mode", "unknown mode",    "unknown mode",
-                        "user mode",    "fiq mode",     "irq mode",        "supervisor mode",
-                        "unknown mode", "unknown mode", "secmonitor mode", "abort mode",
-                        "unknown mode", "unknown mode", "unknown mode",    "undefined mode",
-                        "unknown mode", "unknown mode", "unknown mode",    "system mode",
-};
 
 void General_Irq_Handler()
 {
@@ -23,7 +17,8 @@ void General_Irq_Handler()
     func_1 irq_func = NULL;
     cpsr = __get_cpsr();
 
-    PRINT_DEBUG("in %s 0x%x %s\n", __func__, cpsr, cpu_mode[cpsr & 0x1f]);
+    PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
+    dump_mem(VIC_BASE, 10);
 
     pend[0]   = readl(IRQ_PEND_BASIC);
     pend[1]   = readl(IRQ_PEND1);
@@ -45,16 +40,27 @@ void General_Irq_Handler()
             }
         }
     }
+
+    PRINT_DEBUG("exit %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
 }
 
 __attribute__((naked)) void IrqHandler()
 {
-    asm volatile ("stmfd    sp!, {r0-r3, r12, lr}" : : : "memory");
+    asm volatile (
+            "stmfd sp!, {r0-r3, r12, lr}\n\t" 
+            /*"stmfd sp!, {r4-r11}\n\t" */
+            : 
+            : 
+            : "memory"
+            );
+
     General_Irq_Handler();
-    __asm__ volatile (  \
-            "ldmfd sp!, {r0-r3, r12, lr}\n\t"   \
-            "subs pc, lr, #4\n\t"               \
-            "NOP\n\t"                           \
+
+    __asm__ volatile (
+            /*"ldmfd sp!, {r4-r11}\n\t"*/
+            "ldmfd sp!, {r0-r3, r12, lr}\n\t"
+            "subs pc, lr, #4\n\t"
+            "nop\n\t"
     );
 }
 
@@ -63,7 +69,7 @@ void General_Exc_Handler()
     u32 lr, cpsr;
     cpsr = __get_cpsr();
     PRINT_EMG("in %s \n", __func__);
-    PRINT_EMG("cpsr %x; %s\n", cpsr, cpu_mode[cpsr & 0x1f]);
+    PRINT_EMG("cpsr %x; %s\n", cpsr, get_cpu_mode());
     while(1);
 }
 

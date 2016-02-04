@@ -48,23 +48,23 @@ void uart_puts(const char *str) {
 
 s8 uart_recv()
 {
-    while (1) {
-        if (!(readl(UART0_FR) & (1 << 4))) {
-            break;
-        }
+
+    if ((readl(UART0_FR) & (1 << 4)) == 0) {    /* if RX FIFO not empty */
+        return readl(UART0_DR);
+    } else {
+        return 0;
     }
-    return readl(UART0_DR);
 }
 
 void uart_irq_handler(u32 irq_nr)
 {
     u8 ch;
 
-    /* handle one cmd */
-    /* wait characters forever, until get a '\r' */
+    /* handle one character */
+    writel(UART0_ICR, 0xFFFFFFFF);
     while((ch = uart_recv())) {
 
-        if (ch == '\n') {   /* sscom will send '\r\n' */
+        if (ch == '\n') {   /* sscom will send '\r\n' we ignore the '\n' */
             continue;
         }
         if (uart_recv_buf_index == (UART_IO_SIZE - 1) && ch != '\r') {
@@ -77,7 +77,9 @@ void uart_irq_handler(u32 irq_nr)
         if (ch == '\r') {
             uart_recv_buf[uart_recv_buf_index] = '\0';  /* terminate the string. */
             shell(uart_recv_buf);
+
             uart_recv_buf_index = 0;
+            uart_puts("\nsos>");
             break;
         } else {
             uart_recv_buf[uart_recv_buf_index] = ch;
@@ -94,7 +96,6 @@ void uart_irq_handler(u32 irq_nr)
         }
     }
 
-    uart_puts("\nsos>");
     return;
 }
 
@@ -141,6 +142,7 @@ void uart_init() {
     // Fraction part register = (Fractional part * 64) + 0.5
     // UART_CLOCK = 3000000; Baud = 115200.
  
+    /* uart clk: 3000000 */
     // Divider = 3000000/(16 * 115200) = 1.627 = ~1.
     // Fractional part register = (.627 * 64) + 0.5 = 40.6 = ~40.
     writel(UART0_IBRD, 1);

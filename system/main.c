@@ -233,6 +233,8 @@ char* get_cpu_mode()
     }
 }
 
+u32 test_gpio = 1;
+
 int main()
 {
     u32 cpsr;
@@ -251,13 +253,14 @@ int main()
     set_gpio_output(16, 0);
     unlock_irq();
 
-    while(1) {
+    while(test_gpio) {
         set_gpio_output(16, 1);     /* led off */
         mdelay(1000);
         set_gpio_output(16, 0);     /* led on */
         mdelay(1000);
-
     }
+    while(1) {
+    };
 #if 0
     assert(1==2);
     set_gpio_function(16, 1);

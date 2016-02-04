@@ -56,6 +56,7 @@ ALL_SRCS = $(KERNEL_SRCS) $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS
 
 C_SRCS   = $(filter %.c, $(ALL_SRCS))
 ASM_SRCS = $(filter %.s, $(ALL_SRCS)) 
+H_SRCS   = $(wildcard $(INCLUDE_DIR)/*.h)
 
 C_OBJS   = $(addprefix $(BUILD)/, $(patsubst %.c,%.o,$(C_SRCS)))
 ASM_OBJS = $(addprefix $(BUILD)/, $(patsubst %.s,%.o,$(ASM_SRCS)))
@@ -94,6 +95,7 @@ LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC)
 $(warning CFLAGS: $(CFLAGS))
 build_all: all
 
+$(C_OBJS): $(H_SRCS)
 $(C_OBJS): $(BUILD)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 

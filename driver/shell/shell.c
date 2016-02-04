@@ -16,10 +16,10 @@ s32 cmd_help();
 s32 cmd_systest();
 
 struct shell_cmd_info ci[] = {
-    { .name = "r",       .func = cmd_read,    .desc = "r [addr]                  read any addr"   },
-    { .name = "w",       .func = cmd_write,   .desc = "w [addr] [data]           write any addr"  },
+    { .name = "r",       .func = cmd_read,    .desc = "r [addr]                  read    any addr"},
+    { .name = "w",       .func = cmd_write,   .desc = "w [addr] [data]           write   any addr"},
     { .name = "x",       .func = cmd_exec,    .desc = "x [addr]                  execute any addr"},
-    { .name = "dump",    .func = cmd_dump,    .desc = "dump [addr] [word_num]    dump any addr"   },
+    { .name = "dump",    .func = cmd_dump,    .desc = "dump [addr] [word_num]    dump    any addr"},
     { .name = "systest", .func = cmd_systest, .desc = "systest [module] [i]      system test"     },
     { .name = "help",    .func = cmd_help,    .desc = "help                      print cmd info"  },
 };
