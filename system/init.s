@@ -63,7 +63,7 @@ FiqHandler:
 ResetHandler:
     mov r0,#0x8000
     mov r1,#0x0000
-    /*  branch instructions 8 words */
+    /* branch instructions 8 words */
     ldmia r0!,{r2,r3,r4,r5,r6,r7,r8,r9}
     stmia r1!,{r2,r3,r4,r5,r6,r7,r8,r9}
     /* vector table 8 words */
@@ -79,30 +79,37 @@ clear_bss:
     blo     clear_bss
 
     ldr     r0, =__ram_end__
+
+    /* Undef */
     msr     CPSR_c, #MODE_UND | I_BIT | F_BIT
     mov     sp, r0
     ldr     r1, =__und_stack_size__
     sub     r0, r0, r1
+
     /* Abort */
     msr     CPSR_c, #MODE_ABT | I_BIT | F_BIT
     mov     sp, r0
     ldr     r1, =__abt_stack_size__
     sub     r0, r0, r1
+
     /* FIQ */
     msr     CPSR_c, #MODE_FIQ | I_BIT | F_BIT
     mov     sp, r0
     ldr     r1, =__fiq_stack_size__
     sub     r0, r0, r1
+
     /* IRQ */
     msr     CPSR_c, #MODE_IRQ | I_BIT | F_BIT
     mov     sp, r0
     ldr     r1, =__irq_stack_size__
     sub     r0, r0, r1
+
     /* Supervisor */
     msr     CPSR_c, #MODE_SVC | I_BIT | F_BIT
     mov     sp, r0
     ldr     r1, =__svc_stack_size__
     sub     r0, r0, r1
+
     /* System */
     msr     CPSR_c, #MODE_SYS | I_BIT | F_BIT
     mov     sp, r0

@@ -235,10 +235,9 @@ char* get_cpu_mode()
 
 u32 test_gpio = 1;
 
-int main()
+int main(u32 sp)
 {
     u32 cpsr;
-    u32 sp;
     u32 pc;
     u32 tid;
     u8  ch;
@@ -248,7 +247,7 @@ int main()
 
     PRINT_INFO("%s\n", sys_banner);
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
-            get_cpu_mode(), __get_lr(), __get_sp(), __get_cpsr());
+            get_cpu_mode(), __get_lr(), sp, __get_cpsr());
     set_gpio_function(16, 1);
     set_gpio_output(16, 0);
     unlock_irq();
@@ -258,6 +257,7 @@ int main()
         mdelay(1000);
         set_gpio_output(16, 0);     /* led on */
         mdelay(1000);
+        PRINT_EMG("%d\n", __LINE__);
     }
     while(1) {
     };
