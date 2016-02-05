@@ -235,6 +235,7 @@ char* get_cpu_mode()
 
 u32 test_gpio = 1;
 
+u32 test_context;
 int main(u32 sp)
 {
     u32 cpsr;
@@ -252,13 +253,32 @@ int main(u32 sp)
     set_gpio_output(16, 0);
     unlock_irq();
 
+    asm volatile (
+            "stmfd sp!, {r0-r12, lr}\n\t"
+            "sub sp, sp, #4\n\t"        /* eh... get a free space to place the user/system mode cpsr */
+            "push {r0-r1}\n\t"
+
+            "mrs r0, spsr\n\t"
+            "add r1, sp, #8\n\t"    /* r1 = sp + 8 */
+            "str r0, [r1]\n\t"
+
+            "ldr r0, =test_context\n\t"
+            "str r1, [r0]\n\t"      /* store the context frame */
+
+
+            "pop  {r0-r1}\n\t"
+            "b .\n\t"
+            :   
+            :   
+            : "memory"
+            );  
     while(test_gpio) {
         set_gpio_output(16, 1);     /* led off */
         mdelay(1000);
         set_gpio_output(16, 0);     /* led on */
         mdelay(1000);
         PRINT_EMG("%d\n", __LINE__);
-    }
+    };
     while(1) {
     };
 #if 0

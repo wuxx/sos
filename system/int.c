@@ -6,6 +6,7 @@
 extern void dump_mem(u32 addr, u32 word_nr);
 
 struct cpu_context cpu_ctx;
+u32 *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
 
@@ -18,7 +19,11 @@ void General_Irq_Handler()
     cpsr = __get_cpsr();
 
     PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
+#if 0
+    PRINT_EMG("\ncurrent_context: %x\n", current_context);
+    dump_mem((u32)current_context, 20);
     dump_mem(VIC_BASE, 10);
+#endif
 
     pend[0]   = readl(IRQ_PEND_BASIC);
     pend[1]   = readl(IRQ_PEND1);
@@ -47,8 +52,19 @@ void General_Irq_Handler()
 __attribute__((naked)) void IrqHandler()
 {
     asm volatile (
-            "stmfd sp!, {r0-r3, r12, lr}\n\t" 
-            /*"stmfd sp!, {r4-r11}\n\t" */
+            "stmfd sp!, {r0-r12, lr}\n\t"
+            "sub sp, sp, #4\n\t"        /* eh... get a free space to place the user/system mode cpsr */
+            "push {r0-r1}\n\t"
+
+            "mrs r0, spsr\n\t"
+            "add r1, sp, #8\n\t"    /* r1 = sp + 8 */
+            "str r0, [r1]\n\t"
+
+            "ldr r0, =current_context\n\t"
+            "str r1, [r0]\n\t"      /* store the context frame */
+
+
+            "pop  {r0-r1}\n\t"
             : 
             : 
             : "memory"
@@ -57,9 +73,11 @@ __attribute__((naked)) void IrqHandler()
     General_Irq_Handler();
 
     __asm__ volatile (
-            /*"ldmfd sp!, {r4-r11}\n\t"*/
-            "ldmfd sp!, {r0-r3, r12, lr}\n\t"
-            "subs pc, lr, #4\n\t"
+            "pop {r0}\n\t"  /* spsr -> r0 */
+            "msr SPSR_cxsf, r0\n\t"
+
+            "ldmfd sp!, {r0-r12, lr}\n\t"
+            "subs pc, lr, #4\n\t"   /* (lr - 4) -> pc, rerun the user/system mode code */
             "nop\n\t"
     );
 }
