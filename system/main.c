@@ -235,7 +235,7 @@ char* get_cpu_mode()
 
 u32 test_gpio = 1;
 
-u32 test_context;
+u32 *test_context;
 int main(u32 sp)
 {
     u32 cpsr;
@@ -245,8 +245,9 @@ int main(u32 sp)
 
     int_init();
     uart_init();
-/*    timer_init();*/
-/*    os_init();*/
+
+    timer_init();
+    os_init();
 
     PRINT_INFO("%s\n", sys_banner);
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
@@ -257,7 +258,6 @@ int main(u32 sp)
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
             get_cpu_mode(), __get_lr(), sp, __get_cpsr());
 
-    while(1)
     asm volatile (
             "stmfd sp!, {r0-r12, lr}\n\t"
             "sub sp, sp, #8\n\t"        /* eh... get space to place the user/system mode cpsr, sp */

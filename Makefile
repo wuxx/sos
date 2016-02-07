@@ -93,7 +93,6 @@ LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC)
 
 .PHONY: build_all clean tags
 
-$(warning CFLAGS: $(CFLAGS))
 build_all: all
 
 $(C_OBJS): $(H_SRCS)
@@ -116,10 +115,11 @@ all:init build_objs
 	$(OBJDUMP) -s $(TARGET_ELF) > $(TARGET_SECINFO)
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
 	cp $(TARGET_IMG) $(BUILD)/kernel.img
+	echo "CFLAGS: $(CFLAGS)"
 
 tags:
 	ctags -R $(KERNEL_DIR) $(SYSTEM_DIR) $(LIBC_DIR) $(DRIVER_DIR) $(TEST_DIR) $(INCLUDE_DIR)
-	find ./driver ./libc ./include ./system ./test | grep ".*\.[ch]$$" | xargs wc -l
+	#find ./driver ./libc ./include ./system ./test | grep ".*\.[ch]$$" | xargs wc -l
 
 
 clean: 

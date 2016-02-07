@@ -18,7 +18,10 @@ void os_clock_irq_hook()
     
 }
 
-void os_init()
+s32 os_init()
 {
-    /*task_create(idle_task, 0);*/
+    if (task_create(idle_task, 0) != OK) {
+        PRINT_EMG("idle_task create failed !\n");
+        return ERROR;
+    }
 }

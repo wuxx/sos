@@ -29,7 +29,7 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg)
     ptask->entry = task_entry;
     /* context init */
 
-    cc = (struct cpu_context *)(ptask->stack[TASK_STK_SIZE - sizeof(struct cpu_context)]);
+    cc = (struct cpu_context *)(&(ptask->stack[TASK_STK_SIZE - sizeof(struct cpu_context)]));
 
     cc->r13  = (u32)cc;
     cc->cpsr = 0x15F;   /* irq enable, fiq disable, arm instruction, system mode */
@@ -57,12 +57,14 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg)
 s32 task_create(func_1 entry, u32 arg)
 {
     struct __task__ *ptask;
+    PRINT_STAMP();
     if ((ptask = tcb_alloc()) == NULL) {
         return ENOMEM;
     }
 
     tcb_init(ptask, entry, arg);
 
+    PRINT_STAMP();
     return 0;
 }
 
