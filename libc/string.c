@@ -101,3 +101,16 @@ void *memset(void *s, s32 c, u32 size)
         _s[i] = c;
     }
 }
+
+void *memcpy(void *dst, void *src, u32 size)
+{
+    u32 i;
+    u8 *_dst, *_src;
+
+    _dst = (u8 *)dst;
+    _src = (u8 *)src;
+    for(i=0;i<size;i++) {
+        _dst[i] = _src[i];
+    }
+    return dst;
+}

@@ -6,6 +6,16 @@
 struct __task__ tcb[TASK_NR_MAX] = {0};
 u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE] = {0};
 
+/* get the highest priority task in READY STATE */
+u32 get_task()
+{
+    u32 i;
+    u32 best;
+    for(i=0;i<TASK_NR_MAX;i++) {
+        if (tcb[i].state == TASK_READY) {}
+    }
+}
+
 struct __task__ * tcb_alloc()
 {
     u32 i;
@@ -19,11 +29,12 @@ struct __task__ * tcb_alloc()
     return NULL;
 }
 
-s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg)
+s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
 {
     struct cpu_context *cc;
 
     ptask->state = TASK_READY;
+    ptask->prio = priority;
     ptask->stack = &task_stack[ptask->id][0];
     ptask->stack_size = TASK_STK_SIZE;
     ptask->entry = task_entry;
@@ -54,17 +65,15 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg)
     return 0;
 }
 
-s32 task_create(func_1 entry, u32 arg)
+s32 task_create(func_1 entry, u32 arg, u32 prio)
 {
     struct __task__ *ptask;
-    PRINT_STAMP();
     if ((ptask = tcb_alloc()) == NULL) {
         return ENOMEM;
     }
 
-    tcb_init(ptask, entry, arg);
+    tcb_init(ptask, entry, arg, prio);
 
-    PRINT_STAMP();
     return 0;
 }
 

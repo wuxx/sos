@@ -51,6 +51,7 @@ TEST_SRCS = \
 		$(TEST_DIR)/test_cpu.c          \
 		$(TEST_DIR)/test_timer.c        \
 		$(TEST_DIR)/test_log.c          \
+		$(TEST_DIR)/test_os.c           \
 		$(TEST_DIR)/test_gpio.c
 
 ALL_SRCS = $(KERNEL_SRCS) $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS)
@@ -115,7 +116,7 @@ all:init build_objs
 	$(OBJDUMP) -s $(TARGET_ELF) > $(TARGET_SECINFO)
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
 	cp $(TARGET_IMG) $(BUILD)/kernel.img
-	echo "CFLAGS: $(CFLAGS)"
+	@echo "CFLAGS: $(CFLAGS)"
 
 tags:
 	ctags -R $(KERNEL_DIR) $(SYSTEM_DIR) $(LIBC_DIR) $(DRIVER_DIR) $(TEST_DIR) $(INCLUDE_DIR)

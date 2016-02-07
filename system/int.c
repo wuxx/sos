@@ -5,8 +5,7 @@
 
 extern void dump_mem(u32 addr, u32 word_nr);
 
-struct cpu_context cpu_ctx;
-u32 *current_context;
+struct cpu_context *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
 
@@ -46,12 +45,10 @@ void General_Irq_Handler()
         }
     }
 
-#if 0
     /* os clock */
     if (irq_nr == IRQ_CORE_TIMER) {
-        os_clock_irq_hook();
+        os_clock_irq_hook(current_context);
     }
-#endif
 
     PRINT_DEBUG("exit %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
 }

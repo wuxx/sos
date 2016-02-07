@@ -7,6 +7,8 @@ s32 test_timer_all(u32 argc, char **argv);
 s32 test_gpio_all(u32 argc, char **argv);
 s32 test_libc_all(u32 argc, char **argv);
 s32 test_log_all(u32 argc, char **argv);
+s32 test_os_all(u32 argc, char **argv);
+
 s32 sub_cmd_help();
 
 struct shell_cmd_info sub_ci[] =  {
@@ -15,6 +17,7 @@ struct shell_cmd_info sub_ci[] =  {
     { .name = "gpio",  .func = test_gpio_all,  .desc = ""},
     { .name = "libc",  .func = test_libc_all,  .desc = ""},
     { .name = "log",   .func = test_log_all,   .desc = ""},
+    { .name = "os",    .func = test_os_all,    .desc = ""},
     { .name = "help",  .func = sub_cmd_help,   .desc = ""},
 };
 

@@ -9,10 +9,13 @@ enum TASK_STATE_E {
     TASK_READY   = 3,
     TASK_STATE_MAX,
 };
+/* task priority */
+#define TASK_PRIO_MAX  255  /* 0: the highest priority, 255: the lowest priority */
 
 struct __task__
 {
-    u32 sp; 
+    struct cpu_context cc;
+
     u32 id;
     u32 state;
     u32 prio;
