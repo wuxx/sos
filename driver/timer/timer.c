@@ -66,7 +66,7 @@ void timer_irq_handler(u32 irq_nr)
 s32 timer_init()
 {
     /* core timer */
-    writel(CORETMLOAD, MS2TICK(10000)); /* 10s */
+    writel(CORETMLOAD, MS2TICK(1000)); /* 1s */
                         /* 23-bit counter & irq enable & timer enable */
     writel(CORETMCTRL, 0x1 << 1 | 0x1 << 5 | 0x1 << 7);
     request_irq(IRQ_CORE_TIMER, timer_irq_handler);

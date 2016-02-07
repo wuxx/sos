@@ -20,7 +20,7 @@ void General_Irq_Handler()
     cpsr = __get_cpsr();
     PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
 #if 0
-    PRINT_EMG("\ncurrent_context: %x\n", current_context);
+    PRINT_DEBUG("\ncurrent_context: %x\n", current_context);
     dump_mem((u32)current_context, 20);
     dump_mem(VIC_BASE, 10);
 #endif
@@ -46,6 +46,13 @@ void General_Irq_Handler()
         }
     }
 
+#if 0
+    /* os clock */
+    if (irq_nr == IRQ_CORE_TIMER) {
+        os_clock_irq_hook();
+    }
+#endif
+
     PRINT_DEBUG("exit %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
 }
 
@@ -53,12 +60,16 @@ __attribute__((naked)) void IrqHandler()
 {
     asm volatile (
             "stmfd sp!, {r0-r12, lr}\n\t"
-            "sub sp, sp, #4\n\t"        /* eh... get a free space to place the user/system mode cpsr */
+            "sub sp, sp, #8\n\t"    /* eh... get space to place the user/system mode cpsr, sp */
             "push {r0-r1}\n\t"
 
-            "mrs r0, spsr\n\t"
-            "add r1, sp, #8\n\t"    /* r1 = sp + 8 */
-            "str r0, [r1]\n\t"
+            "add r1, sp, #8\n\t"    /* (r1 = sp + 8) the context frame base. */
+
+            "mrs r0, spsr\n\t"      /* user/system mode cpsr is backup in spsr */
+            "str r0, [r1, #0x4]\n\t"
+
+            "mov r0, r1\n\t"
+            "str r0, [r1, #0x0]\n\t"
 
             "ldr r0, =current_context\n\t"
             "str r1, [r0]\n\t"      /* store the context frame */
@@ -73,7 +84,13 @@ __attribute__((naked)) void IrqHandler()
     General_Irq_Handler();
 
     __asm__ volatile (
-            "pop {r0}\n\t"  /* spsr -> r0 */
+
+            "pop {r0}\n\t"      /* sp -> r0 */
+            "mov sp, r0\n\t"
+
+            "add sp, sp, #4\n\t"
+
+            "pop {r0}\n\t"      /* spsr -> r0 */
             "msr SPSR_cxsf, r0\n\t"
 
             "ldmfd sp!, {r0-r12, lr}\n\t"

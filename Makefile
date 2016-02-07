@@ -24,6 +24,7 @@ TEST_DIR    = $(ROOT)/test
 INCLUDE_DIR = $(ROOT)/include
 
 KERNEL_SRCS = \
+		$(KERNEL_DIR)/kernel.c  \
 		$(KERNEL_DIR)/os_task.c
 
 SYSTEM_SRCS = \

@@ -1,6 +1,7 @@
 #include <types.h>
 
 struct cpu_context {
+    u32 r13;
     u32 cpsr;   /* as spsr_xxx in irq mode */
     u32 r0;
     u32 r1;

@@ -2,6 +2,15 @@
 #include <libc.h>
 #include "log.h"
 
+char *loglevel_desc[] = {
+        "LOG_EMG",
+        "LOG_ERR",
+        "LOG_WARN",
+        "LOG_INFO",
+        "LOG_DEBUG",
+        "LOG_MAX",
+};
+
 s32 test_log_all(u32 argc, char **argv)
 {
     s32 ret = 0;
@@ -10,6 +19,8 @@ s32 test_log_all(u32 argc, char **argv)
     arg1 = atoi(argv[3]);
     switch(i) {
         case (0):
+            arg1 = arg1 > LOG_MAX ? LOG_MAX : arg1;
+            PRINT_EMG("set loglevel [%s]\n", loglevel_desc[arg1]);
             ret = set_log_level(arg1);
             break;
         case (1):

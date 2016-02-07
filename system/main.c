@@ -235,11 +235,6 @@ char* get_cpu_mode()
 
 u32 test_gpio = 1;
 
-void os_init()
-{
-
-}
-
 u32 test_context;
 int main(u32 sp)
 {
@@ -250,7 +245,8 @@ int main(u32 sp)
 
     int_init();
     uart_init();
-    os_init();
+/*    timer_init();*/
+/*    os_init();*/
 
     PRINT_INFO("%s\n", sys_banner);
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
@@ -261,18 +257,22 @@ int main(u32 sp)
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
             get_cpu_mode(), __get_lr(), sp, __get_cpsr());
 
+    while(1)
     asm volatile (
             "stmfd sp!, {r0-r12, lr}\n\t"
-            "sub sp, sp, #4\n\t"        /* eh... get a free space to place the user/system mode cpsr */
+            "sub sp, sp, #8\n\t"        /* eh... get space to place the user/system mode cpsr, sp */
             "push {r0-r1}\n\t"
 
-            "mrs r0, spsr\n\t"
-            "add r1, sp, #8\n\t"    /* r1 = sp + 8 */
-            "str r0, [r1]\n\t"
+            "add r1, sp, #8\n\t"
+
+            "mrs r0, cpsr\n\t"
+            "str r0, [r1, #0x4]\n\t"
+
+            "mov r0, r1\n\t"
+            "str r0, [r1, #0x0]\n\t"
 
             "ldr r0, =test_context\n\t"
             "str r1, [r0]\n\t"      /* store the context frame */
-
 
             "pop  {r0-r1}\n\t"
             "b .\n\t"

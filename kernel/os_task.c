@@ -1,12 +1,12 @@
 #include <libc.h>
 #include <system_config.h>
-#include "task.h"
+#include <os_task.h>
 #include "log.h"
 
 struct __task__ tcb[TASK_NR_MAX] = {0};
 u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE] = {0};
 
-s32 tcb_alloc()
+struct __task__ * tcb_alloc()
 {
     u32 i;
 
@@ -31,6 +31,7 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg)
 
     cc = (struct cpu_context *)(ptask->stack[TASK_STK_SIZE - sizeof(struct cpu_context)]);
 
+    cc->r13  = (u32)cc;
     cc->cpsr = 0x15F;   /* irq enable, fiq disable, arm instruction, system mode */
     cc->r0   = arg;
     cc->r1   = 0;
@@ -49,6 +50,8 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg)
     cc->lr = (u32)task_entry + 4;     /* pc + 4 */
 
     ptask->stack[0] = 0xbadbeef;
+
+    return 0;
 }
 
 s32 task_create(func_1 entry, u32 arg)
