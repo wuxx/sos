@@ -16,8 +16,8 @@ void General_Irq_Handler()
     u32 pend[3], enable[3];
     u32 irq_nr;
     func_1 irq_func = NULL;
-    cpsr = __get_cpsr();
 
+    cpsr = __get_cpsr();
     PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
 #if 0
     PRINT_EMG("\ncurrent_context: %x\n", current_context);

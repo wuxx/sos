@@ -235,6 +235,11 @@ char* get_cpu_mode()
 
 u32 test_gpio = 1;
 
+void os_init()
+{
+
+}
+
 u32 test_context;
 int main(u32 sp)
 {
@@ -245,6 +250,7 @@ int main(u32 sp)
 
     int_init();
     uart_init();
+    os_init();
 
     PRINT_INFO("%s\n", sys_banner);
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
@@ -252,6 +258,8 @@ int main(u32 sp)
     set_gpio_function(16, 1);
     set_gpio_output(16, 0);
     unlock_irq();
+    PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
+            get_cpu_mode(), __get_lr(), sp, __get_cpsr());
 
     asm volatile (
             "stmfd sp!, {r0-r12, lr}\n\t"

@@ -24,7 +24,7 @@ TEST_DIR    = $(ROOT)/test
 INCLUDE_DIR = $(ROOT)/include
 
 KERNEL_SRCS = \
-		$(KERNEL_DIR)/task.c
+		$(KERNEL_DIR)/os_task.c
 
 SYSTEM_SRCS = \
 		$(SYSTEM_DIR)/main.c 	\
@@ -117,7 +117,7 @@ all:init build_objs
 	cp $(TARGET_IMG) $(BUILD)/kernel.img
 
 tags:
-	ctags -R ./driver ./libc ./include ./system ./test
+	ctags -R $(KERNEL_DIR) $(SYSTEM_DIR) $(LIBC_DIR) $(DRIVER_DIR) $(TEST_DIR) $(INCLUDE_DIR)
 	find ./driver ./libc ./include ./system ./test | grep ".*\.[ch]$$" | xargs wc -l
 
 
