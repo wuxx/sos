@@ -47,6 +47,7 @@ void General_Irq_Handler()
 
     /* os clock */
     if (irq_nr == IRQ_CORE_TIMER) {
+        PRINT_STAMP();
         os_clock_irq_hook(current_context);
     }
 

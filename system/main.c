@@ -7,6 +7,7 @@
 #include "timer.h"
 #include "uart.h"
 #include "log.h"
+#include "gpio.h"
 #include "cpu.h"
 
 char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
@@ -252,8 +253,8 @@ int main(u32 sp)
     PRINT_INFO("%s\n", sys_banner);
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
             get_cpu_mode(), __get_lr(), sp, __get_cpsr());
-    set_gpio_function(16, 1);
-    set_gpio_output(16, 0);
+    set_gpio_function(GPIO_16, OUTPUT);
+    set_gpio_output(GPIO_16, 0);
     unlock_irq();
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
             get_cpu_mode(), __get_lr(), sp, __get_cpsr());
@@ -281,46 +282,13 @@ int main(u32 sp)
             : "memory"
             );  
     while(test_gpio) {
-        set_gpio_output(16, 1);     /* led off */
+        set_gpio_output(GPIO_16, 1);     /* led off */
         mdelay(1000);
-        set_gpio_output(16, 0);     /* led on */
+        set_gpio_output(GPIO_16, 0);     /* led on */
         mdelay(1000);
         PRINT_EMG("%d\n", __LINE__);
     };
     while(1) {
     };
-#if 0
-    assert(1==2);
-    set_gpio_function(16, 1);
-    init_task();
-
-    //tid = task_create(0, testA);
-    //PRINT_EMG("get tid %d\n", tid);
-    //dump_task(0);
-
-    //tid = task_create(1, testB);
-    //PRINT_EMG("get tid %d\n", tid);
-    //dump_task(1);
-
-    //start_first_task(0);
-
-    init_vector_table();
-    enable_int();
-    PRINT_EMG("call __die...");
-    __die();
-    PRINT_EMG("after call __die...");
-    while(1) {
-        set_gpio_value(16, 0);  /* LED ON */
-        delay_gpio();
-        set_gpio_value(16, 1);
-        delay_gpio();
-        uart_puts("in main\n");
-        cpsr = __get_cpsr();
-        sp = __get_sp();
-        pc = __get_pc();
-        PRINT_EMG("cpsr: 0x%x; sp: 0x%x; pc: 0x%x\n", cpsr, sp, pc);
-
-    }
-#endif
     return 0;
 }

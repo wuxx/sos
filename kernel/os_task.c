@@ -11,9 +11,14 @@ u32 get_task()
 {
     u32 i;
     u32 best;
+    u32 prio = TASK_PRIO_MAX;
     for(i=0;i<TASK_NR_MAX;i++) {
-        if (tcb[i].state == TASK_READY) {}
+        if (tcb[i].state == TASK_READY && tcb[i].prio < prio) {
+            prio = tcb[i].prio;
+            best = i;
+        }
     }
+    return best;
 }
 
 struct __task__ * tcb_alloc()

@@ -40,6 +40,9 @@ s32 test_libc_all(u32 argc, char **argv)
             test_printf("hello %x \n", 0x12345678);
             test_printf("hello %s \n", "world!");
             break;
+        case (2):   /* assert test */
+            assert(1==2);
+            break;
         default:
             return -1;
     }
