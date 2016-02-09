@@ -1,6 +1,7 @@
 #include <libc.h>
 
-#include "memory_map.h"
+#include <memory_map.h>
+#include <system_config.h>
 
 #include "mmio.h"
 #include "uart.h"
@@ -12,6 +13,7 @@
 
 char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
 extern void __switch_to(func_1);
+extern u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE];
 
 extern u32 __get_sp();
 extern u32 __get_cpsr();
@@ -246,7 +248,7 @@ int main(u32 sp)
 
     int_init();
     uart_init();
-
+    set_log_level(LOG_DEBUG);
     timer_init();
     os_init();
 
@@ -259,6 +261,9 @@ int main(u32 sp)
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
             get_cpu_mode(), __get_lr(), sp, __get_cpsr());
 
+    /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
+    __set_sp(&(task_stack[0][TASK_STK_SIZE]));
+    idle_task();
     asm volatile (
             "stmfd sp!, {r0-r12, lr}\n\t"
             "sub sp, sp, #8\n\t"        /* eh... get space to place the user/system mode cpsr, sp */

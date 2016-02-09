@@ -1,3 +1,5 @@
+#ifndef __OS_TASK_H__
+#define __OS_TASK_H__
 #include <libc.h>
 #include "cpu.h"
 
@@ -14,7 +16,7 @@ enum TASK_STATE_E {
 
 struct __task__
 {
-    struct cpu_context cc;
+    u32 sp;
 
     u32 id;
     u32 state;
@@ -27,3 +29,5 @@ struct __task__
     u32 stack_size;
     func_1 entry;
 };
+
+#endif /* __OS_TASK_H__ */

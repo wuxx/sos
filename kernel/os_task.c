@@ -3,11 +3,11 @@
 #include <os_task.h>
 #include "log.h"
 
-struct __task__ tcb[TASK_NR_MAX] = {0};
-u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE] = {0};
+struct __task__ tcb[TASK_NR_MAX] __attribute__((__aligned__(0x100))) = {0};
+u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = {0};
 
 /* get the highest priority task in READY STATE */
-u32 get_task()
+u32 get_task_ready()
 {
     u32 i;
     u32 best;
@@ -65,6 +65,8 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
     /*cc->r13 = 0;*/
     cc->lr = (u32)task_entry + 4;     /* pc + 4 */
 
+    ptask->sp = (u32)cc;
+
     ptask->stack[0] = 0xbadbeef;
 
     return 0;
@@ -84,5 +86,6 @@ s32 task_create(func_1 entry, u32 arg, u32 prio)
 
 s32 task_delete(u32 task_id)
 {
+    tcb[task_id].state = TASK_UNUSED;
     return 0;
 }

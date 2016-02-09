@@ -1,10 +1,12 @@
 #include <libc.h>
 #include <memory_map.h>
+#include <os_task.h>
 #include "log.h"
 #include "cpu.h"
 
 extern void dump_mem(u32 addr, u32 word_nr);
 
+struct __task__ *old_task, *new_task;
 struct cpu_context *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
@@ -47,18 +49,35 @@ void General_Irq_Handler()
 
     /* os clock */
     if (irq_nr == IRQ_CORE_TIMER) {
-        PRINT_STAMP();
         os_clock_irq_hook(current_context);
     }
 
     PRINT_DEBUG("exit %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
 }
 
+/* cpu_context save into /restore from user/system mode stack */
+void cpu_context_save()
+{
+    old_task->sp = current_context->r13 - sizeof(struct cpu_context);
+
+    memcpy((void *)(old_task->sp), (void *)current_context, sizeof(struct cpu_context));
+}
+
+void cpu_context_restore()
+{
+    memcpy((void *)current_context, (void *)(new_task->sp), sizeof(struct cpu_context));
+}
+
+/* the IrqHandler 'does not' know the task, 
+   it just save the current context into stack, and, 
+   restore the context in stack after General_Irq_Handler() 
+ */
 __attribute__((naked)) void IrqHandler()
 {
     asm volatile (
             "stmfd sp!, {r0-r12, lr}\n\t"
             "sub sp, sp, #8\n\t"    /* eh... get space to place the user/system mode cpsr, sp */
+
             "push {r0-r1}\n\t"
 
             "add r1, sp, #8\n\t"    /* (r1 = sp + 8) the context frame base. */
@@ -66,14 +85,14 @@ __attribute__((naked)) void IrqHandler()
             "mrs r0, spsr\n\t"      /* user/system mode cpsr is backup in spsr */
             "str r0, [r1, #0x4]\n\t"
 
-            "mov r0, r1\n\t"
-            "str r0, [r1, #0x0]\n\t"
+            "stm r1, {sp}^\n\t"     /* user/system mode sp -> [r1] */
 
             "ldr r0, =current_context\n\t"
             "str r1, [r0]\n\t"      /* store the context frame */
 
-
             "pop  {r0-r1}\n\t"
+
+            "bl cpu_context_save\n\t"
             : 
             : 
             : "memory"
@@ -83,10 +102,10 @@ __attribute__((naked)) void IrqHandler()
 
     __asm__ volatile (
 
-            "pop {r0}\n\t"      /* sp -> r0 */
-            "mov sp, r0\n\t"
+            "bl cpu_context_restore\n\t"
+            "ldmfd sp!, {sp}^\n\t"      /* sp -> r0 */
 
-            "add sp, sp, #4\n\t"
+            /* "add sp, sp, #4\n\t" */
 
             "pop {r0}\n\t"      /* spsr -> r0 */
             "msr SPSR_cxsf, r0\n\t"
@@ -94,6 +113,9 @@ __attribute__((naked)) void IrqHandler()
             "ldmfd sp!, {r0-r12, lr}\n\t"
             "subs pc, lr, #4\n\t"   /* (lr - 4) -> pc, rerun the user/system mode code */
             "nop\n\t"
+            : 
+            : 
+            : "memory"
     );
 }
 
