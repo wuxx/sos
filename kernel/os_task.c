@@ -7,10 +7,10 @@ struct __task__ tcb[TASK_NR_MAX] __attribute__((__aligned__(0x100))) = {0};
 u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = {0};
 
 /* get the highest priority task in READY STATE */
-u32 get_task_ready()
+struct __task__ * get_task_ready()
 {
     u32 i;
-    u32 best;
+    s32 best = -1;
     u32 prio = TASK_PRIO_MAX;
     for(i=0;i<TASK_NR_MAX;i++) {
         if (tcb[i].state == TASK_READY && tcb[i].prio < prio) {
@@ -18,7 +18,9 @@ u32 get_task_ready()
             best = i;
         }
     }
-    return best;
+    PRINT_EMG("get %d \n", best);
+    assert((best != -1));
+    return &tcb[best];
 }
 
 struct __task__ * tcb_alloc()
