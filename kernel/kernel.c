@@ -25,11 +25,9 @@ void blink_task()
     /* set_gpio_function(16, OUTPUT); */
     PRINT_STAMP();
     while(1) {
-#if 0
         set_gpio_output(16, 1);     /* led off */
         mdelay(1000);
         set_gpio_output(16, 0);     /* led on */
-#endif
         PRINT_STAMP();
         mdelay(1000);
 
@@ -71,9 +69,9 @@ void task_sched()
 void os_clock_irq_hook(struct cpu_context *ctx)
 {
     u32 old_task_id, new_task_id;
-    PRINT_STAMP();
-    PRINT_EMG("ctx: 0x%x  %x \n", ctx, sizeof(struct cpu_context));
-    dump_ctx(ctx);
+    /* PRINT_STAMP();
+    PRINT_EMG("ctx: 0x%x  %x \n", ctx, sizeof(struct cpu_context)); 
+    dump_ctx(ctx);*/
     if (os_init_ok == 0) {
         memcpy(ctx, (void *)(tcb[0].sp), sizeof(struct cpu_context));  /* idle task context */
         PRINT_STAMP();
@@ -84,14 +82,14 @@ void os_clock_irq_hook(struct cpu_context *ctx)
     } else {
         os_tick ++ ;
 
-        PRINT_STAMP();
-        old_task_id = (ctx->r13 - (u32)task_stack) / TASK_STK_SIZE; /* little hack */
-        PRINT_EMG("%d %x %x %x %x\n", __LINE__, old_task_id, ctx->r13, (u32)task_stack, TASK_STK_SIZE);
+        /*PRINT_STAMP();*/
+        /*old_task_id = (ctx->r13 - (u32)task_stack) / TASK_STK_SIZE; */ /* little hack */
+        /* PRINT_EMG("%d %x %x %x %x\n", __LINE__, old_task_id, ctx->r13, (u32)task_stack, TASK_STK_SIZE);*/
 
         if (need_schedule) {
-            PRINT_STAMP();
+            /*PRINT_STAMP();*/
             task_sched();
-            PRINT_STAMP();
+            /*PRINT_STAMP();*/
 
 #if 0
             PRINT_STAMP();

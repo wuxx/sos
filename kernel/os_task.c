@@ -18,7 +18,7 @@ struct __task__ * get_task_ready()
             best = i;
         }
     }
-    PRINT_EMG("get %d \n", best);
+    /*PRINT_EMG("get %d \n", best);*/
     assert((best != -1));
     return &tcb[best];
 }

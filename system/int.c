@@ -125,18 +125,38 @@ void General_Exc_Handler()
     cpsr = __get_cpsr();
     PRINT_EMG("in %s \n", __func__);
     PRINT_EMG("cpsr %x; %s\n", cpsr, get_cpu_mode());
+    dump_ctx(current_context);
+    lockup();
     while(1);
 }
 
 __attribute__((naked)) void ExcHandler()
 {
-    asm volatile ("stmfd    sp!, {r0-r3, r12, lr}" : : : "memory");
-    General_Irq_Handler();
-    __asm__ volatile (  \
-            "ldmfd sp!, {r0-r3, r12, lr}\n\t"   \
-            "subs pc, lr, #4\n\t"               \
-            "NOP\n\t"                           \
-    );
+    asm volatile (
+            "stmfd sp!, {r0-r12, lr}\n\t"
+            "sub sp, sp, #8\n\t"    /* eh... get space to place the user/system mode cpsr, sp */
+
+            "push {r0-r1}\n\t"
+
+            "add r1, sp, #8\n\t"    /* (r1 = sp + 8) the context frame base. */
+
+            "mrs r0, spsr\n\t"      /* user/system mode cpsr is backup in spsr */
+            "str r0, [r1, #0x4]\n\t"
+
+            "stm r1, {sp}^\n\t"     /* user/system mode sp -> [r1] */
+
+            "ldr r0, =current_context\n\t"
+            "str r1, [r0]\n\t"      /* store the context frame */
+
+            "pop  {r0-r1}\n\t"
+
+            "bl cpu_context_save\n\t"
+            : 
+            : 
+            : "memory"
+            );
+    General_Exc_Handler();
+    lockup();
 }
 
 s32 request_irq(u32 irq_nr, func_1 irq_handler)
@@ -250,10 +270,18 @@ void unlock_irq()
             : [_cpsr]"r"(_cpsr));
 }
 
-s32 lockup(char *file_name, char *func_name, u32 line_num, char *desc)
+s32 lockup()
 {
     PRINT_EMG("lockup!\n");
-    PRINT_EMG("%s-%s-%d: %s\n", file_name, func_name, line_num, desc);
+    lock_irq();
+    while(1);
+}
+
+s32 __assert(char *file_name, char *func_name, u32 line_num, char *desc)
+{
+    PRINT_EMG("lockup!\n");
+    PRINT_EMG("[%s][%s][%d]: %s\n", file_name, func_name, line_num, desc);
+    lock_irq();
     while(1);
 }
 
