@@ -4,7 +4,7 @@
 #include "log.h"
 
 struct __task__ tcb[TASK_NR_MAX] __attribute__((__aligned__(0x100))) = {0};
-u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = {0};
+u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = {0};
 
 /* get the highest priority task in READY STATE */
 struct __task__ * get_task_ready()
@@ -47,7 +47,8 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
     ptask->entry = task_entry;
     /* context init */
 
-    cc = (struct cpu_context *)(&(ptask->stack[TASK_STK_SIZE - sizeof(struct cpu_context)]));
+    cc = (struct cpu_context *)
+        (&(ptask->stack[TASK_STK_SIZE - (sizeof(struct cpu_context) / 4)]));
 
     cc->r13  = (u32)(&ptask->stack[TASK_STK_SIZE]);
     cc->cpsr = 0x15F;   /* irq enable, fiq disable, arm instruction, system mode */

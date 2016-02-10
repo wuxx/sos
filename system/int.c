@@ -66,6 +66,7 @@ void cpu_context_save()
 void cpu_context_restore()
 {
     memcpy((void *)current_context, (void *)(new_task->sp), sizeof(struct cpu_context));
+    dump_ctx(current_context);
 }
 
 /* the IrqHandler 'does not' know the task, 
@@ -75,7 +76,7 @@ void cpu_context_restore()
 __attribute__((naked)) void IrqHandler()
 {
     asm volatile (
-            "stmfd sp!, {r0-r12, lr}\n\t"
+            "stmfd sp!, {r0-r12, r14}^\n\t"  /* the ^ means user/system mode reg */
             "sub sp, sp, #8\n\t"    /* eh... get space to place the user/system mode cpsr, sp */
 
             "push {r0-r1}\n\t"
@@ -91,6 +92,7 @@ __attribute__((naked)) void IrqHandler()
             "str r1, [r0]\n\t"      /* store the context frame */
 
             "pop  {r0-r1}\n\t"
+            "push {lr}\n\t" /* backup the return address */ 
 
             "bl cpu_context_save\n\t"
             : 
@@ -103,15 +105,16 @@ __attribute__((naked)) void IrqHandler()
     __asm__ volatile (
 
             "bl cpu_context_restore\n\t"
-            "ldmfd sp!, {sp}^\n\t"      /* sp -> r0 */
+            "pop {lr}\n\t"              /* restore the return address */
+            "ldmfd sp!, {sp}^\n\t"      /* restore user/system mode sp */
 
             /* "add sp, sp, #4\n\t" */
 
-            "pop {r0}\n\t"      /* spsr -> r0 */
-            "msr SPSR_cxsf, r0\n\t"
+            "pop {r0}\n\t"              /* spsr -> r0 */
+            "msr SPSR_cxsf, r0\n\t"     /* restore cpsr */
 
-            "ldmfd sp!, {r0-r12, lr}\n\t"
-            "subs pc, lr, #4\n\t"   /* (lr - 4) -> pc, rerun the user/system mode code */
+            "ldmfd sp!, {r0-r12, r14}^\n\t"
+            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, rerun the user/system mode code */
             "nop\n\t"
             : 
             : 
@@ -278,7 +281,7 @@ s32 lockup()
     while(1);
 }
 
-s32 __assert(char *file_name, char *func_name, u32 line_num, char *desc)
+s32 _assert(char *file_name, char *func_name, u32 line_num, char *desc)
 {
     PRINT_EMG("lockup!\n");
     PRINT_EMG("[%s][%s][%d]: %s\n", file_name, func_name, line_num, desc);

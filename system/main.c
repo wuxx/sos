@@ -13,7 +13,7 @@
 
 char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
 extern void __switch_to(func_1);
-extern u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE];
+extern u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE];
 extern u32 __get_sp();
 extern u32 __get_cpsr();
 
@@ -70,6 +70,7 @@ int main(u32 sp)
             get_cpu_mode(), __get_lr(), sp, __get_cpsr());
 
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
+    PRINT_EMG("%x \n", &(task_stack[0][TASK_STK_SIZE]));
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));
     idle_task();
 #if 0

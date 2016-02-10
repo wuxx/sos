@@ -17,6 +17,7 @@ void idle_task()
 {
     while(1) {
         PRINT_STAMP();
+        PRINT_EMG("sp: %x \n", __get_sp());
         mdelay(1000);
     }
 }
@@ -29,6 +30,7 @@ void blink_task()
         mdelay(1000);
         set_gpio_output(16, 0);     /* led on */
         PRINT_STAMP();
+        PRINT_EMG("sp: %x \n", __get_sp());
         mdelay(1000);
 
     }
