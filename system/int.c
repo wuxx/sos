@@ -126,6 +126,7 @@ void General_Exc_Handler()
     PRINT_EMG("in %s \n", __func__);
     PRINT_EMG("cpsr %x; %s\n", cpsr, get_cpu_mode());
     dump_ctx(current_context);
+    dump_tcb_all();
     lockup();
     while(1);
 }

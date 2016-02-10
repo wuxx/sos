@@ -91,6 +91,7 @@ int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
                         i++;
                         break;
                     case ('x'):
+                    case ('X'):
                         x = va_arg(args, u32);
                         b = itoa(num, x, 16);
                         buf_puts(buf, size, &offset, b);

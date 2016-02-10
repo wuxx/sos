@@ -59,6 +59,10 @@ void dump_ctx(struct cpu_context *ctx)
 void task_sched()
 {
     new_task = get_task_ready(); /* get the highest priority task in READY STATE */
+    PRINT_EMG("old_task %d ctx: \n", old_task->id);
+    dump_ctx((struct cpu_context *)(old_task->sp));
+    PRINT_EMG("new_task %d ctx: \n", new_task->id);
+    dump_ctx((struct cpu_context *)(new_task->sp));
 
     old_task->state = TASK_READY;
     new_task->state = TASK_RUNNING;
@@ -72,6 +76,17 @@ void os_clock_irq_hook(struct cpu_context *ctx)
     /* PRINT_STAMP();
     PRINT_EMG("ctx: 0x%x  %x \n", ctx, sizeof(struct cpu_context)); 
     dump_ctx(ctx);*/
+    os_tick ++ ;
+
+    /*PRINT_STAMP();*/
+    /*old_task_id = (ctx->r13 - (u32)task_stack) / TASK_STK_SIZE; */ /* little hack */
+    /* PRINT_EMG("%d %x %x %x %x\n", __LINE__, old_task_id, ctx->r13, (u32)task_stack, TASK_STK_SIZE);*/
+
+    if (need_schedule) {
+        /*PRINT_STAMP();*/
+        task_sched();
+        /*PRINT_STAMP();*/
+#if 0
     if (os_init_ok == 0) {
         memcpy(ctx, (void *)(tcb[0].sp), sizeof(struct cpu_context));  /* idle task context */
         PRINT_STAMP();
@@ -90,7 +105,7 @@ void os_clock_irq_hook(struct cpu_context *ctx)
             /*PRINT_STAMP();*/
             task_sched();
             /*PRINT_STAMP();*/
-
+#endif
 #if 0
             PRINT_STAMP();
             new_task_id = get_task_ready(); /* get the highest priority task in READY STATE */
@@ -106,8 +121,8 @@ void os_clock_irq_hook(struct cpu_context *ctx)
             tcb[new_task_id].state = TASK_RUNNING;
             memcpy(ctx, (void *)(tcb[new_task_id].sp), sizeof(struct cpu_context));
             dump_ctx(ctx);
-#endif
         }
+#endif
     }
 }
 

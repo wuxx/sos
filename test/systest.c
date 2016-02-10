@@ -26,7 +26,7 @@ void dump_mem(u32 addr, u32 word_nr)
     u32 i;
     u32 *p = (u32 *)addr;
     for(i=0;i<word_nr;i++) {
-        PRINT_DEBUG("[0x%x]: 0x%x\n", &p[i], p[i]);
+        PRINT_DEBUG("[0x%X]: 0x%X\n", &p[i], p[i]);
     }   
 }
 

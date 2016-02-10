@@ -10,7 +10,7 @@ u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = 
 struct __task__ * get_task_ready()
 {
     u32 i;
-    s32 best = -1;
+    u32 best = 256;
     u32 prio = TASK_PRIO_MAX;
     for(i=0;i<TASK_NR_MAX;i++) {
         if (tcb[i].state == TASK_READY && tcb[i].prio < prio) {
@@ -19,7 +19,7 @@ struct __task__ * get_task_ready()
         }
     }
     /*PRINT_EMG("get %d \n", best);*/
-    assert((best != -1));
+    assert((best != 256));
     return &tcb[best];
 }
 
@@ -49,7 +49,7 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
 
     cc = (struct cpu_context *)(&(ptask->stack[TASK_STK_SIZE - sizeof(struct cpu_context)]));
 
-    cc->r13  = (u32)cc;
+    cc->r13  = (u32)(&ptask->stack[TASK_STK_SIZE]);
     cc->cpsr = 0x15F;   /* irq enable, fiq disable, arm instruction, system mode */
     cc->r0   = arg;
     cc->r1   = 0;

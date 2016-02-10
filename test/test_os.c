@@ -15,7 +15,7 @@ char *task_state_desc[] = {
     "TASK_READY",
 };
 
-void dump_tcb()
+void dump_tcb_all()
 {
     u32 i;
     for(i=0;i<TASK_NR_MAX;i++) {
@@ -28,6 +28,7 @@ void dump_tcb()
             PRINT_EMG("\tstack:      [0x%x]\n", tcb[i].stack);
             PRINT_EMG("\tstack_size: [%d]\n", tcb[i].stack_size);
             PRINT_EMG("\ttask_entry: [0x%x]\n", tcb[i].entry);
+            dump_mem(tcb[i].stack, tcb[i].stack_size);
         }
     }
 }
@@ -48,7 +49,7 @@ s32 test_os_all(u32 argc, char **argv)
             PRINT_EMG("os_tick: 0x%x\n", os_tick);
             break;
         case (1):
-            dump_tcb();
+            dump_tcb_all();
             break;
         default:
             return -1;
