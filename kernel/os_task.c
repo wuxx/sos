@@ -50,7 +50,6 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
     cc = (struct cpu_context *)
         (&(ptask->stack[TASK_STK_SIZE - (sizeof(struct cpu_context) / 4)]));
 
-    cc->r13  = (u32)(&ptask->stack[TASK_STK_SIZE]);
     cc->cpsr = 0x15F;   /* irq enable, fiq disable, arm instruction, system mode */
     cc->r0   = arg;
     cc->r1   = 0;
@@ -65,8 +64,9 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
     cc->r10  = 0;
     cc->r11  = 0;
     cc->r12  = 0;
-    /*cc->r13 = 0;*/
-    cc->lr = (u32)task_entry + 4;     /* pc + 4 */
+    cc->sp   = (u32)(&ptask->stack[TASK_STK_SIZE]);
+    cc->lr   = 0;
+    cc->pc   = (u32)task_entry + 4;     /* pc + 4 */
 
     ptask->sp = (u32)cc;
 

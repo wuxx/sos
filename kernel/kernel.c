@@ -39,7 +39,6 @@ void blink_task()
 void dump_ctx(struct cpu_context *ctx)
 {
 #define DUMP_VAR(c, var) PRINT_EMG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
-    DUMP_VAR(ctx, r13);
     DUMP_VAR(ctx, cpsr);
     DUMP_VAR(ctx, r0);
     DUMP_VAR(ctx, r1);
@@ -54,7 +53,9 @@ void dump_ctx(struct cpu_context *ctx)
     DUMP_VAR(ctx, r10);
     DUMP_VAR(ctx, r11);
     DUMP_VAR(ctx, r12);
+    DUMP_VAR(ctx, sp);
     DUMP_VAR(ctx, lr);
+    DUMP_VAR(ctx, pc);
 }
 
 /* just re-set old_task & new_task */

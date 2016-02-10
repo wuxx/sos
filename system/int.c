@@ -58,7 +58,7 @@ void General_Irq_Handler()
 /* cpu_context save into /restore from user/system mode stack */
 void cpu_context_save()
 {
-    old_task->sp = current_context->r13 - sizeof(struct cpu_context);
+    old_task->sp = current_context->sp - sizeof(struct cpu_context);
 
     memcpy((void *)(old_task->sp), (void *)current_context, sizeof(struct cpu_context));
 }
@@ -76,23 +76,21 @@ void cpu_context_restore()
 __attribute__((naked)) void IrqHandler()
 {
     asm volatile (
-            "stmfd sp!, {r0-r12, r14}^\n\t"  /* the ^ means user/system mode reg */
-            "sub sp, sp, #8\n\t"    /* eh... get space to place the user/system mode cpsr, sp */
+            "stmfd sp!, {lr}\n\t"       /* user/system pc = lr - 4  */
+            "stmfd sp!, {r0-r14}^\n\t"  /* the ^ means user/system mode reg */
+            "sub sp, sp, #4\n\t"        /* eh... get space to place the user/system mode cpsr, sp */
 
             "push {r0-r1}\n\t"
 
             "add r1, sp, #8\n\t"    /* (r1 = sp + 8) the context frame base. */
 
             "mrs r0, spsr\n\t"      /* user/system mode cpsr is backup in spsr */
-            "str r0, [r1, #0x4]\n\t"
-
-            "stm r1, {sp}^\n\t"     /* user/system mode sp -> [r1] */
+            "str r0, [r1, #0x0]\n\t"
 
             "ldr r0, =current_context\n\t"
             "str r1, [r0]\n\t"      /* store the context frame */
 
             "pop  {r0-r1}\n\t"
-            "push {lr}\n\t" /* backup the return address */ 
 
             "bl cpu_context_save\n\t"
             : 
@@ -105,15 +103,12 @@ __attribute__((naked)) void IrqHandler()
     __asm__ volatile (
 
             "bl cpu_context_restore\n\t"
-            "pop {lr}\n\t"              /* restore the return address */
-            "ldmfd sp!, {sp}^\n\t"      /* restore user/system mode sp */
-
-            /* "add sp, sp, #4\n\t" */
 
             "pop {r0}\n\t"              /* spsr -> r0 */
             "msr SPSR_cxsf, r0\n\t"     /* restore cpsr */
 
-            "ldmfd sp!, {r0-r12, r14}^\n\t"
+            "ldmfd sp!, {r0-r14}^\n\t"
+            "ldmfd sp!, {lr}\n\t"
             "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, rerun the user/system mode code */
             "nop\n\t"
             : 
@@ -137,17 +132,16 @@ void General_Exc_Handler()
 __attribute__((naked)) void ExcHandler()
 {
     asm volatile (
-            "stmfd sp!, {r0-r12, lr}\n\t"
-            "sub sp, sp, #8\n\t"    /* eh... get space to place the user/system mode cpsr, sp */
+            "stmfd sp!, {lr}\n\t"       /* user/system pc = lr - 4  */
+            "stmfd sp!, {r0-r14}^\n\t"  /* the ^ means user/system mode reg */
+            "sub sp, sp, #4\n\t"        /* eh... get space to place the user/system mode cpsr, sp */
 
             "push {r0-r1}\n\t"
 
             "add r1, sp, #8\n\t"    /* (r1 = sp + 8) the context frame base. */
 
             "mrs r0, spsr\n\t"      /* user/system mode cpsr is backup in spsr */
-            "str r0, [r1, #0x4]\n\t"
-
-            "stm r1, {sp}^\n\t"     /* user/system mode sp -> [r1] */
+            "str r0, [r1, #0x0]\n\t"
 
             "ldr r0, =current_context\n\t"
             "str r1, [r0]\n\t"      /* store the context frame */
