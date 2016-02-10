@@ -1,36 +1,30 @@
 #include <system_config.h>
 #include <os_task.h>
 #include <libc.h>
+
 #include "log.h"
 #include "gpio.h"
 
-extern u8 task_stack[TASK_NR_MAX][TASK_STK_SIZE];
-extern struct __task__ tcb[TASK_NR_MAX];
-extern struct __task__ *old_task;
-extern struct __task__ *new_task;
-
-u32 os_init_ok = 0;
+/* u32 os_init_ok = 0; */
 u32 os_tick = 0;
 u32 need_schedule = 1;
 
 void idle_task()
 {
     while(1) {
-        PRINT_STAMP();
-        PRINT_EMG("sp: %x \n", __get_sp());
+        PRINT_DEBUG("sp: %x \n", __get_sp());
         mdelay(1000);
     }
 }
 void blink_task()
 {
-    /* set_gpio_function(16, OUTPUT); */
+    set_gpio_function(16, OUTPUT);
     PRINT_STAMP();
     while(1) {
         set_gpio_output(16, 1);     /* led off */
         mdelay(1000);
         set_gpio_output(16, 0);     /* led on */
-        PRINT_STAMP();
-        PRINT_EMG("sp: %x \n", __get_sp());
+        PRINT_DEBUG("sp: %x \n", __get_sp());
         mdelay(1000);
 
     }
@@ -62,10 +56,12 @@ void dump_ctx(struct cpu_context *ctx)
 void task_sched()
 {
     new_task = get_task_ready(); /* get the highest priority task in READY STATE */
+    /*
     PRINT_EMG("old_task %d ctx: \n", old_task->id);
     dump_ctx((struct cpu_context *)(old_task->sp));
     PRINT_EMG("new_task %d ctx: \n", new_task->id);
     dump_ctx((struct cpu_context *)(new_task->sp));
+    */
 
     old_task->state = TASK_READY;
     new_task->state = TASK_RUNNING;
@@ -140,7 +136,7 @@ s32 os_init()
     PRINT_STAMP();
 
     if (task_create(blink_task, 0, 100) != OK) {
-        PRINT_EMG("idle_task create failed !\n");
+        PRINT_EMG("blink_task create failed !\n");
         return ERROR;
     }
     PRINT_STAMP();

@@ -66,7 +66,7 @@ void cpu_context_save()
 void cpu_context_restore()
 {
     memcpy((void *)current_context, (void *)(new_task->sp), sizeof(struct cpu_context));
-    dump_ctx(current_context);
+    /* dump_ctx(current_context); */
 }
 
 /* the IrqHandler 'does not' know the task, 

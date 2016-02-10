@@ -1,6 +1,7 @@
 #ifndef __OS_TASK_H__
 #define __OS_TASK_H__
 #include <libc.h>
+#include <system_config.h>
 #include "cpu.h"
 
 /* task state */
@@ -30,4 +31,14 @@ struct __task__
     func_1 entry;
 };
 
+extern u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE];
+extern struct __task__ tcb[TASK_NR_MAX];
+extern struct __task__ *old_task;
+extern struct __task__ *new_task;
+
+s32 task_create(func_1 entry, u32 arg, u32 prio);
+s32 task_delete(u32 task_id);
+
 #endif /* __OS_TASK_H__ */
+
+

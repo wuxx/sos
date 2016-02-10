@@ -3,6 +3,8 @@
 #include <memory_map.h>
 #include <system_config.h>
 
+#include <os_task.h>
+
 #include "mmio.h"
 #include "uart.h"
 #include "timer.h"
@@ -12,10 +14,6 @@
 #include "cpu.h"
 
 char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
-extern void __switch_to(func_1);
-extern u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE];
-extern u32 __get_sp();
-extern u32 __get_cpsr();
 
 char* get_cpu_mode()
 {

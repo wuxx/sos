@@ -10,7 +10,7 @@ s32 test_cpu_all(u32 argc, char **argv)
     i = atoi(argv[2]);
     switch(i) {
         case (0):
-            dump_mem(VIC_BASE, 10);
+            dump_mem(IRQ_BASE, 10);
             break;
         case (1):
             PRINT_EMG("pc:   0x%x\n", __get_pc());
