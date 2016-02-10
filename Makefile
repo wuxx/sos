@@ -34,9 +34,8 @@ SYSTEM_SRCS = \
 		$(SYSTEM_DIR)/init.s
 
 LIBC_SRCS = \
-		$(LIBC_DIR)/printf.c	\
 		$(LIBC_DIR)/string.c	\
-		$(LIBC_DIR)/vsprintf.c	
+		$(LIBC_DIR)/vsnprintf.c
 
 DRIVER_SRCS = \
 		$(DRIVER_DIR)/gpio/gpio.c       \

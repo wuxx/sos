@@ -65,11 +65,13 @@ int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
     char *s, *b;
     va_list ap;
 
-    char num[11]; /* 2^32 = 4294967296 */
+    char num_dec[11]; /* 2^32 = 4294967296 */
+    char num_hex[8];
 
     offset = 0;
     memset(buf, 0, size);
-    memset(num, 0, sizeof(num));
+    memset(num_dec, 0, sizeof(num_dec));
+    memset(num_hex, 0, sizeof(num_hex));
     len = strlen(fmt);
 
     for(i=0;i<len;i++) {
@@ -86,14 +88,15 @@ int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
                         break;
                     case ('d'):
                         d = va_arg(args, u32);
-                        b = itoa(num, d, 10);
+                        b = itoa(num_dec, d, 10);
                         buf_puts(buf, size, &offset, b);
                         i++;
                         break;
                     case ('x'):
                     case ('X'):
                         x = va_arg(args, u32);
-                        b = itoa(num, x, 16);
+                        b = itoa(num_hex, x, 16);
+                        if (fmt[i+1] == 'X') b = num_hex;
                         buf_puts(buf, size, &offset, b);
                         i++;
                         break;

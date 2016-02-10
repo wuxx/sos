@@ -11,8 +11,8 @@ enum irq_e {
     /* arm basic irq */
     IRQ_CORE_TIMER     = 0,
     IRQ_CORE_MAILBOX   = 1,
-    IRQ_CORE_DOORBEL0  = 2,
-    IRQ_CORE_DOORBEL1  = 3,
+    IRQ_CORE_DOORBELL0 = 2,
+    IRQ_CORE_DOORBELL1 = 3,
     IRQ_GPU0_HALT      = 4,
     IRQ_GPU1_HALT      = 5,
     IRQ_ILEGAL_ACCESS0 = 6,

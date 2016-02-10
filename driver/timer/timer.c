@@ -1,6 +1,7 @@
 #include <libc.h>
 #include <int.h>
 #include <memory_map.h>
+#include <system_config.h>
 
 #include "log.h"
 #include "timer.h"
@@ -66,7 +67,7 @@ void timer_irq_handler(u32 irq_nr)
 s32 timer_init()
 {
     /* core timer */
-    writel(CORETMLOAD, MS2TICK(1000)); /* 1s */
+    writel(CORETMLOAD, MS2TICK(1000/OS_HZ));
                         /* 23-bit counter & irq enable & timer enable */
     writel(CORETMCTRL, 0x1 << 1 | 0x1 << 5 | 0x1 << 7);
     request_irq(IRQ_CORE_TIMER, timer_irq_handler);
