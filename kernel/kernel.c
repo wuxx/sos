@@ -16,6 +16,7 @@ void idle_task()
         mdelay(1000);
     }
 }
+
 void blink_task()
 {
     set_gpio_function(16, OUTPUT);
@@ -85,43 +86,6 @@ void os_clock_irq_hook(struct cpu_context *ctx)
         /*PRINT_STAMP();*/
         task_sched();
         /*PRINT_STAMP();*/
-#if 0
-    if (os_init_ok == 0) {
-        memcpy(ctx, (void *)(tcb[0].sp), sizeof(struct cpu_context));  /* idle task context */
-        PRINT_STAMP();
-        tcb[0].state = TASK_RUNNING;
-        PRINT_STAMP();
-        dump_ctx(ctx);
-        os_init_ok = 1;
-    } else {
-        os_tick ++ ;
-
-        /*PRINT_STAMP();*/
-        /*old_task_id = (ctx->r13 - (u32)task_stack) / TASK_STK_SIZE; */ /* little hack */
-        /* PRINT_EMG("%d %x %x %x %x\n", __LINE__, old_task_id, ctx->r13, (u32)task_stack, TASK_STK_SIZE);*/
-
-        if (need_schedule) {
-            /*PRINT_STAMP();*/
-            task_sched();
-            /*PRINT_STAMP();*/
-#endif
-#if 0
-            PRINT_STAMP();
-            new_task_id = get_task_ready(); /* get the highest priority task in READY STATE */
-            PRINT_EMG("%d %x \n", __LINE__, new_task_id);
-            /* save the old task context */
-            PRINT_STAMP();
-            tcb[old_task_id].state = TASK_READY;
-            memcpy((void *)(tcb[old_task_id].sp), ctx, sizeof(struct cpu_context));
-            dump_ctx(ctx);
-
-            /* restore the new task context */
-            PRINT_STAMP();
-            tcb[new_task_id].state = TASK_RUNNING;
-            memcpy(ctx, (void *)(tcb[new_task_id].sp), sizeof(struct cpu_context));
-            dump_ctx(ctx);
-        }
-#endif
     }
 }
 
