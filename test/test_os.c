@@ -15,6 +15,11 @@ char *task_state_desc[] = {
     "TASK_READY",
 };
 
+void test_task()
+{
+    PRINT_EMG("in %s \n", __func__);
+}
+
 void dump_tcb_all()
 {
     u32 i;
@@ -50,6 +55,9 @@ s32 test_os_all(u32 argc, char **argv)
             break;
         case (1):
             dump_tcb_all();
+            break;
+        case (10):  /* task create */
+            task_create(test_task, 0, 0);
             break;
         default:
             return -1;
