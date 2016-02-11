@@ -28,12 +28,9 @@ s32 test_cpu_all(u32 argc, char **argv)
             __set_pc(arg1);
             break;
         case (3):
-            __set_lr(arg1);
-            break;
-        case (4):
             __set_sp(arg1);
             break;
-        case (5):
+        case (4):
             __set_cpsr(arg1);
             break;
         case (100): /* illegal instruction */

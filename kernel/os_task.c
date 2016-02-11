@@ -19,8 +19,11 @@ struct __task__ * get_task_ready()
         }
     }
     /*PRINT_EMG("get %d \n", best);*/
-    assert((best != 256));
-    return &tcb[best];
+    if (best == 256) {
+        return NULL;
+    } else {
+        return &tcb[best];
+    }
 }
 
 struct __task__ * tcb_alloc()

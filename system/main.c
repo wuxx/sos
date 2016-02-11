@@ -54,7 +54,7 @@ int main(u32 sp)
 
     int_init();
     uart_init();
-    set_log_level(LOG_DEBUG);
+    set_log_level(LOG_INFO);
     timer_init();
     os_init();
 
