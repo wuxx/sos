@@ -7,7 +7,7 @@
 #define FIQ_DISABLE_BIT 6
 #define IRQ_DISABLE_BIT 7
 
-enum irq_e {
+enum IRQ_NR_E {
     /* arm basic irq */
     IRQ_CORE_TIMER     = 0,
     IRQ_CORE_MAILBOX   = 1,

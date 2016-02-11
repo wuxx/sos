@@ -54,7 +54,7 @@ void dump_ctx(struct cpu_context *ctx)
 u32 need_schedule()
 {
     new_task = get_task_ready(); /* get the highest priority task in READY STATE */
-    if ((new_task != NULL) && (new_task->prio <= old_task)) {
+    if ((new_task != NULL) && (new_task->prio <= old_task->prio)) {
         return 1;
     } else {
         return 0;
@@ -64,12 +64,6 @@ u32 need_schedule()
 /* just re-set old_task & new_task */
 void task_sched()
 {
-    /*
-    PRINT_EMG("old_task %d ctx: \n", old_task->id);
-    dump_ctx((struct cpu_context *)(old_task->sp));
-    PRINT_EMG("new_task %d ctx: \n", new_task->id);
-    dump_ctx((struct cpu_context *)(new_task->sp));
-    */
 
     old_task->state = TASK_READY;
     new_task->state = TASK_RUNNING;
@@ -80,19 +74,10 @@ void task_sched()
 void os_clock_irq_hook(struct cpu_context *ctx)
 {
     u32 old_task_id, new_task_id;
-    /* PRINT_STAMP();
-    PRINT_EMG("ctx: 0x%x  %x \n", ctx, sizeof(struct cpu_context)); 
-    dump_ctx(ctx);*/
     os_tick ++ ;
 
-    /*PRINT_STAMP();*/
-    /*old_task_id = (ctx->r13 - (u32)task_stack) / TASK_STK_SIZE; */ /* little hack */
-    /* PRINT_EMG("%d %x %x %x %x\n", __LINE__, old_task_id, ctx->r13, (u32)task_stack, TASK_STK_SIZE);*/
-
     if (need_schedule()) {
-        /*PRINT_STAMP();*/
         task_sched();
-        /*PRINT_STAMP();*/
     }
 }
 

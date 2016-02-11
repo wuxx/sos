@@ -66,13 +66,8 @@ void cpu_context_save()
 void cpu_context_restore()
 {
     memcpy((void *)current_context, (void *)(new_task->sp), sizeof(struct cpu_context));
-    /* dump_ctx(current_context); */
 }
 
-/* the IrqHandler 'does not' know the task, 
-   it just save the current context into stack, and, 
-   restore the context in stack after General_Irq_Handler() 
- */
 __attribute__((naked)) void IrqHandler()
 {
     asm volatile (
@@ -277,15 +272,15 @@ s32 lockup()
 
 s32 _assert(char *file_name, char *func_name, u32 line_num, char *desc)
 {
-    PRINT_EMG("lockup!\n");
     PRINT_EMG("[%s][%s][%d]: %s\n", file_name, func_name, line_num, desc);
-    lock_irq();
+    lockup();
     while(1);
 }
 
 s32 unexpect_irq_handler(u32 irq_nr)
 {
     PRINT_EMG("in %s %d\n", __func__, irq_nr);
+    lockup();
     while(1);
 }
 
