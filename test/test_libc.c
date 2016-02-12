@@ -1,18 +1,9 @@
 #include <memory_map.h>
 #include <libc.h>
 
-static char buf[1024] = {0};
+#include "log.h"
 
-extern int vsnprintf(char *buf, u32 size, const char *fmt, va_list args);
-void test_printf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args,fmt);
-    dump_mem((u32)args, 10);
-    vsnprintf(buf,sizeof(buf), fmt, args);
-    va_end(args);
-    uart_puts(buf);
-}
+static char buf[1024] = {0};
 
 s32 test_libc_all(u32 argc, char **argv)
 {
@@ -33,13 +24,13 @@ s32 test_libc_all(u32 argc, char **argv)
             uart_puts(buf);
             break;
         case (1):   /* vsnprintf test */
-            test_printf("hello, world!\n");
-            test_printf("%%%%%%%%%%%%%%%");
-            test_printf("hello %c \n", 'A');
-            test_printf("hello %d \n", 12345678);
-            test_printf("hello %x \n", 0x12345678);
-            test_printf("hello %s \n", "world!");
-            test_printf("hello %X \n", 0x12345678);
+            PRINT_EMG("hello, world!\n");
+            PRINT_EMG("%%%%%%%%%%%%%%%");
+            PRINT_EMG("hello %c \n", 'A');
+            PRINT_EMG("hello %d \n", 12345678);
+            PRINT_EMG("hello %x \n", 0x12345678);
+            PRINT_EMG("hello %s \n", "world!");
+            PRINT_EMG("hello %X \n", 0x12345678);
             break;
         case (2):   /* assert test */
             assert(1==2);

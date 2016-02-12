@@ -5,7 +5,6 @@
 #include "log.h"
 #include "gpio.h"
 
-/* u32 os_init_ok = 0; */
 u32 os_tick = 0;
 
 void idle_task()
@@ -73,7 +72,6 @@ void task_sched()
 
 void os_clock_irq_hook(struct cpu_context *ctx)
 {
-    u32 old_task_id, new_task_id;
     os_tick ++ ;
 
     if (need_schedule()) {
