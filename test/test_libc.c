@@ -31,6 +31,7 @@ s32 test_libc_all(u32 argc, char **argv)
             PRINT_EMG("hello %x \n", 0x12345678);
             PRINT_EMG("hello %s \n", "world!");
             PRINT_EMG("hello %X \n", 0x12345678);
+            PRINT_EMG("hello %X \n", 0x5678);
             break;
         case (2):   /* assert test */
             assert(1==2);
