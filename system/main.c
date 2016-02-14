@@ -94,15 +94,6 @@ int main(u32 sp)
             :   
             : "memory"
             );  
-    while(test_gpio) {
-        set_gpio_output(GPIO_16, 1);     /* led off */
-        mdelay(1000);
-        set_gpio_output(GPIO_16, 0);     /* led on */
-        mdelay(1000);
-        PRINT_EMG("%d\n", __LINE__);
-    };
-    while(1) {
-    };
 #endif
     while(1); /* never reach here */
     return 0;

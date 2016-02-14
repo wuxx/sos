@@ -38,6 +38,12 @@ s32 test_cpu_all(u32 argc, char **argv)
             func = (func_0)arg1;
             func();
             break;
+        case (200): /* enable irq */
+            enable_irq(arg1);
+            break;
+        case (201): /* disable irq */
+            disable_irq(arg1);
+            break;
         default:
             return -1;
     }

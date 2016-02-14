@@ -19,6 +19,10 @@ enum IRQ_NR_E {
     IRQ_ILEGAL_ACCESS1 = 7,
 
     /* arm peripherals irq */
+    IRQ_SYS_TIMER0  = 32 +  0,
+    IRQ_SYS_TIMER1  = 32 +  1,
+    IRQ_SYS_TIMER2  = 32 +  2,
+    IRQ_SYS_TIMER3  = 32 +  3,
     IRQ_AUX         = 32 + 29,
     IRQ_I2C_SPI_SLV = 32 + 43,
     IRQ_SMI         = 32 + 48,

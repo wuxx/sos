@@ -3,6 +3,36 @@
 #include "timer.h"
 #include "log.h"
 
+void systimer_irq_handler(u32 irq_nr)
+{
+    PRINT_EMG("in %s %d \n", __func__, irq_nr);
+    u32 clear = 0;
+    switch (irq_nr) {
+        case (IRQ_SYS_TIMER0):
+            set_bit(&clear, 0, 1);
+            break;
+        case (IRQ_SYS_TIMER1):
+            set_bit(&clear, 1, 1);
+            break;
+        case (IRQ_SYS_TIMER2):
+            set_bit(&clear, 2, 1);
+            break;
+        case (IRQ_SYS_TIMER3):
+            set_bit(&clear, 3, 1);
+            break;
+        default:
+            PRINT_EMG("unknown irq %d \n", irq_nr);
+            lockup();
+            break;
+    }
+    writel(SYSTMCS, clear);
+}
+
+void sys_timer_init()
+{
+    writel(SYSTMCS, 0xF);
+}
+
 s32 test_timer_all(u32 argc, char **argv)
 {
     u64 sc;

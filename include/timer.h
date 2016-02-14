@@ -15,5 +15,6 @@
 u64 get_syscounter();
 void udelay(u32 us);
 void mdelay(u32 ms);
+void clk_delay(u32 cycle);
 s32 timer_init();
 #endif /* __TIMER_H__ */

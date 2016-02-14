@@ -47,11 +47,6 @@ void General_Irq_Handler()
         }
     }
 
-    /* os clock */
-    if (irq_nr == IRQ_CORE_TIMER) {
-        os_clock_irq_hook(current_context);
-    }
-
     PRINT_DEBUG("exit %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
 }
 

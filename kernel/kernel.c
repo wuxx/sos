@@ -1,9 +1,14 @@
 #include <system_config.h>
+#include <memory_map.h>
 #include <os_task.h>
 #include <libc.h>
 
+#include "cpu.h"
+#include "timer.h"
 #include "log.h"
 #include "gpio.h"
+
+extern struct cpu_context *current_context;
 
 u32 os_tick = 0;
 
@@ -79,8 +84,26 @@ void os_clock_irq_hook(struct cpu_context *ctx)
     }
 }
 
+void coretimer_irq_handler(u32 irq_nr)
+{
+    PRINT_DEBUG("in %s %d\n", __func__, irq_nr);
+    os_clock_irq_hook(current_context);
+    writel(CORETMCLR, 0x0);
+}
+
+s32 coretimer_init()
+{
+    /* core timer */
+    writel(CORETMLOAD, MS2TICK(1000/OS_HZ));
+                        /* 23-bit counter & irq enable & timer enable */
+    writel(CORETMCTRL, 0x1 << 1 | 0x1 << 5 | 0x1 << 7); 
+    request_irq(IRQ_CORE_TIMER, coretimer_irq_handler);
+    enable_irq(IRQ_CORE_TIMER);
+}
+
 s32 os_init()
 {
+    coretimer_init();
     PRINT_STAMP();
     if (task_create(idle_task, 0, 100) != OK) {
         PRINT_EMG("idle_task create failed !\n");

@@ -125,11 +125,11 @@ void uart_init() {
  
     // Disable pull up/down for all GPIO pins & delay for 150 cycles.
     writel(GPPUD, 0x00000000);
-    delay(150);
+    clk_delay(150);
  
     // Disable pull up/down for pin 14,15 & delay for 150 cycles.
     writel(GPPUDCLK0, (1 << 14) | (1 << 15));
-    delay(150);
+    clk_delay(150);
  
     // Write 0 to GPPUDCLK0 to make it take effect.
     writel(GPPUDCLK0, 0x00000000);
