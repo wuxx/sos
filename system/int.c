@@ -53,7 +53,7 @@ void General_Irq_Handler()
 /* cpu_context save into /restore from user/system mode stack */
 void cpu_context_save()
 {
-    old_task->sp = current_context->sp - sizeof(struct cpu_context);
+    old_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
 
     memcpy((void *)(old_task->sp), (void *)current_context, sizeof(struct cpu_context));
 }

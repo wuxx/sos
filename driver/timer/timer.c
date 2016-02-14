@@ -58,19 +58,7 @@ void clk_delay(u32 count) {
             : "cc");
 }
 
-void timer_irq_handler(u32 irq_nr)
-{
-    PRINT_DEBUG("in %s %d\n", __func__, irq_nr);
-    writel(CORETMCLR, 0x0);
-}
-
 s32 timer_init()
 {
-    /* core timer */
-    writel(CORETMLOAD, MS2TICK(1000/OS_HZ));
-                        /* 23-bit counter & irq enable & timer enable */
-    writel(CORETMCTRL, 0x1 << 1 | 0x1 << 5 | 0x1 << 7);
-    request_irq(IRQ_CORE_TIMER, timer_irq_handler);
-    enable_irq(IRQ_CORE_TIMER);
+    return 0;
 }
-
