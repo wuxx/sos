@@ -7,7 +7,7 @@ struct __task__ tcb[TASK_NR_MAX] __attribute__((__aligned__(0x100))) = {0};
 u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = {0};
 
 /* get current task id, little hack */
-u32 get_current_task()
+PRIVATE u32 get_current_task()
 {
     u32 task_id;
     u32 sp = __get_sp();
@@ -18,7 +18,7 @@ u32 get_current_task()
 }
 
 /* get the highest priority task in READY STATE */
-struct __task__ * get_task_ready()
+PRIVATE struct __task__ * get_task_ready()
 {
     u32 i;
     u32 best = 256;
@@ -37,7 +37,7 @@ struct __task__ * get_task_ready()
     }
 }
 
-struct __task__ * tcb_alloc()
+PRIVATE struct __task__ * tcb_alloc()
 {
     u32 i;
 
@@ -50,7 +50,7 @@ struct __task__ * tcb_alloc()
     return NULL;
 }
 
-void task_matrix(u32 addr, u32 arg)
+PRIVATE void task_matrix(u32 addr, u32 arg)
 {
     u32 current_task_id;
     func_1 task_entry = (func_1)addr;
@@ -61,7 +61,7 @@ void task_matrix(u32 addr, u32 arg)
     while(1);
 }
 
-s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
+PRIVATE s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
 {
     struct cpu_context *cc;
 
@@ -100,7 +100,7 @@ s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
     return 0;
 }
 
-s32 task_create(func_1 entry, u32 arg, u32 prio)
+PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
 {
     struct __task__ *ptask;
     if ((ptask = tcb_alloc()) == NULL) {
@@ -112,7 +112,7 @@ s32 task_create(func_1 entry, u32 arg, u32 prio)
     return 0;
 }
 
-s32 task_delete(u32 task_id)
+PUBLIC s32 task_delete(u32 task_id)
 {
     /* FIXME: these two statment need atomic */
     tcb[task_id].prio  = TASK_PRIO_MAX; /* lowest prio */

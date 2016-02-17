@@ -11,7 +11,7 @@ struct cpu_context *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
 
-void General_Irq_Handler()
+PUBLIC void General_Irq_Handler()
 {
     u32 i, j, cpsr;
     u32 pend[3], enable[3];
@@ -51,14 +51,14 @@ void General_Irq_Handler()
 }
 
 /* cpu_context save into /restore from user/system mode stack */
-void cpu_context_save()
+PRIVATE void cpu_context_save()
 {
     old_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
 
     memcpy((void *)(old_task->sp), (void *)current_context, sizeof(struct cpu_context));
 }
 
-void cpu_context_restore()
+PRIVATE void cpu_context_restore()
 {
     memcpy((void *)current_context, (void *)(new_task->sp), sizeof(struct cpu_context));
 }
@@ -107,7 +107,7 @@ __attribute__((naked)) void IrqHandler()
     );
 }
 
-void General_Exc_Handler()
+PUBLIC void General_Exc_Handler()
 {
     u32 lr, cpsr;
     cpsr = __get_cpsr();
@@ -147,7 +147,7 @@ __attribute__((naked)) void ExcHandler()
     lockup();
 }
 
-s32 request_irq(u32 irq_nr, func_1 irq_handler)
+PUBLIC s32 request_irq(u32 irq_nr, func_1 irq_handler)
 {
     if (irq_nr >= IRQ_MAX) {
         return -1;
@@ -157,7 +157,7 @@ s32 request_irq(u32 irq_nr, func_1 irq_handler)
     return 0;
 }
 
-s32 release_irq(u32 irq_nr)
+PUBLIC s32 release_irq(u32 irq_nr)
 {
     if (irq_nr >= IRQ_MAX) {
         return -1;
@@ -168,7 +168,7 @@ s32 release_irq(u32 irq_nr)
 
 }
 
-s32 enable_irq(u32 irq_nr)
+PUBLIC s32 enable_irq(u32 irq_nr)
 {
     u32 i, offset, enable_base;
     u32 rv;
@@ -199,7 +199,7 @@ s32 enable_irq(u32 irq_nr)
     writel(enable_base, rv);
 }
 
-s32 disable_irq(u32 irq_nr)
+PUBLIC s32 disable_irq(u32 irq_nr)
 {
     u32 i, offset, disable_base;
     u32 rv;
@@ -231,14 +231,14 @@ s32 disable_irq(u32 irq_nr)
     writel(disable_base, rv);
 }
 
-s32 disable_irq_all()
+PUBLIC s32 disable_irq_all()
 {
     writel(IRQ_DISABLE_BASIC, 0xFFFFFFFF);
     writel(IRQ_DISABLE1, 0xFFFFFFFF);
     writel(IRQ_DISABLE2, 0xFFFFFFFF);
 }
 
-void lock_irq()   
+PUBLIC void lock_irq()   
 {
     u32 _cpsr = __get_cpsr();
 
@@ -248,7 +248,7 @@ void lock_irq()
             : [_cpsr]"r"(_cpsr));
 }
 
-void unlock_irq()   
+PUBLIC void unlock_irq()   
 {
     u32 _cpsr = __get_cpsr();
 
@@ -258,28 +258,28 @@ void unlock_irq()
             : [_cpsr]"r"(_cpsr));
 }
 
-s32 lockup()
+PUBLIC s32 lockup()
 {
     PRINT_EMG("lockup!\n");
     lock_irq();
     while(1);
 }
 
-s32 _assert(char *file_name, char *func_name, u32 line_num, char *desc)
+PUBLIC s32 _assert(char *file_name, char *func_name, u32 line_num, char *desc)
 {
     PRINT_EMG("[%s][%s][%d]: %s\n", file_name, func_name, line_num, desc);
     lockup();
     while(1);
 }
 
-s32 unexpect_irq_handler(u32 irq_nr)
+PRIVATE s32 unexpect_irq_handler(u32 irq_nr)
 {
     PRINT_EMG("in %s %d\n", __func__, irq_nr);
     lockup();
     while(1);
 }
 
-s32 int_init()
+PUBLIC s32 int_init()
 {
     u32 i;
     for(i=0;i<IRQ_MAX;i++) {

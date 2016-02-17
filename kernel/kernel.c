@@ -12,7 +12,7 @@ extern struct cpu_context *current_context;
 
 u32 os_tick = 0;
 
-void idle_task()
+PRIVATE void idle_task()
 {
     while(1) {
         PRINT_INFO("in %s\n", __func__);
@@ -20,7 +20,7 @@ void idle_task()
     }
 }
 
-void blink_task()
+PRIVATE void blink_task()
 {
     set_gpio_function(16, OUTPUT);
     while(1) {
@@ -33,7 +33,7 @@ void blink_task()
     }
 }
 
-void dump_ctx(struct cpu_context *ctx)
+PUBLIC void dump_ctx(struct cpu_context *ctx)
 {
 #define DUMP_VAR(c, var) PRINT_EMG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
     DUMP_VAR(ctx, cpsr);
@@ -55,7 +55,7 @@ void dump_ctx(struct cpu_context *ctx)
     DUMP_VAR(ctx, pc);
 }
 
-u32 need_schedule()
+PRIVATE u32 need_schedule()
 {
     new_task = get_task_ready(); /* get the highest priority task in READY STATE */
     if ((new_task != NULL) && (new_task->prio <= old_task->prio)) {
@@ -66,7 +66,7 @@ u32 need_schedule()
 }
 
 /* just re-set old_task & new_task */
-void task_sched()
+PRIVATE void task_sched()
 {
 
     old_task->state = TASK_READY;
@@ -75,7 +75,7 @@ void task_sched()
     old_task = new_task;
 }
 
-void os_clock_irq_hook(struct cpu_context *ctx)
+PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
 {
     os_tick ++ ;
 
@@ -84,14 +84,14 @@ void os_clock_irq_hook(struct cpu_context *ctx)
     }
 }
 
-void coretimer_irq_handler(u32 irq_nr)
+PRIVATE void coretimer_irq_handler(u32 irq_nr)
 {
     PRINT_DEBUG("in %s %d\n", __func__, irq_nr);
     os_clock_irq_hook(current_context);
     writel(CORETMCLR, 0x0);
 }
 
-s32 coretimer_init()
+PRIVATE s32 coretimer_init()
 {
     /* core timer */
     writel(CORETMLOAD, MS2TICK(1000/OS_HZ));
@@ -101,7 +101,7 @@ s32 coretimer_init()
     enable_irq(IRQ_CORE_TIMER);
 }
 
-s32 os_init()
+PUBLIC s32 os_init()
 {
     coretimer_init();
     PRINT_STAMP();

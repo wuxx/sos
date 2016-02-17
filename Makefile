@@ -1,18 +1,28 @@
 ############ by wuxx #############
 
+#from build_sos.sh
 CFLAGS = $(cflags)
 
-#ROOT = $(shell pwd)
-ROOT = .
-TOOLCHAIN_DIR=$(ROOT)/.compiler
-CROSS_COMPILE=$(TOOLCHAIN_DIR)/bin/arm-none-eabi
+HOST_IS_ARM = $(shell uname -m | grep "arm")
 
-CC = $(CROSS_COMPILE)-gcc
-AS = $(CROSS_COMPILE)-as
-LD = $(CROSS_COMPILE)-ld
-OBJCOPY = $(CROSS_COMPILE)-objcopy
-OBJDUMP = $(CROSS_COMPILE)-objdump
-READELF = $(CROSS_COMPILE)-readelf
+#$(warning HOST_IS_ARM: $(HOST_IS_ARM))
+ifeq ("", $(HOST_IS_ARM))
+    TOOLCHAIN_DIR=$(ROOT)/.compiler
+    CROSS_COMPILE=$(TOOLCHAIN_DIR)/bin/arm-none-eabi-
+    LIBGCC = $(shell find $(TOOLCHAIN_DIR)/ | grep "armv6-m\/libgcc\.a")
+endif
+
+LIBGCC ?= $(shell gcc -print-libgcc-file-name)
+#$(warning libgcc $(LIBGCC))
+
+ROOT = .
+
+CC = $(CROSS_COMPILE)gcc
+AS = $(CROSS_COMPILE)as
+LD = $(CROSS_COMPILE)ld
+OBJCOPY = $(CROSS_COMPILE)objcopy
+OBJDUMP = $(CROSS_COMPILE)objdump
+READELF = $(CROSS_COMPILE)readelf
 
 BUILD = $(ROOT)/build
 
@@ -35,6 +45,7 @@ SYSTEM_SRCS = \
 
 LIBC_SRCS = \
 		$(LIBC_DIR)/string.c	\
+		$(LIBC_DIR)/signal.c	\
 		$(LIBC_DIR)/vsnprintf.c
 
 DRIVER_SRCS = \
@@ -85,10 +96,9 @@ TARGET_SECINFO = $(BUILD)/$(TARGET).secinfo #section info
 LDS = $(ROOT)/$(TARGET).ld
 
 #-march=armv6
-CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -fomit-frame-pointer -I$(INCLUDE_DIR)
+CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -fomit-frame-pointer -mfloat-abi=soft -I$(INCLUDE_DIR)
 ASFLAGS += 
 
-LIBGCC = $(shell find $(TOOLCHAIN_DIR)/ | grep "armv6-m\/libgcc\.a")
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 
 
 .PHONY: build_all clean tags

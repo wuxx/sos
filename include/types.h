@@ -1,9 +1,8 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
-#define PUBLIC  __attribute__((weak))
-#define PRIVATE
-/*#define PRIVATE static*/
+#define PUBLIC  /* __attribute__((weak)) */
+#define PRIVATE /* static                */
 
 #define NULL ((void*)0)
 

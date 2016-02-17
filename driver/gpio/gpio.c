@@ -4,7 +4,7 @@
 #include "log.h"
 #include "gpio.h"
 
-s32 set_gpio_function(u32 gpio_index, u32 func_index)
+PUBLIC s32 set_gpio_function(u32 gpio_index, u32 func_index)
 {
     u32 i, fsel_addr;
     union gpio_fsel_reg fr;
@@ -64,7 +64,7 @@ s32 set_gpio_function(u32 gpio_index, u32 func_index)
     return 0;
 }
 
-s32 set_gpio_output(u32 gpio_index, u32 bit)
+PUBLIC s32 set_gpio_output(u32 gpio_index, u32 bit)
 {
     u32 output_set_addr, output_clear_addr;
     u32 bit_offset;
@@ -89,16 +89,7 @@ s32 set_gpio_output(u32 gpio_index, u32 bit)
     return 0;
 }
 
-void bcm2835_gpio_fnsel(u32 gpio_pin, u32 gpio_fn)
-{
-    u32 gpfnbank = gpio_pin/10;
-    u32 offset = (gpio_pin - (gpfnbank * 10)) * 3;
-    volatile u32 *gpfnsel = GPIO_BASE + gpfnbank;
-    *gpfnsel &= ~(0x07 << offset);
-    *gpfnsel |= (gpio_fn << offset);
-}
-
-void set_gpio_value(u32 gpio, u32 val)
+PUBLIC void set_gpio_value(u32 gpio, u32 val)
 {
     u32 offset0 = 0;
     u32 offset1 = 0;
@@ -132,11 +123,5 @@ void set_gpio_value(u32 gpio, u32 val)
     tmp |= (1 << offset1);
     *((u32 *)GPIO_BASE + base + offset0) = tmp;
 
-}
-
-void delay_gpio()
-{
-    u32 count = 400000;
-    while(count--);
 }
 

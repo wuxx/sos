@@ -25,7 +25,7 @@ struct shell_cmd_info ci[] = {
 };
 
 
-s32 cmd_read()
+PRIVATE s32 cmd_read()
 {
     u32 addr;
     u32 data;
@@ -36,7 +36,7 @@ s32 cmd_read()
     return 0;
 }
 
-s32 cmd_write()
+PRIVATE s32 cmd_write()
 {
     u32 addr, data;
 
@@ -48,7 +48,7 @@ s32 cmd_write()
     return 0;
 }
 
-s32 cmd_exec()
+PRIVATE s32 cmd_exec()
 {
     s32 ret;
     u32 addr, para1, para2, para3, para4;
@@ -67,7 +67,7 @@ s32 cmd_exec()
     return ret;
 }
 
-s32 cmd_dump()
+PRIVATE s32 cmd_dump()
 {
     u32 i;
     u32 *p;
@@ -85,12 +85,12 @@ s32 cmd_dump()
     return 0;
 }
 
-s32 cmd_systest()
+PRIVATE s32 cmd_systest()
 {
     return systest(argc, argv);
 }
 
-s32 cmd_help()
+PRIVATE s32 cmd_help()
 {
     u32 i;
     for(i=0; i<(sizeof(ci)/sizeof(ci[0])); i++) {
@@ -99,7 +99,7 @@ s32 cmd_help()
     return 0;
 }
 
-s32 parse_cmd(char *cmd)
+PRIVATE s32 parse_cmd(char *cmd)
 {
     u32 i,j;
     
@@ -132,7 +132,7 @@ s32 parse_cmd(char *cmd)
     }
 }
 
-static s32 get_cmd_index(char *cmd)
+PRIVATE static s32 get_cmd_index(char *cmd)
 {
     u32 i;
     for(i=0; i<(sizeof(ci)/sizeof(ci[0])); i++) {
@@ -143,7 +143,7 @@ static s32 get_cmd_index(char *cmd)
     return -1;
 }
 
-s32 shell(char *cmd)
+PUBLIC s32 shell(char *cmd)
 {
     u32 i, len;
     u32 para1, para2;

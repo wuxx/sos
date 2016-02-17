@@ -7,7 +7,7 @@
 #include "timer.h"
 
 /* increment syscounter */
-u64 get_syscounter()
+PUBLIC u64 get_syscounter()
 {
     u64 sc;
     u32 clo, chi;
@@ -17,7 +17,7 @@ u64 get_syscounter()
     return sc;
 }
 
-void udelay(u32 us)
+PUBLIC void udelay(u32 us)
 {
     u64 sc_start, sc_end;
     u32 ticks;
@@ -34,7 +34,7 @@ void udelay(u32 us)
 
 }
 
-void mdelay(u32 ms)
+PUBLIC void mdelay(u32 ms)
 {
     u64 sc_start, sc_end;
     u32 ticks;
@@ -51,14 +51,14 @@ void mdelay(u32 ms)
 
 }
 
-void clk_delay(u32 count) {
+PUBLIC void clk_delay(u32 count) {
     asm volatile("__delay_%=: subs %[count], %[count], #1; bne __delay_%=\n"
             : 
             : [count]"r"(count) 
             : "cc");
 }
 
-s32 timer_init()
+PUBLIC s32 timer_init()
 {
     return 0;
 }

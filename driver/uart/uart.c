@@ -11,20 +11,13 @@
 
 #define UART_IO_SIZE 256
 
-u32  uart_recv_buf_index = 0;
-char uart_recv_buf[UART_IO_SIZE] = {0};
+PRIVATE u32  uart_recv_buf_index = 0;
+PRIVATE char uart_recv_buf[UART_IO_SIZE] = {0};
 
-char uart_send_buf[UART_IO_SIZE] = {0};
-char format_buf[UART_IO_SIZE] = {0};
+PRIVATE char uart_send_buf[UART_IO_SIZE] = {0};
+PRIVATE char format_buf[UART_IO_SIZE] = {0};
 
-void bcm2835_delay(u32 n)
-{
-     volatile u32 i = 0;
-      for(i = 0; i < n; i++);
-}
-
- 
-void uart_wait_fifo_empty()
+PRIVATE void uart_wait_fifo_empty()
 {
     while(1) {
         if ((readl(UART0_FR) & (1 << 7))) {
@@ -33,7 +26,7 @@ void uart_wait_fifo_empty()
     }
 }
 
-void uart_puts(const char *str) {
+PUBLIC void uart_puts(const char *str) {
     while (*str) {
         if (*str == '\n') {
             uart_putc('\r');
@@ -56,7 +49,7 @@ s8 uart_recv()
     }
 }
 
-void uart_irq_handler(u32 irq_nr)
+PRIVATE void uart_irq_handler(u32 irq_nr)
 {
     u8 ch;
 
@@ -99,22 +92,7 @@ void uart_irq_handler(u32 irq_nr)
     return;
 }
 
-#if 0
-void uart_printf(const char* fmt,...)
-{
-    va_list args;
-    va_start(args,fmt);
-    vsnprintf(format_buf,sizeof(format_buf), fmt, args);
-    va_end(args);
-    uart_puts(format_buf);
-    memset(format_buf, 0, sizeof(format_buf));
-}
-#endif
-
-/*
- * Initialize UART.
- */
-void uart_init() {
+PUBLIC void uart_init() {
 #ifdef UART0
     set_gpio_function(14, ALT_FUNC_0);
     set_gpio_function(15, ALT_FUNC_0);
@@ -241,9 +219,9 @@ void uart_init() {
     bcm2835_gpio_fnsel(15, GPFN_ALT5);
 
     GPPUDD = 0;
-    bcm2835_delay(150);
+    clk_delay(150);
     GPPUDCLK00 = (1<<14)|(1<<15);
-    bcm2835_delay(150);
+    clk_delay(150);
     GPPUDCLK00 = 0;
 
     AUX_MU_CNTL_REG = 0x03;
@@ -256,7 +234,7 @@ void uart_init() {
  * Transmit a byte via UART0.
  * u8 Byte: byte to send.
  */
-void uart_putc(u8 byte) {
+PRIVATE void uart_putc(u8 byte) {
 #ifdef UART0
     // wait for UART to become ready to transmit
     while (1) {
