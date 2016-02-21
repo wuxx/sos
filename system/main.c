@@ -15,17 +15,6 @@
 
 char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
 
-enum CPU_MODE_E {
-    MODE_USER   = 16,
-    MODE_FIQ    = 17,
-    MODE_IRQ    = 18,
-    MODE_SVC    = 19,
-    MODE_SECMT  = 22,
-    MODE_ABORT  = 23,
-    MODE_UNDEF  = 27,
-    MODE_SYSTEM = 31,
-};
-
 char* get_cpu_mode(u32 *m)
 {
     u32 cpsr, mode;

@@ -64,6 +64,7 @@ s32 test_cpu_all(u32 argc, char **argv)
             break;
         case (300): /* swi */
             swi(arg1);
+            break;
         default:
             return -1;
     }

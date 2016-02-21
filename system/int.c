@@ -3,8 +3,10 @@
 #include <os_task.h>
 #include "log.h"
 #include "cpu.h"
+#include "syscall.h"
 
 extern void dump_mem(u32 addr, u32 word_nr);
+extern struct __syscall__ syscall_table[];
 
 struct __task__ *old_task, *new_task;
 struct cpu_context *current_context;
@@ -110,13 +112,24 @@ __attribute__((naked)) void IrqHandler()
 PUBLIC void General_Exc_Handler()
 {
     u32 lr, cpsr;
+    u32 syscall_nr, mode;
     cpsr = __get_cpsr();
     PRINT_EMG("in %s \n", __func__);
-    PRINT_EMG("cpsr %x; %s\n", cpsr, get_cpu_mode());
+    PRINT_EMG("cpsr %x; %s\n", cpsr, get_cpu_mode(&mode));
     dump_ctx(current_context);
-    dump_tcb_all();
-    lockup();
-    while(1);
+    if (mode == MODE_SVC) {
+        syscall_nr = readl(current_context->pc - 4) & 0xFFFFFF;
+        PRINT_STAMP();
+        syscall_table[syscall_nr].handler((u32*)(current_context->r0));
+        PRINT_STAMP();
+
+        current_context->pc += 4;
+    } else {
+        dump_tcb_all();
+        lockup();
+        while(1);
+
+    }
 }
 
 __attribute__((naked)) void ExcHandler()
@@ -138,13 +151,28 @@ __attribute__((naked)) void ExcHandler()
 
             "pop  {r0-r1}\n\t"
 
-            "bl cpu_context_save\n\t"
+            /* "bl cpu_context_save\n\t" */ /* we are not gonna to do the task switch. */
             : 
             : 
             : "memory"
             );
     General_Exc_Handler();
-    lockup();
+    __asm__ volatile (
+
+            /* "bl cpu_context_restore\n\t" */
+
+            "pop {r0}\n\t"              /* spsr -> r0 */
+            "msr SPSR_cxsf, r0\n\t"     /* restore cpsr */
+
+            "ldmfd sp!, {r0-r14}^\n\t"
+            "ldmfd sp!, {lr}\n\t"
+            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, rerun the user/system mode code */
+            "nop\n\t"
+            : 
+            : 
+            : "memory"
+    );
+
 }
 
 PUBLIC s32 request_irq(u32 irq_nr, func_1 irq_handler)

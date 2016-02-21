@@ -59,6 +59,7 @@ PRIVATE u32 need_schedule()
 {
     new_task = get_task_ready(); /* get the highest priority task in READY STATE */
     if ((new_task != NULL) && (new_task->prio <= old_task->prio)) {
+        PRINT_DEBUG("schedule task %d \n", new_task->id);
         return 1;
     } else {
         return 0;

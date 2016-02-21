@@ -40,7 +40,7 @@ KERNEL_SRCS = \
 SYSTEM_SRCS = \
 		$(SYSTEM_DIR)/main.c 	 \
 		$(SYSTEM_DIR)/int.c 	 \
-		$(SYSTEM_DIR)/sys_call.c \
+		$(SYSTEM_DIR)/syscall.c  \
 		$(SYSTEM_DIR)/arm_v6.s 	 \
 		$(SYSTEM_DIR)/init.s
 
