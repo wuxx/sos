@@ -4,6 +4,7 @@
 #include <libc.h>
 #include "timer.h"
 #include "log.h"
+#include "sys_call.h"
 
 extern u32 os_tick;
 extern struct __task__ tcb[TASK_NR_MAX];
@@ -37,7 +38,7 @@ void dump_tcb_all()
         }
     }
 }
-
+#define TEST111 1
 s32 test_os_all(u32 argc, char **argv)
 {
     u64 sc;
@@ -58,6 +59,9 @@ s32 test_os_all(u32 argc, char **argv)
             break;
         case (10):  /* task create */
             task_create(test_task, 0, 0);
+            break;
+        case (100):
+            asm ("swi " SYS_TASK_CREATE);
             break;
         default:
             return -1;

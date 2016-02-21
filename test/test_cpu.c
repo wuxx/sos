@@ -3,6 +3,24 @@
 #include "log.h"
 #include "cpu.h"
 
+static inline void swi(u32 i)
+{
+    u32 word;
+    func_0 _swi;
+#if 1
+    asm volatile (
+            "swi 0x1\n\t"
+            :
+            :
+            :
+            );
+#else
+    word = 0xef << 24 | i & 0xFFFFFFFF ;
+    _swi = (func_0)word;
+    _swi();
+#endif
+}
+
 s32 test_cpu_all(u32 argc, char **argv)
 {
     s32 ret = 0;
@@ -44,6 +62,8 @@ s32 test_cpu_all(u32 argc, char **argv)
         case (201): /* disable irq */
             disable_irq(arg1);
             break;
+        case (300): /* swi */
+            swi(arg1);
         default:
             return -1;
     }
