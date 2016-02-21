@@ -38,9 +38,10 @@ KERNEL_SRCS = \
 		$(KERNEL_DIR)/os_task.c
 
 SYSTEM_SRCS = \
-		$(SYSTEM_DIR)/main.c 	\
-		$(SYSTEM_DIR)/int.c 	\
-		$(SYSTEM_DIR)/arm_v6.s 	\
+		$(SYSTEM_DIR)/main.c 	 \
+		$(SYSTEM_DIR)/int.c 	 \
+		$(SYSTEM_DIR)/sys_call.c \
+		$(SYSTEM_DIR)/arm_v6.s 	 \
 		$(SYSTEM_DIR)/init.s
 
 LIBC_SRCS = \

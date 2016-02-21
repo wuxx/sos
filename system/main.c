@@ -15,11 +15,27 @@
 
 char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
 
-char* get_cpu_mode()
+enum CPU_MODE_E {
+    MODE_USER   = 16,
+    MODE_FIQ    = 17,
+    MODE_IRQ    = 18,
+    MODE_SVC    = 19,
+    MODE_SECMT  = 22,
+    MODE_ABORT  = 23,
+    MODE_UNDEF  = 27,
+    MODE_SYSTEM = 31,
+};
+
+char* get_cpu_mode(u32 *m)
 {
     u32 cpsr, mode;
     cpsr = __get_cpsr();
     mode = cpsr & 0x1f;
+
+    if (m != NULL) {
+        *m = mode;
+    }
+
     switch (mode) {
         case (16):
             return "user mode";
@@ -57,11 +73,11 @@ int main(u32 sp)
 
     PRINT_INFO("%s\n", sys_banner);
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
-            get_cpu_mode(), __get_lr(), sp, __get_cpsr());
+            get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
     set_gpio_function(GPIO_16, OUTPUT);
     set_gpio_output(GPIO_16, 0);
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
-            get_cpu_mode(), __get_lr(), sp, __get_cpsr());
+            get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
 
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));
