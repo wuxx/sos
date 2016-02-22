@@ -19,6 +19,7 @@ char *task_state_desc[] = {
 void test_task()
 {
     while (1) {
+        set_log_level(LOG_DEBUG);
         PRINT_EMG("in %s \n", __func__);
         PRINT_STAMP();
         clk_delay(100000);

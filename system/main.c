@@ -69,6 +69,10 @@ int main(u32 sp)
             get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
 
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
+#if 0
+    char *argv[5] = {"systest", "os", "100"};
+    systest(0, argv);
+#endif
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));
     unlock_irq();
     idle_task();

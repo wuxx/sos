@@ -3,7 +3,11 @@
 
 simple OS for raspberry pi
 more information about rpi
+
 https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/
+
+arm inline asm 
+http://www.ethernut.de/en/documents/arm-inline-asm.html
 
 PL2303驱动有点小问题，一段时间后串口会丢失，需要重新关闭串口工具连接(也可能是PC USB驱动的问题)
 
