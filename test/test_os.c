@@ -19,11 +19,8 @@ char *task_state_desc[] = {
 void test_task()
 {
     while (1) {
-        set_log_level(LOG_DEBUG);
         PRINT_EMG("in %s \n", __func__);
-        PRINT_STAMP();
-        clk_delay(100000);
-        /*mdelay(1000); */
+        mdelay(1000);
     }
 }
 
@@ -66,6 +63,8 @@ s32 test_os_all(u32 argc, char **argv)
         case (10):  /* task create */
             task_create(test_task, 0, 0);
             break;
+        case (99):  /* slip to case 100 */
+            set_log_level(LOG_DEBUG);
         case (100):
             os_task_create(test_task, 0, 0);
             break;

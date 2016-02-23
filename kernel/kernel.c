@@ -35,7 +35,7 @@ PRIVATE void blink_task()
 
 PUBLIC void dump_ctx(struct cpu_context *ctx)
 {
-#define DUMP_VAR(c, var) PRINT_EMG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
+#define DUMP_VAR(c, var) PRINT_DEBUG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
     DUMP_VAR(ctx, cpsr);
     DUMP_VAR(ctx, r0);
     DUMP_VAR(ctx, r1);
@@ -62,6 +62,7 @@ PRIVATE u32 need_schedule()
         PRINT_DEBUG("schedule task %d \n", new_task->id);
         return 1;
     } else {
+        new_task = old_task;    /* restore new_task */
         return 0;
     }
 }
@@ -74,6 +75,7 @@ PRIVATE void task_sched()
     new_task->state = TASK_RUNNING;
 
     old_task = new_task;
+    PRINT_DEBUG("schedule %d \n", new_task->id);
 }
 
 PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
