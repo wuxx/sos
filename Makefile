@@ -35,7 +35,9 @@ INCLUDE_DIR = $(ROOT)/include
 
 KERNEL_SRCS = \
 		$(KERNEL_DIR)/kernel.c  \
-		$(KERNEL_DIR)/os_task.c
+		$(KERNEL_DIR)/os_task.c \
+		$(KERNEL_DIR)/os_mailbox.c \
+		$(KERNEL_DIR)/os_list.c
 
 SYSTEM_SRCS = \
 		$(SYSTEM_DIR)/main.c 	 \
