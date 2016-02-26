@@ -15,7 +15,7 @@ enum TASK_STATE_E {
 /* task priority */
 #define TASK_PRIO_MAX  255  /* 0: the highest priority, 255: the lowest priority */
 
-struct __task__
+struct __os_task__
 {
     u32 sp;
 
@@ -23,8 +23,10 @@ struct __task__
     u32 state;
     u32 prio;
 
-    struct __task__ *prev;
-    struct __task__ *next;
+    u32 sleep_ticks;
+
+    struct __os_task__ *prev;
+    struct __os_task__ *next;
 
     u32 *stack;
     u32 stack_size;
@@ -32,9 +34,9 @@ struct __task__
 };
 
 extern u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE];
-extern struct __task__ tcb[TASK_NR_MAX];
-extern struct __task__ *old_task;
-extern struct __task__ *new_task;
+extern struct __os_task__ tcb[TASK_NR_MAX];
+extern struct __os_task__ *old_task;
+extern struct __os_task__ *new_task;
 
 s32 task_create(func_1 entry, u32 arg, u32 prio);
 s32 task_delete(u32 task_id);

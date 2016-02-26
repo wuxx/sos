@@ -7,5 +7,6 @@
 #define TASK_STK_SIZE   (256)  /* 256 word */
 
 #define MBX_NR_MAX      (10)
+#define SEM_NR_MAX      (10)
 
 #endif /* __SYSTEM_CONFIG_H__ */

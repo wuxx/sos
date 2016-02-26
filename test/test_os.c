@@ -7,7 +7,7 @@
 #include "syscall.h"
 
 extern u32 os_tick;
-extern struct __task__ tcb[TASK_NR_MAX];
+extern struct __os_task__ tcb[TASK_NR_MAX];
 
 char *task_state_desc[] = {
     "TASK_UNUSED",

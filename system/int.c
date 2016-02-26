@@ -8,7 +8,7 @@
 extern void dump_mem(u32 addr, u32 word_nr);
 extern struct __syscall__ syscall_table[];
 
-struct __task__ *old_task, *new_task;
+struct __os_task__ *old_task, *new_task;
 struct cpu_context *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
@@ -124,13 +124,12 @@ PUBLIC void General_Exc_Handler()
     if (mode == MODE_SVC) {
         syscall_nr = readl(current_context->pc - 4) & 0xFFFFFF;
         PRINT_STAMP();
-        syscall_table[syscall_nr].handler((u32*)(current_context->r0));
+        syscall_table[syscall_nr].handler(current_context->r0);
         PRINT_STAMP();
 
         current_context->pc += 4;
     } else {
-        dump_tcb_all();
-        lockup();
+        panic();
         while(1);
 
     }
@@ -290,6 +289,13 @@ PUBLIC void unlock_irq()
             : [_cpsr]"r"(_cpsr));
 }
 
+PUBLIC s32 panic()
+{
+    dump_tcb_all();
+    lockup();
+    while(1);
+}
+
 PUBLIC s32 lockup()
 {
     PRINT_EMG("lockup!\n");
@@ -307,7 +313,7 @@ PUBLIC s32 _assert(char *file_name, char *func_name, u32 line_num, char *desc)
 PRIVATE s32 unexpect_irq_handler(u32 irq_nr)
 {
     PRINT_EMG("in %s %d\n", __func__, irq_nr);
-    lockup();
+    panic();
     while(1);
 }
 

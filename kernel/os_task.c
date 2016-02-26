@@ -3,7 +3,7 @@
 #include <os_task.h>
 #include "log.h"
 
-struct __task__ tcb[TASK_NR_MAX] __attribute__((__aligned__(0x100))) = {0};
+struct __os_task__ tcb[TASK_NR_MAX] __attribute__((__aligned__(0x100))) = {0};
 u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = {0};
 
 /* get current task id, little hack */
@@ -18,7 +18,7 @@ PRIVATE u32 get_current_task()
 }
 
 /* get the highest priority task in READY STATE */
-PRIVATE struct __task__ * get_task_ready()
+PRIVATE struct __os_task__ * get_task_ready()
 {
     u32 i;
     u32 best = 256;
@@ -37,7 +37,7 @@ PRIVATE struct __task__ * get_task_ready()
     }
 }
 
-PRIVATE struct __task__ * tcb_alloc()
+PRIVATE struct __os_task__ * tcb_alloc()
 {
     u32 i;
 
@@ -61,7 +61,7 @@ PRIVATE void task_matrix(u32 addr, u32 arg)
     while(1);
 }
 
-PRIVATE s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
+PRIVATE s32 tcb_init(struct __os_task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
 {
     struct cpu_context *cc;
 
@@ -102,7 +102,7 @@ PRIVATE s32 tcb_init(struct __task__ *ptask, func_1 task_entry, u32 arg, u32 pri
 
 PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
 {
-    struct __task__ *ptask;
+    struct __os_task__ *ptask;
     if ((ptask = tcb_alloc()) == NULL) {
         return ENOMEM;
     }

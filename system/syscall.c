@@ -4,7 +4,7 @@
 #define SYSCALL_ARG_MAX (4)
 
 u32 args[SYSCALL_ARG_MAX];
-s32 do_task_create(u32 *args);
+s32 do_task_create(u32 args);
 
 struct __syscall__ syscall_table[] = {
     {SYS_TASK_CREATE,  do_task_create},
@@ -25,7 +25,8 @@ s32 os_task_create(func_1 entry, u32 arg, u32 prio)
     return 0;
 }
 
-s32 do_task_create(u32 *args)
+s32 do_task_create(u32 _args)
 {
+    u32 *args = (u32*)_args;
     return task_create(args[0], args[1], args[2]);
 }

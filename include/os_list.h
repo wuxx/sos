@@ -4,7 +4,7 @@
 #include <os_task.h>
 
 struct __os_list__ {
-    struct __task__ *next;
+    struct __os_task__ *next;
 };
 
 #endif /* __OS_LIST_H__ */
