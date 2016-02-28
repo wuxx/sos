@@ -40,7 +40,7 @@ s32 strcmp(char *s1, char *s2)
 u32 atoi(char *str)
 {
     u32 i;
-    u32 len; 
+    u32 len;
     u32 sum = 0;
 
     len = strlen(str);
@@ -61,8 +61,8 @@ u32 atoi(char *str)
                     sum = sum*16 + (str[i] - 'A' + 10);
                     break;
 
-                case ('0'): case ('1'): case ('2'): case ('3'): case ('4'): 
-                case ('5'): case ('6'): case ('7'): case ('8'): case ('9'): 
+                case ('0'): case ('1'): case ('2'): case ('3'): case ('4'):
+                case ('5'): case ('6'): case ('7'): case ('8'): case ('9'):
                     sum = sum*16 + (str[i] - '0');
                     break;
 
@@ -77,8 +77,8 @@ u32 atoi(char *str)
         while(i < len) {
             switch(str[i]) {
 
-                case ('0'): case ('1'): case ('2'): case ('3'): case ('4'): 
-                case ('5'): case ('6'): case ('7'): case ('8'): case ('9'): 
+                case ('0'): case ('1'): case ('2'): case ('3'): case ('4'):
+                case ('5'): case ('6'): case ('7'): case ('8'): case ('9'):
                     sum = sum*10 + (str[i] - '0');
                     break;
 
@@ -88,7 +88,7 @@ u32 atoi(char *str)
             }
             i++;
         }
-    
+
     }
     return sum;
 }

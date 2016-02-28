@@ -53,8 +53,8 @@ PUBLIC void mdelay(u32 ms)
 
 PUBLIC void clk_delay(u32 count) {
     asm volatile("__delay_%=: subs %[count], %[count], #1; bne __delay_%=\n"
-            : 
-            : [count]"r"(count) 
+            :
+            : [count]"r"(count)
             : "cc");
 }
 

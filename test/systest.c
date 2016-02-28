@@ -27,7 +27,7 @@ void dump_mem(u32 addr, u32 word_nr)
     u32 *p = (u32 *)addr;
     for(i=0;i<word_nr;i++) {
         PRINT_EMG("[0x%X]: 0x%X\n", &p[i], p[i]);
-    }   
+    }
 }
 
 s32 sub_cmd_help()
@@ -39,7 +39,7 @@ s32 sub_cmd_help()
     return 0;
 }
 
-static s32 get_cmd_index(char *cmd) 
+static s32 get_cmd_index(char *cmd)
 {
     u32 i;
     for(i=0; i<(sizeof(sub_ci)/sizeof(sub_ci[0])); i++) {
@@ -49,7 +49,7 @@ static s32 get_cmd_index(char *cmd)
     }
     return -1;
 }
-              
+
 s32 systest(u32 argc, char **argv)
 {
     u32 i;

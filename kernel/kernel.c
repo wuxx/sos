@@ -1,7 +1,8 @@
 #include <system_config.h>
+#include <libc.h>
 #include <memory_map.h>
 #include <os_task.h>
-#include <libc.h>
+#include <os_list.h>
 
 #include "cpu.h"
 #include "timer.h"
@@ -31,6 +32,14 @@ PRIVATE void blink_task()
         mdelay(1000);
 
     }
+}
+
+PUBLIC s32 os_sleep(u32 sleep_ticks)
+{
+    /* list_del(&os_ready, new_task); no need */
+    list_insert(&os_sleep, new_task);
+    new_task = get_task_ready();
+    return 0;
 }
 
 PUBLIC void dump_ctx(struct cpu_context *ctx)
@@ -99,7 +108,7 @@ PRIVATE s32 coretimer_init()
     /* core timer */
     writel(CORETMLOAD, MS2TICK(1000/OS_HZ));
                         /* 23-bit counter & irq enable & timer enable */
-    writel(CORETMCTRL, 0x1 << 1 | 0x1 << 5 | 0x1 << 7); 
+    writel(CORETMCTRL, 0x1 << 1 | 0x1 << 5 | 0x1 << 7);
     request_irq(IRQ_CORE_TIMER, coretimer_irq_handler);
     enable_irq(IRQ_CORE_TIMER);
 }

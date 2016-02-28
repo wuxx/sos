@@ -61,11 +61,11 @@ int main(u32 sp)
     os_init();
 
     PRINT_INFO("%s\n", sys_banner);
-    PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
+    PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n",
             get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
     set_gpio_function(GPIO_16, OUTPUT);
     set_gpio_output(GPIO_16, 0);
-    PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
+    PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n",
             get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
 
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */

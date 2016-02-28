@@ -43,10 +43,10 @@ enum {
         GPFSEL3 = (GPIO_BASE + 0x0C),
         GPFSEL4 = (GPIO_BASE + 0x10),
         GPFSEL5 = (GPIO_BASE + 0x14),
-    
+
         GPSET0  = (GPIO_BASE + 0x1C),
         GPSET1  = (GPIO_BASE + 0x20),
-    
+
         GPCLR0  = (GPIO_BASE + 0x28),
         GPCLR1  = (GPIO_BASE + 0x2C),
 
@@ -54,7 +54,7 @@ enum {
         GPLEV1  = (GPIO_BASE + 0x38),
 
         GPEDS0  = (GPIO_BASE + 0x40),
-        GPEDS1  = (GPIO_BASE + 0x44), 
+        GPEDS1  = (GPIO_BASE + 0x44),
 
         GPREN0  = (GPIO_BASE + 0x4C),
         GPREN1  = (GPIO_BASE + 0x50),

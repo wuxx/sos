@@ -30,7 +30,7 @@ s32 test_cpu_all(u32 argc, char **argv)
     i = atoi(argv[2]);
     arg1 = atoi(argv[3]);
 
-    PRINT_EMG("arg1: %x\n", arg1);   
+    PRINT_EMG("arg1: %x\n", arg1);
 
     switch(i) {
         case (0):

@@ -89,8 +89,8 @@ __attribute__((naked)) void IrqHandler()
             "pop  {r0-r1}\n\t"
 
             "bl cpu_context_save\n\t"
-            : 
-            : 
+            :
+            :
             : "memory"
             );
 
@@ -107,8 +107,8 @@ __attribute__((naked)) void IrqHandler()
             "ldmfd sp!, {lr}\n\t"
             "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, rerun the user/system mode code */
             "nop\n\t"
-            : 
-            : 
+            :
+            :
             : "memory"
     );
 }
@@ -155,8 +155,8 @@ __attribute__((naked)) void ExcHandler()
             "pop  {r0-r1}\n\t"
 
             /* "bl cpu_context_save\n\t" */ /* we are not gonna to do the task switch. */
-            : 
-            : 
+            :
+            :
             : "memory"
             );
     General_Exc_Handler();
@@ -171,8 +171,8 @@ __attribute__((naked)) void ExcHandler()
             "ldmfd sp!, {lr}\n\t"
             "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, rerun the user/system mode code */
             "nop\n\t"
-            : 
-            : 
+            :
+            :
             : "memory"
     );
 
@@ -207,7 +207,7 @@ PUBLIC s32 enable_irq(u32 irq_nr)
         return -1;
     }
 
-    i      = irq_nr / 32; 
+    i      = irq_nr / 32;
     offset = irq_nr % 32;
 
     switch (i) {
@@ -224,7 +224,7 @@ PUBLIC s32 enable_irq(u32 irq_nr)
             PRINT_EMG("%s: illegal index %d\n", __func__, i);
             return -1;
     }
-    
+
     rv = readl(enable_base);
     set_bit(&rv, offset, 1);
     writel(enable_base, rv);
@@ -239,7 +239,7 @@ PUBLIC s32 disable_irq(u32 irq_nr)
         return -1;
     }
 
-    i      = irq_nr / 32; 
+    i      = irq_nr / 32;
     offset = irq_nr % 32;
 
     switch (i) {
@@ -256,7 +256,7 @@ PUBLIC s32 disable_irq(u32 irq_nr)
             PRINT_EMG("%s: illegal index %d\n", __func__, i);
             return -1;
     }
-    
+
     rv = readl(disable_base);
     set_bit(&rv, offset, 1);
     writel(disable_base, rv);
@@ -269,23 +269,23 @@ PUBLIC s32 disable_irq_all()
     writel(IRQ_DISABLE2, 0xFFFFFFFF);
 }
 
-PUBLIC void lock_irq()   
+PUBLIC void lock_irq()
 {
     u32 _cpsr = __get_cpsr();
 
-    set_bit(&_cpsr, IRQ_DISABLE_BIT, 1); 
+    set_bit(&_cpsr, IRQ_DISABLE_BIT, 1);
     asm volatile("msr CPSR_c, %[_cpsr]"
-            :   
+            :
             : [_cpsr]"r"(_cpsr));
 }
 
-PUBLIC void unlock_irq()   
+PUBLIC void unlock_irq()
 {
     u32 _cpsr = __get_cpsr();
 
-    set_bit(&_cpsr, IRQ_DISABLE_BIT, 0); 
+    set_bit(&_cpsr, IRQ_DISABLE_BIT, 0);
     asm volatile("msr CPSR_c, %[_cpsr]"
-            :   
+            :
             : [_cpsr]"r"(_cpsr));
 }
 

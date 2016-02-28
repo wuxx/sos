@@ -80,7 +80,7 @@ PRIVATE s32 cmd_dump()
 
     for(i=0;i<word_nr;i++) {
         PRINT_EMG("[0x%x]: 0x%x\r\n", &p[i], p[i]);
-    }   
+    }
 
     return 0;
 }
@@ -102,7 +102,7 @@ PRIVATE s32 cmd_help()
 PRIVATE s32 parse_cmd(char *cmd)
 {
     u32 i,j;
-    
+
     memset(argv, 0, SHELL_ARGS_MAX*sizeof(argv[0]));
 
     /* first, set the argv */
@@ -112,7 +112,7 @@ PRIVATE s32 parse_cmd(char *cmd)
         while(cmd[i] == ' ') {
             i++;
         }
-        
+
         argv[j++] = &cmd[i];
         if (j == SHELL_ARGS_MAX) {
             return 0;
@@ -153,7 +153,7 @@ PUBLIC s32 shell(char *cmd)
         return 0;
     }
 
-    PRINT_EMG("\n");   
+    PRINT_EMG("\n");
 
     parse_cmd(cmd);
 #if 0

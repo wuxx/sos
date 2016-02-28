@@ -100,35 +100,35 @@ PUBLIC void uart_init() {
     // Disable PL011_UART.
     writel(UART0_CR, 0x00000000);
     // Setup the GPIO pin 14 && 15.
- 
+
     // Disable pull up/down for all GPIO pins & delay for 150 cycles.
     writel(GPPUD, 0x00000000);
     clk_delay(150);
- 
+
     // Disable pull up/down for pin 14,15 & delay for 150 cycles.
     writel(GPPUDCLK0, (1 << 14) | (1 << 15));
     clk_delay(150);
- 
+
     // Write 0 to GPPUDCLK0 to make it take effect.
     writel(GPPUDCLK0, 0x00000000);
- 
+
     // Clear pending interrupts.
     writel(UART0_ICR, 0x7FF);
- 
+
     // Set integer & fractional part of baud rate.
     // Divider = UART_CLOCK/(16 * Baud)
     // Fraction part register = (Fractional part * 64) + 0.5
     // UART_CLOCK = 3000000; Baud = 115200.
- 
+
     /* uart clk: 3000000 */
     // Divider = 3000000/(16 * 115200) = 1.627 = ~1.
     // Fractional part register = (.627 * 64) + 0.5 = 40.6 = ~40.
     writel(UART0_IBRD, 1);
     writel(UART0_FBRD, 40);
- 
+
     // Enable FIFO & 8 bit data transmissio (1 stop bit, no parity).
     writel(UART0_LCRH, (1 << 4) | (1 << 5) | (1 << 6));
- 
+
     // Mask all interrupts.
 #if 0
     writel(UART0_IMSC, (1 << 1) | (1 << 4) | (1 << 5) |
@@ -139,7 +139,7 @@ PUBLIC void uart_init() {
             (1 << 6) | (1 << 7) | (1 << 8) |
             (1 << 9) | (1 << 10));
 #endif
- 
+
     // Enable UART, receive & transfer part of UART.
     writel(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
 
@@ -212,7 +212,7 @@ PUBLIC void uart_init() {
     AUX_MU_LCR_REG  = 0x03; // Bit 1 must be set
     AUX_MU_MCR_REG  = 0x00;
     AUX_MU_IER_REG  = 0x05;
-    AUX_MU_IIR_REG  = 0xC6; 
+    AUX_MU_IIR_REG  = 0xC6;
     AUX_MU_BAUD_REG = BAUD_RATE_COUNT(115200);
 
     bcm2835_gpio_fnsel(14, GPFN_ALT5);

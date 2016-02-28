@@ -10,7 +10,7 @@ PUBLIC s32 set_gpio_function(u32 gpio_index, u32 func_index)
     union gpio_fsel_reg fr;
 
 
-    if ((gpio_index >= GPIO_NR_MAX) || func_index >= ALT_FUNC_MAX) { 
+    if ((gpio_index >= GPIO_NR_MAX) || func_index >= ALT_FUNC_MAX) {
         PRINT_EMG("invalid para %d %d\n", gpio_index, func_index);
         return -1;
     }
@@ -69,7 +69,7 @@ PUBLIC s32 set_gpio_output(u32 gpio_index, u32 bit)
     u32 output_set_addr, output_clear_addr;
     u32 bit_offset;
 
-    if ((gpio_index >= GPIO_NR_MAX) || bit > 1) { 
+    if ((gpio_index >= GPIO_NR_MAX) || bit > 1) {
         PRINT_EMG("invalid para %d %d\n", gpio_index, bit);
         return -1;
     }
@@ -99,7 +99,7 @@ PUBLIC void set_gpio_value(u32 gpio, u32 val)
     if (gpio > 53) {
         return;
     }
-    
+
     switch(val) {
         case (0):
             base = 10;  /* offset 40  output 0 */

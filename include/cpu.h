@@ -18,7 +18,7 @@ cpu_context in irq mode sp
             r2
             r1
             r0
-            cpsr 
+            cpsr
 sp_irq ->   r13 (sp_user or sp_system)
  */
 enum CPU_MODE_E {
