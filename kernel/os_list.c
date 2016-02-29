@@ -39,18 +39,17 @@ s32 list_delete(struct __os_list__ *list, struct __os_task__ *ptask)
     pprev = list;
     pcurr = list->next;
 
-    if (list == &os_ready_list) {
+    if (list == &os_ready_list ||
+        list == &os_sleep_list) {
         while (pcurr != ptask && pcurr != NULL) {
             pprev = pcurr;
             pcurr = pcurr->next;
         }
+
         assert(pcurr != NULL); /* FIXME: kassert */
 
         pprev->next       = ptask;
         ptask->next->prev = pprev;
-
-
-    } else if (list == &os_sleep_list) {
 
     } else {
         panic();
