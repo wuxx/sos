@@ -26,6 +26,22 @@ PRIVATE void uart_wait_fifo_empty()
     }
 }
 
+PRIVATE void uart_putc(u8 byte) {
+#ifdef UART0
+    // wait for UART to become ready to transmit
+    while (1) {
+        if (!(readl(UART0_FR) & (1 << 5))) {
+            break;
+        }
+    }
+    writel(UART0_DR, byte);
+    uart_wait_fifo_empty();
+#else
+    while((AUX_MU_LSR_REG & 0x20) == 0);
+    AUX_MU_IO_REG = byte;
+#endif
+}
+
 PUBLIC void uart_puts(const char *str) {
     while (*str) {
         if (*str == '\n') {
@@ -49,7 +65,7 @@ s8 uart_recv()
     }
 }
 
-PRIVATE void uart_irq_handler(u32 irq_nr)
+PRIVATE s32 uart_irq_handler(u32 irq_nr)
 {
     u8 ch;
 
@@ -89,7 +105,7 @@ PRIVATE void uart_irq_handler(u32 irq_nr)
         }
     }
 
-    return;
+    return 0;
 }
 
 PUBLIC void uart_init() {
@@ -227,25 +243,5 @@ PUBLIC void uart_init() {
     AUX_MU_CNTL_REG = 0x03;
 
     IRQ_ENABLE1 = BIT(29);
-#endif
-}
-
-/*
- * Transmit a byte via UART0.
- * u8 Byte: byte to send.
- */
-PRIVATE void uart_putc(u8 byte) {
-#ifdef UART0
-    // wait for UART to become ready to transmit
-    while (1) {
-        if (!(readl(UART0_FR) & (1 << 5))) {
-            break;
-        }
-    }
-    writel(UART0_DR, byte);
-    uart_wait_fifo_empty();
-#else
-    while((AUX_MU_LSR_REG & 0x20) == 0);
-    AUX_MU_IO_REG = byte;
 #endif
 }

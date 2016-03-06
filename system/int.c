@@ -59,13 +59,13 @@ PRIVATE void cpu_context_save()
     old_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
 
     memcpy((void *)(old_task->sp), (void *)current_context, sizeof(struct cpu_context));
-    dump_ctx((struct cpu_context *)(old_task->sp));
+    /* dump_ctx((struct cpu_context *)(old_task->sp)); */
 }
 
 PRIVATE void cpu_context_restore()
 {
     PRINT_DEBUG("restore %d \n", new_task->id);
-    dump_ctx((struct cpu_context *)(new_task->sp));
+    /* dump_ctx((struct cpu_context *)(new_task->sp)); */
     memcpy((void *)current_context, (void *)(new_task->sp), sizeof(struct cpu_context));
 }
 

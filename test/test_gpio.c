@@ -6,7 +6,7 @@
 /* GPIO17 -> GPIO_GEN0 -> 11 */
 /* GPIO18 -> GPIO_GEN1 -> 12 */
 
-void test_gpio_irq_handler(u32 irq_nr)
+s32 test_gpio_irq_handler(u32 irq_nr)
 {
     u32 stat;
     PRINT_EMG("in %s %d\n", __func__, irq_nr);
@@ -17,6 +17,7 @@ void test_gpio_irq_handler(u32 irq_nr)
 
     stat = readl(GPEDS1);
     writel(GPEDS1, stat);
+    return 0;
 }
 
 s32 test_gpio_all(u32 argc, char **argv)

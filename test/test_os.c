@@ -24,22 +24,50 @@ void test_task()
     }
 }
 
+
+void dump_tcb(u32 i)
+{
+    PRINT_EMG("[%d]: [%s]\n", i, task_state_desc[tcb[i].state]);
+    if (tcb[i].state != TASK_UNUSED) {
+        PRINT_EMG("\ttask_id:     [%d]\n", tcb[i].id);
+        PRINT_EMG("\tstate:       [%s]\n", task_state_desc[tcb[i].state]);
+        PRINT_EMG("\tprio:        [%d]\n", tcb[i].prio);
+        PRINT_EMG("\tsleep_ticks: [%d]\n", tcb[i].sleep_ticks);
+        
+        PRINT_EMG("\tstack:       [0x%x]\n", tcb[i].stack);
+        PRINT_EMG("\tstack_size:  [%d]\n", tcb[i].stack_size);
+        PRINT_EMG("\ttask_entry:  [0x%x]\n", tcb[i].entry);
+        dump_mem(tcb[i].stack, tcb[i].stack_size);
+    }
+
+}
+
 void dump_tcb_all()
 {
     u32 i;
     for(i=0;i<TASK_NR_MAX;i++) {
-
-        PRINT_EMG("[%d]: [%s]\n", i, task_state_desc[tcb[i].state]);
-        if (tcb[i].state != TASK_UNUSED) {
-            PRINT_EMG("\ttask_id:    [%d]\n", tcb[i].id);
-            PRINT_EMG("\tstate:      [%s]\n", task_state_desc[tcb[i].state]);
-            PRINT_EMG("\tprio:       [%d]\n", tcb[i].prio);
-            PRINT_EMG("\tstack:      [0x%x]\n", tcb[i].stack);
-            PRINT_EMG("\tstack_size: [%d]\n", tcb[i].stack_size);
-            PRINT_EMG("\ttask_entry: [0x%x]\n", tcb[i].entry);
-            dump_mem(tcb[i].stack, tcb[i].stack_size);
-        }
+        dump_tcb(i);
     }
+}
+
+s32 dump_list()
+{
+    struct __os_task__ *ptask;
+
+    ptask = os_ready_list.next;
+    PRINT_EMG("os_ready: \n");
+    while(ptask != NULL) {
+        dump_tcb(ptask->id);
+        ptask = ptask->next;
+    }
+
+    ptask = os_sleep_list.next;
+    PRINT_EMG("os_sleep: \n");
+    while(ptask != NULL) {
+        dump_tcb(ptask->id);
+        ptask = ptask->next;
+    }
+    return 0;
 }
 
 s32 test_os_all(u32 argc, char **argv)
@@ -67,6 +95,9 @@ s32 test_os_all(u32 argc, char **argv)
             set_log_level(LOG_DEBUG);
         case (100):
             os_task_create(test_task, 0, 0);
+            break;
+        case (200):
+            dump_list();
             break;
         default:
             return -1;

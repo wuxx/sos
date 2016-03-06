@@ -10,7 +10,7 @@
 PUBLIC u64 get_syscounter()
 {
     u64 sc;
-    u32 clo, chi;
+    u64 clo, chi;
     clo = readl(SYSTMCLO);
     chi = readl(SYSTMCHI);
     sc  = (chi << 32) | clo;

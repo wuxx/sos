@@ -17,6 +17,9 @@ enum TASK_STATE_E {
 
 struct __os_task__
 {
+    struct __os_task__ *next;
+    struct __os_task__ *prev;
+
     u32 sp;
 
     u32 id;
@@ -25,8 +28,6 @@ struct __os_task__
 
     u32 sleep_ticks;
 
-    struct __os_task__ *prev;
-    struct __os_task__ *next;
 
     u32 *stack;
     u32 stack_size;
@@ -40,6 +41,7 @@ extern struct __os_task__ *new_task;
 
 s32 task_create(func_1 entry, u32 arg, u32 prio);
 s32 task_delete(u32 task_id);
+struct __os_task__ * get_task_ready();
 
 #endif /* __OS_TASK_H__ */
 

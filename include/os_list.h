@@ -3,6 +3,12 @@
 
 #include <os_task.h>
 
+#define os_ready_insert(task)   list_insert(&os_ready_list, task)
+#define os_delay_insert(task)   list_insert(&os_sleep_list, task)
+
+#define os_ready_delete(task)   list_delete(&os_ready_list, task)
+#define os_delay_delete(task)   list_delete(&os_sleep_list, task)
+
 struct __os_list__ {
     struct __os_task__ *next;
 };
