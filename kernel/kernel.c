@@ -1,8 +1,7 @@
 #include <system_config.h>
 #include <libc.h>
 #include <memory_map.h>
-#include <os_task.h>
-#include <os_list.h>
+#include <os.h>
 
 #include "cpu.h"
 #include "timer.h"
@@ -11,17 +10,25 @@
 
 extern struct cpu_context *current_context;
 
-u32 os_tick = 0;
-
-PRIVATE void idle_task()
+volatile u32 os_tick = 0;
+volatile u32 idle_init = 0;
+PRIVATE s32 idle_task(u32 arg)
 {
+    if (idle_init == 0) {
+        os_ready_delete(&tcb[0]);
+        extern s32 dump_list();
+        dump_list();
+        unlock_irq();
+        idle_init = 1;
+    }
     while(1) {
         PRINT_INFO("in %s\n", __func__);
         mdelay(1000);
     }
+    return 0;
 }
 
-PRIVATE void blink_task()
+PRIVATE s32 blink_task(u32 arg)
 {
     set_gpio_function(16, OUTPUT);
     while(1) {
@@ -32,19 +39,20 @@ PRIVATE void blink_task()
         mdelay(1000);
 
     }
+    return 0;
 }
 
 PUBLIC s32 os_sleep(u32 sleep_ticks)
 {
-    /* list_del(&os_ready, new_task); no need */
-    list_insert(&os_sleep, new_task);
+#if 0
     new_task = get_task_ready();
+#endif
     return 0;
 }
 
 PUBLIC void dump_ctx(struct cpu_context *ctx)
 {
-#define DUMP_VAR(c, var) PRINT_DEBUG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
+#define DUMP_VAR(c, var) PRINT_EMG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
     DUMP_VAR(ctx, cpsr);
     DUMP_VAR(ctx, r0);
     DUMP_VAR(ctx, r1);
@@ -64,43 +72,51 @@ PUBLIC void dump_ctx(struct cpu_context *ctx)
     DUMP_VAR(ctx, pc);
 }
 
-PRIVATE u32 need_schedule()
+PRIVATE struct __os_task__ * need_schedule()
 {
-    new_task = get_task_ready(); /* get the highest priority task in READY STATE */
-    if ((new_task != NULL) && (new_task->prio <= old_task->prio)) {
-        PRINT_DEBUG("schedule task %d \n", new_task->id);
-        return 1;
-    } else {
-        new_task = old_task;    /* restore new_task */
-        return 0;
+    struct __os_task__ *best_task;
+
+    best_task = get_task_ready(); /* get the highest priority task in READY STATE */
+    if (best_task->prio <= new_task->prio) {
+        PRINT_DEBUG("schedule task %d \n", best_task->id);
+        return best_task;
     }
+    return NULL;
 }
 
 /* just re-set old_task & new_task */
-PRIVATE void task_sched()
+PRIVATE void task_sched(struct __os_task__ *best_task)
 {
+
+    old_task = new_task;
+    new_task = best_task;
 
     old_task->state = TASK_READY;
     new_task->state = TASK_RUNNING;
 
-    old_task = new_task;
+    os_ready_delete(best_task);
+    os_ready_insert(old_task);
+
+    /* dump_list(); */
     PRINT_DEBUG("schedule %d \n", new_task->id);
 }
 
 PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
 {
-    os_tick ++ ;
+    struct __os_task__ *best_task;
 
-    if (need_schedule()) {
-        task_sched();
+    os_tick ++ ;
+    if ((best_task = need_schedule()) != NULL) {
+        task_sched(best_task);
     }
 }
 
-PRIVATE void coretimer_irq_handler(u32 irq_nr)
+PRIVATE s32 coretimer_irq_handler(u32 irq_nr)
 {
     PRINT_DEBUG("in %s %d\n", __func__, irq_nr);
     os_clock_irq_hook(current_context);
     writel(CORETMCLR, 0x0);
+    return 0;
 }
 
 PRIVATE s32 coretimer_init()

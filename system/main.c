@@ -57,7 +57,6 @@ int main(u32 sp)
     int_init();
     uart_init();
     timer_init();
-    set_log_level(LOG_INFO);
     os_init();
 
     PRINT_INFO("%s\n", sys_banner);
@@ -68,13 +67,14 @@ int main(u32 sp)
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n",
             get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
 
+    set_log_level(LOG_DEBUG);
+
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
 #if 0
     char *argv[5] = {"systest", "os", "100"};
     systest(0, argv);
 #endif
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));
-    unlock_irq();
     idle_task();
     while(1); /* never reach here */
     return 0;

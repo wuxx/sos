@@ -57,14 +57,16 @@ s32 dump_list()
     ptask = os_ready_list.next;
     PRINT_EMG("os_ready: \n");
     while(ptask != NULL) {
-        dump_tcb(ptask->id);
+        /*dump_tcb(ptask->id);*/
+        PRINT_EMG("[%d] ->", ptask->id);
         ptask = ptask->next;
     }
 
     ptask = os_sleep_list.next;
-    PRINT_EMG("os_sleep: \n");
+    PRINT_EMG("\nos_sleep: \n");
     while(ptask != NULL) {
-        dump_tcb(ptask->id);
+        /*dump_tcb(ptask->id);*/
+        PRINT_EMG("[%d] ->", ptask->id);
         ptask = ptask->next;
     }
     return 0;

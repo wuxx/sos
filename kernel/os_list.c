@@ -3,15 +3,15 @@
 #include <os_task.h>
 #include <os_list.h>
 
+#include "log.h"
 
 struct __os_list__ os_ready_list = {.next = NULL};
 struct __os_list__ os_sleep_list = {.next = NULL};
 
-
 s32 list_insert(struct __os_list__ *list, struct __os_task__ *ptask)
 {
     struct __os_task__ *pprev, *pcurr;
-    pprev = list;
+    pprev = (struct __os_task__ *)list;
     pcurr = list->next;
 
     if (list == &os_ready_list) {
@@ -23,7 +23,10 @@ s32 list_insert(struct __os_list__ *list, struct __os_task__ *ptask)
         ptask->next = pcurr;
 
         ptask->prev = pprev;
-        pcurr->prev = ptask;
+
+        if (pcurr != NULL) {
+            pcurr->prev = ptask;
+        }
 
     } else if (list == &os_sleep_list) {
 
@@ -36,9 +39,10 @@ s32 list_insert(struct __os_list__ *list, struct __os_task__ *ptask)
 s32 list_delete(struct __os_list__ *list, struct __os_task__ *ptask)
 {
     struct __os_task__ *pprev, *pcurr;
-    pprev = list;
+    pprev = (struct __os_task__ *)list;
     pcurr = list->next;
 
+    /* PRINT_EMG("delete %x \n", ptask); */
     if (list == &os_ready_list ||
         list == &os_sleep_list) {
         while (pcurr != ptask && pcurr != NULL) {
@@ -48,11 +52,15 @@ s32 list_delete(struct __os_list__ *list, struct __os_task__ *ptask)
 
         assert(pcurr != NULL); /* FIXME: kassert */
 
-        pprev->next       = ptask;
-        ptask->next->prev = pprev;
+        pprev->next = ptask->next;
+
+        if (ptask->next != NULL) {
+            ptask->next->prev = pprev;
+        }
 
     } else {
         panic();
     }
     return 0;
 }
+

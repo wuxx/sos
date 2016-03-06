@@ -21,8 +21,8 @@ PUBLIC void General_Irq_Handler()
     func_1 irq_func = NULL;
 
     cpsr = __get_cpsr();
-    PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
 #if 0
+    PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
     PRINT_DEBUG("\ncurrent_context: %x\n", current_context);
     dump_mem((u32)current_context, 20);
     dump_mem(VIC_BASE, 10);
@@ -40,7 +40,7 @@ PUBLIC void General_Irq_Handler()
         for(j=0;j<32;j++) {
             if (get_bit(pend[i], j) && get_bit(enable[i], j)) {
                 irq_nr = i * 32 + j;
-                PRINT_DEBUG("irq_nr: %d\n", irq_nr);
+                /* PRINT_DEBUG("irq_nr: %d\n", irq_nr); */
                 irq_func = irq_table[irq_nr];
                 if (irq_func != NULL) {
                     irq_func(irq_nr);
@@ -49,22 +49,22 @@ PUBLIC void General_Irq_Handler()
         }
     }
 
-    PRINT_DEBUG("exit %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
+    /* PRINT_DEBUG("exit %s 0x%x %s\n", __func__, cpsr, get_cpu_mode()); */
 }
 
 /* cpu_context save into /restore from user/system mode stack */
 PRIVATE void cpu_context_save()
 {
-    PRINT_DEBUG("save %d \n", old_task->id);
-    old_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
+    new_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
 
-    memcpy((void *)(old_task->sp), (void *)current_context, sizeof(struct cpu_context));
-    /* dump_ctx((struct cpu_context *)(old_task->sp)); */
+    memcpy((void *)(new_task->sp), (void *)current_context, sizeof(struct cpu_context));
+    PRINT_DEBUG("save %d \n", new_task->id);
+    /* dump_ctx((struct cpu_context *)(new_task->sp)); */
 }
 
 PRIVATE void cpu_context_restore()
 {
-    PRINT_DEBUG("restore %d \n", new_task->id);
+    PRINT_DEBUG("restore %d \n", new_task->id); 
     /* dump_ctx((struct cpu_context *)(new_task->sp)); */
     memcpy((void *)current_context, (void *)(new_task->sp), sizeof(struct cpu_context));
 }

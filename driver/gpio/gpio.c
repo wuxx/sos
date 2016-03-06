@@ -78,7 +78,7 @@ PUBLIC s32 set_gpio_output(u32 gpio_index, u32 bit)
     output_set_addr   = GPSET0 + gpio_index / 32;
     output_clear_addr = GPCLR0 + gpio_index / 32;
 
-    PRINT_DEBUG("%s 0x%x 0x%x [0x%x] [0x%x]\n", __func__, bit, bit_offset, output_set_addr, output_clear_addr);
+    /* PRINT_DEBUG("%s 0x%x 0x%x [0x%x] [0x%x]\n", __func__, bit, bit_offset, output_set_addr, output_clear_addr); */
 
     if (bit == 0) {
         writel(output_clear_addr, 0x1 << bit_offset);

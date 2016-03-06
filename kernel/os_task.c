@@ -1,6 +1,6 @@
-#include <libc.h>
 #include <system_config.h>
-#include <os_task.h>
+#include <libc.h>
+#include <os.h>
 #include "log.h"
 
 struct __os_task__ tcb[TASK_NR_MAX] __attribute__((__aligned__(0x100))) = {0};
@@ -17,9 +17,10 @@ PRIVATE u32 get_current_task()
     return task_id;
 }
 
-/* get the highest priority task in READY STATE */
-PRIVATE struct __os_task__ * get_task_ready()
+/* get the highest priority task in os_ready_list */
+PUBLIC struct __os_task__ * get_task_ready()
 {
+#if 0
     u32 i;
     u32 best = 256;
     u32 prio = TASK_PRIO_MAX;
@@ -27,14 +28,21 @@ PRIVATE struct __os_task__ * get_task_ready()
         if (tcb[i].state == TASK_READY && tcb[i].prio < prio) {
             prio = tcb[i].prio;
             best = i;
-        }
-    }
+        }   
+    }   
     /*PRINT_EMG("get %d \n", best);*/
     if (best == 256) {
         return NULL;
     } else {
         return &tcb[best];
-    }
+    }   
+#else
+    struct __os_task__ *ptask;
+    ptask = os_ready_list.next;
+    PRINT_DEBUG("get_task_ready %x \n", ptask);
+    assert(ptask != NULL);
+    return ptask;
+#endif
 }
 
 PRIVATE struct __os_task__ * tcb_alloc()
@@ -108,6 +116,8 @@ PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
     }
 
     tcb_init(ptask, entry, arg, prio);
+
+    os_ready_insert(ptask);
 
     return 0;
 }
