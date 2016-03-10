@@ -13,6 +13,7 @@ PRIVATE u32 get_current_task()
     u32 sp = __get_sp();
 
     task_id = (sp - (u32)task_stack) / (TASK_STK_SIZE * 4);
+    PRINT_EMG("task_id: %d\n", task_id);
     assert(task_id <= TASK_NR_MAX);
     return task_id;
 }

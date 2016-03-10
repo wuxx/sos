@@ -18,26 +18,12 @@ PRIVATE s32 idle_task(u32 arg)
         os_ready_delete(&tcb[0]);
         extern s32 dump_list();
         dump_list();
-        unlock_irq();
         idle_init = 1;
+        unlock_irq();   /* kick off the system */
     }
     while(1) {
         PRINT_INFO("in %s\n", __func__);
         mdelay(1000);
-    }
-    return 0;
-}
-
-PRIVATE s32 blink_task(u32 arg)
-{
-    set_gpio_function(16, OUTPUT);
-    while(1) {
-        PRINT_INFO("in %s\n", __func__);
-        set_gpio_output(16, 1);     /* led off */
-        mdelay(1000);
-        set_gpio_output(16, 0);     /* led on */
-        mdelay(1000);
-
     }
     return 0;
 }
@@ -45,7 +31,7 @@ PRIVATE s32 blink_task(u32 arg)
 PUBLIC s32 os_sleep(u32 sleep_ticks)
 {
 #if 0
-    new_task = get_task_ready();
+    current_task = get_task_ready();
 #endif
     return 0;
 }
@@ -77,28 +63,35 @@ PRIVATE struct __os_task__ * need_schedule()
     struct __os_task__ *best_task;
 
     best_task = get_task_ready(); /* get the highest priority task in READY STATE */
-    if (best_task->prio <= new_task->prio) {
+    if (best_task->prio <= current_task->prio ||
+        current_task->state == TASK_UNUSED  /* current_task self-destruction  */
+        ) {
         PRINT_DEBUG("schedule task %d \n", best_task->id);
         return best_task;
     }
     return NULL;
 }
 
-/* just re-set old_task & new_task */
+/* just re-set current_task */
 PRIVATE void task_sched(struct __os_task__ *best_task)
 {
+    struct __os_task__ *old_task;
 
-    old_task = new_task;
-    new_task = best_task;
+    old_task     = current_task;
+    current_task = best_task;
 
-    old_task->state = TASK_READY;
-    new_task->state = TASK_RUNNING;
-
+    current_task->state = TASK_RUNNING;
     os_ready_delete(best_task);
-    os_ready_insert(old_task);
+
+    if (old_task->state == TASK_UNUSED) {   /* self-destruction */
+
+    } else {
+        old_task->state = TASK_READY;
+        os_ready_insert(old_task);
+    }
 
     /* dump_list(); */
-    PRINT_DEBUG("schedule %d \n", new_task->id);
+    PRINT_DEBUG("schedule %d \n", current_task->id);
 }
 
 PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
@@ -137,12 +130,6 @@ PUBLIC s32 os_init()
         PRINT_EMG("idle_task create failed !\n");
         return ERROR;
     }
-    old_task = new_task = &tcb[0];  /* idle_task */
-    PRINT_STAMP();
-
-    if (task_create(blink_task, 0, 100) != OK) {
-        PRINT_EMG("blink_task create failed !\n");
-        return ERROR;
-    }
+    current_task = &tcb[0];  /* idle_task */
     PRINT_STAMP();
 }

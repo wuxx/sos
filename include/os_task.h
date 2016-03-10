@@ -37,7 +37,7 @@ struct __os_task__
 extern u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE];
 extern struct __os_task__ tcb[TASK_NR_MAX];
 extern struct __os_task__ *old_task;
-extern struct __os_task__ *new_task;
+extern struct __os_task__ *current_task;
 
 s32 task_create(func_1 entry, u32 arg, u32 prio);
 s32 task_delete(u32 task_id);

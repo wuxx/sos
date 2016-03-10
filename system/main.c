@@ -15,6 +15,20 @@
 
 char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
 
+s32 blink_task(u32 arg)
+{
+    set_gpio_function(16, OUTPUT);
+    while(1) {
+        PRINT_INFO("in %s\n", __func__);
+        set_gpio_output(16, 1);     /* led off */
+        mdelay(1000);
+        set_gpio_output(16, 0);     /* led on */
+        mdelay(1000);
+
+    }   
+    return 0;
+}
+
 char* get_cpu_mode(u32 *m)
 {
     u32 cpsr, mode;
@@ -47,7 +61,13 @@ char* get_cpu_mode(u32 *m)
     }
 }
 
-int main(u32 sp)
+s32 task_main(u32 arg)
+{
+    PRINT_STAMP();
+    return 0;
+}
+
+s32 os_main(u32 sp)
 {
     u32 cpsr;
     u32 pc;
@@ -67,13 +87,17 @@ int main(u32 sp)
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n",
             get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
 
-    set_log_level(LOG_DEBUG);
+    /* set_log_level(LOG_DEBUG); */
+
+    if (task_create(blink_task, 0, 100) != 0) {
+        PRINT_EMG("blink_task create failed !\n");
+    }
+
+    if (task_create(task_main, 0, 100) != 0) {
+        PRINT_EMG("blink_task create failed !\n");
+    }
 
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
-#if 0
-    char *argv[5] = {"systest", "os", "100"};
-    systest(0, argv);
-#endif
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));
     idle_task();
     while(1); /* never reach here */

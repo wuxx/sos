@@ -8,7 +8,7 @@
 extern void dump_mem(u32 addr, u32 word_nr);
 extern struct __syscall__ syscall_table[];
 
-struct __os_task__ *old_task, *new_task;
+struct __os_task__ *current_task;
 struct cpu_context *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
@@ -55,18 +55,18 @@ PUBLIC void General_Irq_Handler()
 /* cpu_context save into /restore from user/system mode stack */
 PRIVATE void cpu_context_save()
 {
-    new_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
+    current_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
 
-    memcpy((void *)(new_task->sp), (void *)current_context, sizeof(struct cpu_context));
-    PRINT_DEBUG("save %d \n", new_task->id);
-    /* dump_ctx((struct cpu_context *)(new_task->sp)); */
+    memcpy((void *)(current_task->sp), (void *)current_context, sizeof(struct cpu_context));
+    PRINT_DEBUG("save %d \n", current_task->id);
+    /* dump_ctx((struct cpu_context *)(current_task->sp)); */
 }
 
 PRIVATE void cpu_context_restore()
 {
-    PRINT_DEBUG("restore %d \n", new_task->id); 
-    /* dump_ctx((struct cpu_context *)(new_task->sp)); */
-    memcpy((void *)current_context, (void *)(new_task->sp), sizeof(struct cpu_context));
+    PRINT_DEBUG("restore %d \n", current_task->id); 
+    /* dump_ctx((struct cpu_context *)(current_task->sp)); */
+    memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct cpu_context));
 }
 
 __attribute__((naked)) void IrqHandler()

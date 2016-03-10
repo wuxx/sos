@@ -113,5 +113,5 @@ clear_bss:
     /* System */
     msr     CPSR_c, #MODE_SYS | I_BIT | F_BIT
     mov     sp, r0
-    bl main
+    bl      os_main
     b . 
