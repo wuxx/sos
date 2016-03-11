@@ -7,9 +7,9 @@ enum SEM_STATUS_E {
 };
 
 struct __os_semaphore__ {
+    struct __os_task__ *next;
     u32 status; 
     u32 tokens;
-    struct __os_task__ *next;
 };
 
 struct __os_semaphore__ os_semaphore[SEM_NR_MAX];

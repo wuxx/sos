@@ -9,7 +9,15 @@
 #define os_ready_delete(task)   list_delete(&os_ready_list, task)
 #define os_delay_delete(task)   list_delete(&os_sleep_list, task)
 
+enum LIST_TYPE_E {
+    OS_READY,
+    OS_SLEEP,
+    OS_SEM,
+    OS_MBX,
+};
+
 struct __os_list__ {
+    u32 type;
     struct __os_task__ *next;
 };
 

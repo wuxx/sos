@@ -14,7 +14,9 @@ s32 list_insert(struct __os_list__ *list, struct __os_task__ *ptask)
     pprev = (struct __os_task__ *)list;
     pcurr = list->next;
 
-    if (list == &os_ready_list) {
+    if (list->type == OS_READY ||
+        list->type == OS_SEM   ||
+        list->type == OS_MBX    ) {
         while (pcurr != NULL && pcurr->prio <= ptask->prio) {
             pprev = pcurr;
             pcurr = pcurr->next;
@@ -28,7 +30,7 @@ s32 list_insert(struct __os_list__ *list, struct __os_task__ *ptask)
             pcurr->prev = ptask;
         }
 
-    } else if (list == &os_sleep_list) {
+    } else if (list->type == OS_SLEEP) {
 
     } else {
         panic();
@@ -43,23 +45,17 @@ s32 list_delete(struct __os_list__ *list, struct __os_task__ *ptask)
     pcurr = list->next;
 
     /* PRINT_EMG("delete %x \n", ptask); */
-    if (list == &os_ready_list ||
-        list == &os_sleep_list) {
-        while (pcurr != ptask && pcurr != NULL) {
-            pprev = pcurr;
-            pcurr = pcurr->next;
-        }
+    while (pcurr != ptask && pcurr != NULL) {
+        pprev = pcurr;
+        pcurr = pcurr->next;
+    }
 
-        assert(pcurr != NULL); /* FIXME: kassert */
+    assert(pcurr != NULL); /* FIXME: kassert */
 
-        pprev->next = ptask->next;
+    pprev->next = ptask->next;
 
-        if (ptask->next != NULL) {
-            ptask->next->prev = pprev;
-        }
-
-    } else {
-        panic();
+    if (ptask->next != NULL) {
+        ptask->next->prev = pprev;
     }
     return 0;
 }

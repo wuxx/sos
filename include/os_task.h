@@ -17,18 +17,17 @@ enum TASK_STATE_E {
 
 struct __os_task__
 {
-    struct __os_task__ *next;
+    u32 id;
+
+    struct __os_task__ *next;   /* must be at offset 4byte */
     struct __os_task__ *prev;
 
-    u32 sp;
-
-    u32 id;
     u32 state;
     u32 prio;
 
     u32 sleep_ticks;
 
-
+    u32 sp;
     u32 *stack;
     u32 stack_size;
     func_1 entry;

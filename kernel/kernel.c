@@ -12,6 +12,7 @@ extern struct cpu_context *current_context;
 
 volatile u32 os_tick = 0;
 volatile u32 idle_init = 0;
+
 PRIVATE s32 idle_task(u32 arg)
 {
     if (idle_init == 0) {

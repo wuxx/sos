@@ -3,7 +3,7 @@
 #include <os.h>
 #include "log.h"
 
-struct __os_task__ tcb[TASK_NR_MAX] __attribute__((__aligned__(0x100))) = {0};
+struct __os_task__ tcb[TASK_NR_MAX]        __attribute__((__aligned__(0x100))) = {0};
 u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = {0};
 
 /* get current task id, little hack */
@@ -125,7 +125,6 @@ PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
 
 PUBLIC s32 task_delete(u32 task_id)
 {
-    /* FIXME: these two statment need atomic */
     tcb[task_id].prio  = TASK_PRIO_MAX; /* lowest prio */
     tcb[task_id].state = TASK_UNUSED;
     return 0;
