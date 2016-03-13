@@ -29,11 +29,13 @@ PRIVATE s32 idle_task(u32 arg)
     return 0;
 }
 
-PUBLIC s32 os_sleep(u32 sleep_ticks)
+PUBLIC s32 os_sleep(u32 ms)
 {
-#if 0
-    current_task = get_task_ready();
-#endif
+
+    u32 ticks = (ms * OS_HZ) / 1000;
+    current_task->sleep_ticks = ticks;
+    current_task->state == TASK_SLEEP;
+    /* FIXME: need do task switch immediately */
     return 0;
 }
 
@@ -65,7 +67,8 @@ PRIVATE struct __os_task__ * need_schedule()
 
     best_task = get_task_ready(); /* get the highest priority task in READY STATE */
     if (best_task->prio <= current_task->prio ||
-        current_task->state == TASK_UNUSED  /* current_task self-destruction  */
+        current_task->state == TASK_UNUSED    || /* current_task self-destruction  */
+        current_task->state == TASK_SLEEP
         ) {
         PRINT_DEBUG("schedule task %d \n", best_task->id);
         return best_task;
@@ -86,6 +89,8 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
 
     if (old_task->state == TASK_UNUSED) {   /* self-destruction */
 
+    } else if (old_task->state == TASK_SLEEP) {
+        os_sleep_insert(old_task);
     } else {
         old_task->state = TASK_READY;
         os_ready_insert(old_task);
@@ -100,6 +105,8 @@ PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
     struct __os_task__ *best_task;
 
     os_tick ++ ;
+    
+    os_sleep_expire();
     if ((best_task = need_schedule()) != NULL) {
         task_sched(best_task);
     }

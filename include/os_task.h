@@ -8,7 +8,7 @@
 enum TASK_STATE_E {
     TASK_UNUSED  = 0,
     TASK_RUNNING = 1,
-    TASK_SUSPEND = 2,
+    TASK_SLEEP   = 2,
     TASK_READY   = 3,
     TASK_STATE_MAX,
 };

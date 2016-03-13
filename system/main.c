@@ -23,7 +23,6 @@ s32 blink_task(u32 arg)
         set_gpio_output(16, 1);     /* led off */
         mdelay(1000);
         set_gpio_output(16, 0);     /* led on */
-        mdelay(1000);
 
     }   
     return 0;

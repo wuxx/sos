@@ -31,6 +31,18 @@ s32 list_insert(struct __os_list__ *list, struct __os_task__ *ptask)
         }
 
     } else if (list->type == OS_SLEEP) {
+        while (pcurr != NULL && pcurr->sleep_ticks <= ptask->sleep_ticks) {
+            pprev = pcurr;
+            pcurr = pcurr->next;
+        }
+        pprev->next = ptask;
+        ptask->next = pcurr;
+
+        ptask->prev = pprev;
+
+        if (pcurr != NULL) {
+            pcurr->prev = ptask;
+        }
 
     } else {
         panic();
