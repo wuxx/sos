@@ -109,6 +109,11 @@ PRIVATE s32 tcb_init(struct __os_task__ *ptask, func_1 task_entry, u32 arg, u32 
     return 0;
 }
 
+PUBLIC s32 task_dispatch()
+{
+    return 0;
+}
+
 PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
 {
     struct __os_task__ *ptask;

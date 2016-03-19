@@ -4,12 +4,15 @@
 #include <os_task.h>
 
 #define os_ready_insert(task)   list_insert(&os_ready_list, task)
-#define os_sleep_insert(task)   list_insert(&os_sleep_list, task)
-
 #define os_ready_delete(task)   list_delete(&os_ready_list, task)
+
+#define os_sleep_insert(task)   list_insert(&os_sleep_list, task)
 #define os_sleep_delete(task)   list_delete(&os_sleep_list, task)
 
-enum LIST_TYPE_E {
+#define os_sem_insert(sem, task)   list_insert(&sem, task)
+#define os_sem_delete(sem, task)   list_delete(&sem, task)
+
+enum CB_TYPE_E {
     OS_READY,
     OS_SLEEP,
     OS_SEM,

@@ -6,10 +6,11 @@
 
 /* task state */
 enum TASK_STATE_E {
-    TASK_UNUSED  = 0,
-    TASK_RUNNING = 1,
-    TASK_SLEEP   = 2,
-    TASK_READY   = 3,
+    TASK_UNUSED   = 0,
+    TASK_RUNNING  = 1,
+    TASK_SLEEP    = 2,
+    TASK_READY    = 3,
+    TASK_WAIT_SEM = 4,
     TASK_STATE_MAX,
 };
 /* task priority */
