@@ -66,9 +66,9 @@ PRIVATE struct __os_task__ * need_schedule()
     struct __os_task__ *best_task;
 
     best_task = get_task_ready(); /* get the highest priority task in READY STATE */
-    if (best_task->prio <= current_task->prio ||
+    if (best_task->prio <= current_task->prio || /* current_task create a higher prio task  */
         current_task->state == TASK_UNUSED    || /* current_task self-destruction  */
-        current_task->state == TASK_SLEEP
+        current_task->state == TASK_SLEEP        /* current_task invoke os_sleep */
         ) {
         PRINT_DEBUG("schedule task %d \n", best_task->id);
         return best_task;
@@ -76,7 +76,11 @@ PRIVATE struct __os_task__ * need_schedule()
     return NULL;
 }
 
-/* just re-set current_task */
+/*
+   1. update current_task
+   2. delete the current_task from os_ready_list
+   3. insert old_task into os_sleep_list or os_ready_list or sem_list.
+*/
 PRIVATE void task_sched(struct __os_task__ *best_task)
 {
     struct __os_task__ *old_task;
@@ -87,9 +91,9 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
     current_task->state = TASK_RUNNING;
     os_ready_delete(best_task);
 
-    if (old_task->state == TASK_UNUSED) {   /* self-destruction */
+    if (old_task->state == TASK_UNUSED) {       /* self-destruction */
 
-    } else if (old_task->state == TASK_SLEEP) {
+    } else if (old_task->state == TASK_SLEEP) { /* current_task invoke os_sleep */
         os_sleep_insert(old_task);
     } else {
         old_task->state = TASK_READY;
