@@ -1,4 +1,4 @@
-############ by wuxx #############
+############ create by wuxx #############
 
 #from build_sos.sh
 CFLAGS = $(cflags)

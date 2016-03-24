@@ -69,22 +69,23 @@ PRIVATE void cpu_context_restore()
     memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct cpu_context));
 }
 
+/* when irq happen, irq mode [lr] = user/system mode [pc] +4 */
 __attribute__((naked)) void IrqHandler()
 {
-    asm volatile (
-            "stmfd sp!, {lr}\n\t"       /* user/system pc = lr - 4  */
+    asm volatile (  /* cpu context save, please check the struct cpu_context */
+            "stmfd sp!, {lr}\n\t"       /* user/system pc = irq lr - 4  */
             "stmfd sp!, {r0-r14}^\n\t"  /* the ^ means user/system mode reg */
             "sub sp, sp, #4\n\t"        /* eh... get space to place the user/system mode cpsr, sp */
 
             "push {r0-r1}\n\t"
 
-            "add r1, sp, #8\n\t"    /* (r1 = sp + 8) the context frame base. */
+            "add r1, sp, #8\n\t"        /* (r1 = sp + 8) the context frame base. */
 
-            "mrs r0, spsr\n\t"      /* user/system mode cpsr is backup in spsr */
-            "str r0, [r1, #0x0]\n\t"
+            "mrs r0, spsr\n\t"          /* user/system mode cpsr is backup in spsr */
+            "str r0, [r1, #0x0]\n\t"    /* store the cpsr */
 
             "ldr r0, =current_context\n\t"
-            "str r1, [r0]\n\t"      /* store the context frame */
+            "str r1, [r0]\n\t"          /* store the context frame point in current_context */
 
             "pop  {r0-r1}\n\t"
 
@@ -96,16 +97,16 @@ __attribute__((naked)) void IrqHandler()
 
     General_Irq_Handler();
 
-    __asm__ volatile (
+    __asm__ volatile (  /* cpu context restore */
 
             "bl cpu_context_restore\n\t"
 
             "pop {r0}\n\t"              /* spsr -> r0 */
-            "msr SPSR_cxsf, r0\n\t"     /* restore cpsr */
+            "msr SPSR_cxsf, r0\n\t"     /* ready to restore cpsr */
 
-            "ldmfd sp!, {r0-r14}^\n\t"
-            "ldmfd sp!, {lr}\n\t"
-            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, rerun the user/system mode code */
+            "ldmfd sp!, {r0-r14}^\n\t"  /* restore user/system mode r0-r14 */
+            "ldmfd sp!, {lr}\n\t"       /*  lr */
+            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, run the user/system mode code */
             "nop\n\t"
             :
             :
