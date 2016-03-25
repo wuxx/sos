@@ -98,6 +98,7 @@ s32 os_main(u32 sp)
 
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));
+    current_task->state = TASK_RUNNING;
     idle_task();
     while(1); /* never reach here */
     return 0;

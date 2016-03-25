@@ -100,7 +100,7 @@ PRIVATE s32 tcb_init(struct __os_task__ *ptask, func_1 task_entry, u32 arg, u32 
     cc->r12  = 0;
     cc->sp   = (u32)(&ptask->stack[TASK_STK_SIZE]);
     cc->lr   = 0;
-    cc->pc   = (u32)task_matrix + 4;     /* pc + 4 */
+    cc->pc   = (u32)task_matrix + 4;     /* real pc + 4, create the fake irq mode saved cpu_context */
 
     ptask->sp = (u32)cc;
 

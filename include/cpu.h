@@ -48,8 +48,8 @@ struct cpu_context {
     u32 r11;
     u32 r12;
     u32 sp;
-    u32 lr; /* actually it's a irq mode lr */
-    u32 pc;
+    u32 lr;
+    u32 pc;     /* user/system mode [pc] + 4 */
 };
 
 #if 0

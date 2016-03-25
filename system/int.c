@@ -69,7 +69,7 @@ PRIVATE void cpu_context_restore()
     memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct cpu_context));
 }
 
-/* when irq happen, irq mode [lr] = user/system mode [pc] +4 */
+/* when irq happen, = user/system mode [pc] +4 -> irq mode [lr]  */
 __attribute__((naked)) void IrqHandler()
 {
     asm volatile (  /* cpu context save, please check the struct cpu_context */
@@ -105,8 +105,8 @@ __attribute__((naked)) void IrqHandler()
             "msr SPSR_cxsf, r0\n\t"     /* ready to restore cpsr */
 
             "ldmfd sp!, {r0-r14}^\n\t"  /* restore user/system mode r0-r14 */
-            "ldmfd sp!, {lr}\n\t"       /*  lr */
-            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, run the user/system mode code */
+            "ldmfd sp!, {lr}\n\t"       /*  user/system mode pc -> irq mode lr */
+            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, launching into the user/system mode code */
             "nop\n\t"
             :
             :

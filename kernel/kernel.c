@@ -91,13 +91,20 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
     current_task->state = TASK_RUNNING;
     os_ready_delete(best_task);
 
-    if (old_task->state == TASK_UNUSED) {       /* self-destruction */
-
-    } else if (old_task->state == TASK_SLEEP) { /* current_task invoke os_sleep */
-        os_sleep_insert(old_task);
-    } else {
-        old_task->state = TASK_READY;
-        os_ready_insert(old_task);
+    switch (old_task->state) {
+        case (TASK_UNUSED):     /* current task self-destruction */
+            break;
+        case (TASK_RUNNING):    /* current task create higher prio task  */
+            old_task->state = TASK_READY;
+            os_ready_insert(old_task);
+            break;
+        case (TASK_SLEEP):      /* current task invoke os_task_sleep sleep */
+            os_sleep_insert(old_task);
+            break;
+        case (TASK_WAIT_SEM):   /* current task wait for sem has already insert into the sem wait list */
+            break;
+        default:
+            kassert("%x \n", old_task->state);
     }
 
     /* dump_list(); */
@@ -111,6 +118,7 @@ PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
     os_tick ++ ;
     
     os_sleep_expire();
+
     if ((best_task = need_schedule()) != NULL) {
         task_sched(best_task);
     }
