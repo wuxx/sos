@@ -25,6 +25,7 @@ struct __os_task__
 
     u32 state;
     u32 prio;
+    void *private_data;
 
     u32 sleep_ticks;
 

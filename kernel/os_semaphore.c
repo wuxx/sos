@@ -59,7 +59,7 @@ s32 os_semaphore_get(u32 sem_id)
 
     if (sem->token == 0) {
         current_task->state = TASK_WAIT_SEM;
-        os_sem_insert(sem, current_task);
+        current_task->private_data = sem;
         task_dispatch();
     } else {
         sem->token -- ;

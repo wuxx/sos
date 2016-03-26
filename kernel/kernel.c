@@ -84,6 +84,7 @@ PRIVATE struct __os_task__ * need_schedule()
 PRIVATE void task_sched(struct __os_task__ *best_task)
 {
     struct __os_task__ *old_task;
+    struct __os_semaphore__ *psem;
 
     old_task     = current_task;
     current_task = best_task;
@@ -101,7 +102,9 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
         case (TASK_SLEEP):      /* current task invoke os_task_sleep sleep */
             os_sleep_insert(old_task);
             break;
-        case (TASK_WAIT_SEM):   /* current task wait for sem has already insert into the sem wait list */
+        case (TASK_WAIT_SEM):   /* current task wait for sem */
+            psem = (struct __os_semaphore__ *)(current_task->private_data);
+            os_sem_insert(psem, current_task);
             break;
         default:
             kassert("%x \n", old_task->state);

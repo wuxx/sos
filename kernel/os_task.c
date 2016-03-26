@@ -111,6 +111,12 @@ PRIVATE s32 tcb_init(struct __os_task__ *ptask, func_1 task_entry, u32 arg, u32 
 
 PUBLIC s32 task_dispatch()
 {
+    struct __os_task__ *best_task;
+
+    if ((best_task = need_schedule()) != NULL) {
+        task_sched(best_task);
+    }
+
     return 0;
 }
 
