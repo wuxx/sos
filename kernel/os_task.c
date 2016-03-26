@@ -129,7 +129,7 @@ PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
 
     tcb_init(ptask, entry, arg, prio);
 
-    os_ready_insert(ptask);
+    os_ready_insert(ptask); /* FIXME: do task switch immediately if a higher task created. */
 
     return 0;
 }
@@ -138,5 +138,6 @@ PUBLIC s32 task_delete(u32 task_id)
 {
     tcb[task_id].prio  = TASK_PRIO_MAX; /* lowest prio */
     tcb[task_id].state = TASK_UNUSED;
+    /* FIXME: do task switch immediately */
     return 0;
 }

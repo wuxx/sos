@@ -122,9 +122,7 @@ PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
     
     os_sleep_expire();
 
-    if ((best_task = need_schedule()) != NULL) {
-        task_sched(best_task);
-    }
+    task_dispatch();
 }
 
 PRIVATE s32 coretimer_irq_handler(u32 irq_nr)
@@ -155,4 +153,6 @@ PUBLIC s32 os_init()
     }
     current_task = &tcb[0];  /* idle_task */
     PRINT_STAMP();
+    /* FIXME: create main() task */
 }
+
