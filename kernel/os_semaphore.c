@@ -39,7 +39,7 @@ s32 get_free_sem()
     return -1;
 }
 
-s32 os_semaphore_create(u32 res_nr)
+s32 semaphore_create(u32 res_nr)
 {
     s32 sem_id;
     sem_id = get_free_sem();
@@ -48,7 +48,7 @@ s32 os_semaphore_create(u32 res_nr)
     return sem_id;
 }
 
-s32 os_semaphore_get(u32 sem_id)
+s32 semaphore_get(u32 sem_id)
 {
     struct __os_semaphore__ *sem = NULL;
 
@@ -68,7 +68,7 @@ s32 os_semaphore_get(u32 sem_id)
     return 0;
 }
 
-s32 os_semaphore_put(u32 sem_id)
+s32 semaphore_put(u32 sem_id)
 {
     struct __os_semaphore__ *sem = NULL;
 
@@ -84,7 +84,7 @@ s32 os_semaphore_put(u32 sem_id)
     return 0;
 }
 
-s32 os_semaphore_delete(u32 sem_id)
+s32 semaphore_delete(u32 sem_id)
 {
     struct __os_semaphore__ *sem = NULL;
 

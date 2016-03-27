@@ -124,14 +124,14 @@ PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
 {
     struct __os_task__ *ptask;
     if ((ptask = tcb_alloc()) == NULL) {
-        return ENOMEM;
+        kassert(0);
     }
 
     tcb_init(ptask, entry, arg, prio);
 
     os_ready_insert(ptask); /* FIXME: do task switch immediately if a higher task created. */
 
-    return 0;
+    return ptask->id;
 }
 
 PUBLIC s32 task_delete(u32 task_id)

@@ -155,7 +155,7 @@ __attribute__((naked)) void ExcHandler()
 
             "pop  {r0-r1}\n\t"
 
-            /* "bl cpu_context_save\n\t" */ /* we are not gonna to do the task switch. */
+            "bl cpu_context_save\n\t"
             :
             :
             : "memory"
@@ -163,13 +163,13 @@ __attribute__((naked)) void ExcHandler()
     General_Exc_Handler();
     __asm__ volatile (
 
-            /* "bl cpu_context_restore\n\t" */
+            "bl cpu_context_restore\n\t"
 
             "pop {r0}\n\t"              /* spsr -> r0 */
             "msr SPSR_cxsf, r0\n\t"     /* restore cpsr */
 
             "ldmfd sp!, {r0-r14}^\n\t"
-            "ldmfd sp!, {lr}\n\t"
+            "ldmfd sp!, {lr}\n\t"       /* user/system mode pc -> irq mode lr */
             "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, rerun the user/system mode code */
             "nop\n\t"
             :
