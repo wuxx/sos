@@ -23,17 +23,19 @@ struct __syscall__ syscall_table[] = {
 
 s32 os_task_create(func_1 entry, u32 arg, u32 prio)
 {
+    register int __r0 __asm("r0");
+
     args[0] = (u32)entry;
     args[1] = arg;
     args[2] = prio;
     /* invoke the swi */
     asm (   "ldr r0, =args\n\t"
             "swi " SYS_TASK_CREATE "\n\t"
+        :"=r" (__r0)
         :
-        :
-        :"r0"
+        :"cc"
             );
-    return 0;
+    return __r0;   /* TODO: add appropriate return value */
 }
 
 s32 do_task_create(u32 _args)

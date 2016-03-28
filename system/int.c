@@ -116,18 +116,26 @@ __attribute__((naked)) void IrqHandler()
 
 PUBLIC void General_Exc_Handler()
 {
-    u32 lr, cpsr;
-    u32 syscall_nr, mode;
-    cpsr = __get_cpsr();
+    u32 cpsr, syscall_nr, mode;
+    s32 ret;
+    struct __os_task__ *ptask;
+    struct cpu_context *pctx;
+
+    ptask = current_task;
+    cpsr  = __get_cpsr();
+    pctx  = (struct cpu_context *)(ptask->sp);
+    pctx->pc += 4;  /* assume that we are in a irq */
+
     PRINT_EMG("in %s \n", __func__);
     PRINT_EMG("cpsr %x; %s\n", cpsr, get_cpu_mode(&mode));
     dump_ctx(current_context);
     if (mode == MODE_SVC) {
         syscall_nr = readl(current_context->pc - 4) & 0xFFFFFF;
         PRINT_STAMP();
-        syscall_table[syscall_nr].handler(current_context->r0);
+        ret = syscall_table[syscall_nr].handler(current_context->r0);   /* may be invoke task_dispatch */
         PRINT_STAMP();
 
+        pctx->r0  = ret;
         current_context->pc += 4;
     } else {
         panic();

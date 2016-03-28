@@ -71,6 +71,7 @@ s32 semaphore_get(u32 sem_id)
 s32 semaphore_put(u32 sem_id)
 {
     struct __os_semaphore__ *sem = NULL;
+    struct __os_task__ *ptask = NULL;
 
     assert(sem_id < SEM_NR_MAX);
     assert(os_semaphore[sem_id].status == SEM_USED);
@@ -80,7 +81,16 @@ s32 semaphore_put(u32 sem_id)
     sem->token ++;
     if (sem->token == 1) {
         /* */
+        if (sem->next != NULL) { /* somebody is waiting for the sem */
+            ptask = sem->next;
+            sem->next = sem->next->next;
+            if (ptask->prio < current_task->prio) {
+                os_ready_insert(ptask);
+                task_dispatch();
+            }
+        }
     }
+
     return 0;
 }
 
