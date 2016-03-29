@@ -141,3 +141,10 @@ PUBLIC s32 task_delete(u32 task_id)
     /* FIXME: do task switch immediately */
     return 0;
 }
+
+PUBLIC s32 task_sleep(u32 ticks)
+{
+    current_task->state = TASK_SLEEP;
+    task_dispatch();
+    return 0;
+}

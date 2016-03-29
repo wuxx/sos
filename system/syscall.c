@@ -3,7 +3,6 @@
 
 #define SYSCALL_ARG_MAX (4)
 
-u32 args[SYSCALL_ARG_MAX];
 
 s32 do_task_create(u32 args);
 s32 do_task_sleep (u32 args);
@@ -24,10 +23,29 @@ struct __syscall__ syscall_table[] = {
 s32 os_task_create(func_1 entry, u32 arg, u32 prio)
 {
     register int __r0 __asm("r0");
+    register int __r1 __asm("r1");
+    register int __r2 __asm("r2");
+    register int __r3 __asm("r3");
 
-    args[0] = (u32)entry;
-    args[1] = arg;
-    args[2] = prio;
+    __r0 = (u32)entry;
+    __r1 = arg;
+    __r2 = prio;
+    /* invoke the swi */
+    asm ( 
+            "swi " SYS_TASK_CREATE "\n\t"
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
+        :"cc"
+            );
+    return __r0;   /* TODO: add appropriate return value */
+}
+
+s32 os_task_sleep(u32 ticks)
+{
+#if 0
+    register int __r0 __asm("r0");
+
+    args[0] = (u32)ticks;
     /* invoke the swi */
     asm (   "ldr r0, =args\n\t"
             "swi " SYS_TASK_CREATE "\n\t"
@@ -36,6 +54,28 @@ s32 os_task_create(func_1 entry, u32 arg, u32 prio)
         :"cc"
             );
     return __r0;   /* TODO: add appropriate return value */
+#endif
+    return 0;
+}
+
+s32 os_sem_create(u32 tokens)
+{
+#if 0
+    u32 args[SYSCALL_ARG_MAX];
+    register int __r0 __asm("r0");
+
+    args[0] = (u32)tokens;
+    /* invoke the swi */
+    asm (   "ldr r0, =args\n\t"
+            "swi " SYS_TASK_CREATE "\n\t"
+        :"=r" (__r0)
+        :
+        :"cc"
+            );
+    return __r0;   /* TODO: add appropriate return value */
+
+#endif
+    return 0;
 }
 
 s32 do_task_create(u32 _args)
@@ -46,6 +86,8 @@ s32 do_task_create(u32 _args)
 
 s32 do_task_sleep(u32 _args)
 {
+    u32 *args = (u32*)_args;
+    task_sleep(args[0]);
     return 0;
 }
 
