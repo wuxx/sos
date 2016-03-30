@@ -37,43 +37,46 @@ s32 os_task_create(func_1 entry, u32 arg, u32 prio)
         : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
         :"cc"
             );
-    return __r0;   /* TODO: add appropriate return value */
+    return __r0;
 }
 
 s32 os_task_sleep(u32 ticks)
 {
-#if 0
+#if 1
     register int __r0 __asm("r0");
+    register int __r1 __asm("r1");
+    register int __r2 __asm("r2");
+    register int __r3 __asm("r3");
 
-    args[0] = (u32)ticks;
+    __r0 = (u32)ticks;
     /* invoke the swi */
-    asm (   "ldr r0, =args\n\t"
+    asm (
             "swi " SYS_TASK_CREATE "\n\t"
-        :"=r" (__r0)
-        :
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
         :"cc"
             );
-    return __r0;   /* TODO: add appropriate return value */
+    return __r0;
 #endif
-    return 0;
 }
 
 s32 os_sem_create(u32 tokens)
 {
-#if 0
-    u32 args[SYSCALL_ARG_MAX];
+#if 1
     register int __r0 __asm("r0");
+    register int __r1 __asm("r1");
+    register int __r2 __asm("r2");
+    register int __r3 __asm("r3");
 
-    args[0] = (u32)tokens;
+    __r0 = (u32)tokens;
     /* invoke the swi */
-    asm (   "ldr r0, =args\n\t"
-            "swi " SYS_TASK_CREATE "\n\t"
-        :"=r" (__r0)
-        :
+    asm (
+            "swi " SYS_SEM_CREATE "\n\t"
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
         :"cc"
             );
-    return __r0;   /* TODO: add appropriate return value */
-
+    return __r0;
 #endif
     return 0;
 }
@@ -93,7 +96,8 @@ s32 do_task_sleep(u32 _args)
 
 s32 do_sem_create(u32 _args)
 {
-    return 0;
+    u32 tokens = _args;
+    return semaphore_create(tokens);
 }
 
 s32 do_sem_get(u32 _args)

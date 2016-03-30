@@ -71,6 +71,7 @@ s32 os_main(u32 sp)
     u32 cpsr;
     u32 pc;
     u32 tid;
+
     u8  ch;
 
     int_init();
@@ -92,9 +93,10 @@ s32 os_main(u32 sp)
         PRINT_EMG("blink_task create failed !\n");
     }
 
-    if (task_create(task_main, 0, 100) != 0) {
-        PRINT_EMG("blink_task create failed !\n");
+    if ((tid = os_task_create(task_main, 0, 100)) != 0) {
+        PRINT_EMG("blink_task create failed %d !\n", tid);
     }
+    PRINT_EMG("tid %d !\n", tid);
 
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));
