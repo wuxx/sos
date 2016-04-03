@@ -61,21 +61,6 @@ PUBLIC void dump_ctx(struct cpu_context *ctx)
     DUMP_VAR(ctx, pc);
 }
 
-PRIVATE struct __os_task__ * need_schedule()
-{
-    struct __os_task__ *best_task;
-
-    best_task = get_task_ready(); /* get the highest priority task in READY STATE */
-    if (best_task->prio <= current_task->prio || /* current_task create a higher prio task  */
-        current_task->state == TASK_UNUSED    || /* current_task self-destruction  */
-        current_task->state == TASK_SLEEP        /* current_task invoke os_sleep */
-        ) {
-        PRINT_DEBUG("schedule task %d \n", best_task->id);
-        return best_task;
-    }
-    return NULL;
-}
-
 /*
    1. update current_task
    2. delete the current_task from os_ready_list
@@ -147,7 +132,7 @@ PUBLIC s32 os_init()
 {
     coretimer_init();
     PRINT_STAMP();
-    if (task_create(idle_task, 0, 100) != OK) {
+    if (task_create(idle_task, 0, 100) != 0) {
         PRINT_EMG("idle_task create failed !\n");
         return ERROR;
     }

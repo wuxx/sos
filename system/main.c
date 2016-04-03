@@ -62,7 +62,10 @@ char* get_cpu_mode(u32 *m)
 
 s32 task_main(u32 arg)
 {
-    PRINT_STAMP();
+    while (1) {
+        PRINT_STAMP();
+        mdelay(1000);
+    }
     return 0;
 }
 
@@ -89,14 +92,20 @@ s32 os_main(u32 sp)
 
     /* set_log_level(LOG_DEBUG); */
 
-    if (task_create(blink_task, 0, 100) != 0) {
+    if (task_create(blink_task, 0, 100) == -1) {
         PRINT_EMG("blink_task create failed !\n");
     }
 
-    if ((tid = os_task_create(task_main, 0, 100)) != 0) {
+    if ((task_create(task_main, 0, 100)) == -1) {
         PRINT_EMG("blink_task create failed %d !\n", tid);
     }
     PRINT_EMG("tid %d !\n", tid);
+#if 0
+    if ((tid = os_task_create(task_main, 0, 100)) == -1) {
+        PRINT_EMG("blink_task create failed %d !\n", tid);
+    }
+    PRINT_EMG("tid %d !\n", tid);
+#endif
 
     /* 'slip into idle task', cause the main() is not a task (it's the god code of system) */
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));

@@ -1,5 +1,6 @@
 #include <libc.h>
 #include "syscall.h"
+#include "log.h"
 
 #define SYSCALL_ARG_MAX (4)
 
@@ -43,10 +44,10 @@ s32 os_task_create(func_1 entry, u32 arg, u32 prio)
 s32 os_task_sleep(u32 ticks)
 {
 #if 1
-    register int __r0 __asm("r0");
-    register int __r1 __asm("r1");
-    register int __r2 __asm("r2");
-    register int __r3 __asm("r3");
+    register s32 __r0 __asm("r0");
+    register s32 __r1 __asm("r1");
+    register s32 __r2 __asm("r2");
+    register s32 __r3 __asm("r3");
 
     __r0 = (u32)ticks;
     /* invoke the swi */
@@ -63,10 +64,10 @@ s32 os_task_sleep(u32 ticks)
 s32 os_sem_create(u32 tokens)
 {
 #if 1
-    register int __r0 __asm("r0");
-    register int __r1 __asm("r1");
-    register int __r2 __asm("r2");
-    register int __r3 __asm("r3");
+    register s32 __r0 __asm("r0");
+    register s32 __r1 __asm("r1");
+    register s32 __r2 __asm("r2");
+    register s32 __r3 __asm("r3");
 
     __r0 = (u32)tokens;
     /* invoke the swi */
@@ -84,6 +85,8 @@ s32 os_sem_create(u32 tokens)
 s32 do_task_create(u32 _args)
 {
     u32 *args = (u32*)_args;
+    PRINT_STAMP();
+    PRINT_EMG("%x %x %x \n", args[0], args[1], args[2]);
     return task_create(args[0], args[1], args[2]);
 }
 
