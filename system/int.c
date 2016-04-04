@@ -124,19 +124,20 @@ PUBLIC void General_Exc_Handler()
     ptask = current_task;
     cpsr  = __get_cpsr();
     pctx  = (struct cpu_context *)(ptask->sp);
-    pctx->pc += 4;  /* assume that we are in a irq */
+    /*pctx->pc += 4;*/  /* assume that we are in a irq */
 
     PRINT_EMG("in %s \n", __func__);
     PRINT_EMG("cpsr %x; %s\n", cpsr, get_cpu_mode(&mode));
     dump_ctx(current_context);
     if (mode == MODE_SVC) {
-        syscall_nr = readl(current_context->pc - 4) & 0xFFFFFF;
+        syscall_nr = readl(current_context->pc - 8) & 0xFFFFFF;
+        PRINT_EMG("syscall %d \n", syscall_nr);
         PRINT_STAMP();
         ret = syscall_table[syscall_nr].handler(current_context->r0);   /* may be invoke task_dispatch */
         PRINT_STAMP();
 
         pctx->r0  = ret;
-        current_context->pc += 4;
+        /* current_context->pc += 4; */ /* FIXME: if we need this ?? */
     } else {
         panic();
         while(1);
@@ -146,8 +147,9 @@ PUBLIC void General_Exc_Handler()
 
 __attribute__((naked)) void ExcHandler()
 {
+    asm volatile ( "add lr, lr, #4" ); /* irq mode lr = user/system mode pc + 4, but in svc mode lr = user/system mode pc   */
     asm volatile (
-            "stmfd sp!, {lr}\n\t"       /* user/system pc = lr - 4  */
+            "stmfd sp!, {lr}\n\t"
             "stmfd sp!, {r0-r14}^\n\t"  /* the ^ means user/system mode reg */
             "sub sp, sp, #4\n\t"        /* eh... get space to place the user/system mode cpsr, sp */
 

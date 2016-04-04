@@ -13,15 +13,15 @@ extern struct cpu_context *current_context;
 volatile u32 os_tick = 0;
 volatile u32 idle_init = 0;
 
-PRIVATE s32 idle_task(u32 arg)
+/*PRIVATE*/ s32 idle_task(u32 arg)
 {
     if (idle_init == 0) {
-        os_ready_delete(&tcb[0]);
         extern s32 dump_list();
         dump_list();
         idle_init = 1;
-        unlock_irq();   /* kick off the system */
+        unlock_irq();   /* kick off the system, will switch to the main_task */
     }
+
     while(1) {
         PRINT_INFO("in %s\n", __func__);
         mdelay(1000);
