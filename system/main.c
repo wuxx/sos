@@ -27,38 +27,6 @@ s32 blink_task(u32 arg)
     return 0;
 }
 
-char* get_cpu_mode(u32 *m)
-{
-    u32 cpsr, mode;
-    cpsr = __get_cpsr();
-    mode = cpsr & 0x1f;
-
-    if (m != NULL) {
-        *m = mode;
-    }
-
-    switch (mode) {
-        case (16):
-            return "user mode";
-        case (17):
-            return "fiq mode";
-        case (18):
-            return "irq mode";
-        case (19):
-            return "supervisor mode";
-        case (22):
-            return "secmonitor mode";
-        case (23):
-            return "abort mode";
-        case (27):
-            return "undefined mode";
-        case (31):
-            return "system mode";
-        default:
-            return "unknown mode";
-    }
-}
-
 #if 1
 static s32 test_task(u32 arg)
 {

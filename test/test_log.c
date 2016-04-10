@@ -1,6 +1,7 @@
 #include <memory_map.h>
 #include <libc.h>
 #include "log.h"
+#include "systest.h"
 
 char *loglevel_desc[] = {
         "LOG_EMG",

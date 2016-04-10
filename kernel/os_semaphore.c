@@ -16,19 +16,7 @@ struct __os_semaphore__ {
 
 struct __os_semaphore__ os_semaphore[SEM_NR_MAX];
 
-struct __os_semaphore__ * os_semaphore_init()
-{
-    u32 i;
-    for(i=0;i<SEM_NR_MAX;i++) {
-        os_semaphore[i].type   == OS_SEM;
-        os_semaphore[i].next   == NULL;
-        os_semaphore[i].status == SEM_FREE;
-        os_semaphore[i].token == 0;
-    }
-    return 0;
-}
-
-s32 get_free_sem()
+PRIVATE s32 get_free_sem()
 {
     u32 i;
     for(i=0;i<SEM_NR_MAX;i++) {
@@ -39,21 +27,21 @@ s32 get_free_sem()
     return -1;
 }
 
-s32 semaphore_create(u32 res_nr)
+PUBLIC s32 semaphore_create(u32 res_num)
 {
     s32 sem_id;
     sem_id = get_free_sem();
     os_semaphore[sem_id].status = SEM_USED;
-    os_semaphore[sem_id].token = res_nr;
+    os_semaphore[sem_id].token = res_num;
     return sem_id;
 }
 
-s32 semaphore_get(u32 sem_id)
+PUBLIC s32 semaphore_get(u32 sem_id)
 {
     struct __os_semaphore__ *sem = NULL;
 
-    assert(sem_id < SEM_NR_MAX);
-    assert(os_semaphore[sem_id].status == SEM_USED);
+    kassert(sem_id < SEM_NR_MAX);
+    kassert(os_semaphore[sem_id].status == SEM_USED);
 
     sem = &os_semaphore[sem_id];
 
@@ -68,13 +56,13 @@ s32 semaphore_get(u32 sem_id)
     return 0;
 }
 
-s32 semaphore_put(u32 sem_id)
+PUBLIC s32 semaphore_put(u32 sem_id)
 {
     struct __os_semaphore__ *sem = NULL;
     struct __os_task__ *ptask = NULL;
 
-    assert(sem_id < SEM_NR_MAX);
-    assert(os_semaphore[sem_id].status == SEM_USED);
+    kassert(sem_id < SEM_NR_MAX);
+    kassert(os_semaphore[sem_id].status == SEM_USED);
 
     sem = &os_semaphore[sem_id];
 
@@ -94,16 +82,28 @@ s32 semaphore_put(u32 sem_id)
     return 0;
 }
 
-s32 semaphore_delete(u32 sem_id)
+PUBLIC s32 semaphore_delete(u32 sem_id)
 {
     struct __os_semaphore__ *sem = NULL;
 
-    assert(sem_id < SEM_NR_MAX);
-    assert(os_semaphore[sem_id].status == SEM_USED);
+    kassert(sem_id < SEM_NR_MAX);
+    kassert(os_semaphore[sem_id].status == SEM_USED);
 
     sem = &os_semaphore[sem_id];
     assert(sem->next == NULL);
     sem->status = SEM_FREE;
     sem->token = 0;
+    return 0;
+}
+
+struct __os_semaphore__ * semaphore_init()
+{
+    u32 i;
+    for(i=0;i<SEM_NR_MAX;i++) {
+        os_semaphore[i].type   = OS_SEM;
+        os_semaphore[i].next   = NULL;
+        os_semaphore[i].status = SEM_FREE;
+        os_semaphore[i].token  = 0;
+    }
     return 0;
 }

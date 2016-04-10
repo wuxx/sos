@@ -21,7 +21,7 @@ struct shell_cmd_info sub_ci[] =  {
     { .name = "help",  .func = sub_cmd_help,   .desc = ""},
 };
 
-void dump_mem(u32 addr, u32 word_nr)
+PUBLIC void dump_mem(u32 addr, u32 word_nr)
 {
     u32 i;
     u32 *p = (u32 *)addr;
@@ -30,7 +30,7 @@ void dump_mem(u32 addr, u32 word_nr)
     }
 }
 
-s32 sub_cmd_help()
+PRIVATE s32 sub_cmd_help()
 {
     u32 i;
     for(i=0; i<(sizeof(sub_ci)/sizeof(sub_ci[0])); i++) {
@@ -39,7 +39,7 @@ s32 sub_cmd_help()
     return 0;
 }
 
-static s32 get_cmd_index(char *cmd)
+PRIVATE static s32 get_cmd_index(char *cmd)
 {
     u32 i;
     for(i=0; i<(sizeof(sub_ci)/sizeof(sub_ci[0])); i++) {
@@ -50,7 +50,7 @@ static s32 get_cmd_index(char *cmd)
     return -1;
 }
 
-s32 systest(u32 argc, char **argv)
+PUBLIC s32 systest(u32 argc, char **argv)
 {
     u32 i;
     s32 ret;

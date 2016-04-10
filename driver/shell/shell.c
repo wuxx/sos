@@ -4,6 +4,7 @@
 #include "log.h"
 #include "mmio.h"
 #include "shell.h"
+#include "systest.h"
 
 u32 argc;
 char *argv[SHELL_ARGS_MAX] = {NULL};
@@ -72,7 +73,6 @@ PRIVATE s32 cmd_dump()
     u32 i;
     u32 *p;
     u32 addr, word_nr;
-    func_4 func;
 
     addr    = atoi(argv[1]);
     word_nr = atoi(argv[2]);
@@ -130,6 +130,7 @@ PRIVATE s32 parse_cmd(char *cmd)
             cmd[i] = '\0';
         }
     }
+    return 0;
 }
 
 PRIVATE static s32 get_cmd_index(char *cmd)
@@ -146,7 +147,6 @@ PRIVATE static s32 get_cmd_index(char *cmd)
 PUBLIC s32 shell(char *cmd)
 {
     u32 i, len;
-    u32 para1, para2;
     s32 ret;
 
     if ((len = strlen(cmd)) == 0) {
@@ -168,9 +168,10 @@ PUBLIC s32 shell(char *cmd)
 
     if ((i=get_cmd_index(argv[0])) == -1) {
         PRINT_EMG("illegal cmd [%s] \n", argv[0]);
-        return -1;
+        return EINVAL;
     }
 
     ret = ci[i].func();
     PRINT_EMG("return 0x%x\n", ret);
+    return 0;
 }

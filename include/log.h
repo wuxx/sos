@@ -12,7 +12,8 @@ enum LOG_LEVEL_E {
     LOG_MAX,
 };
 
-s32 log(u32 log_level, char *format, ...);
+s32 set_log_level(u32 log_level);
+s32 log(u32 log_level, const char *format, ...);
 
 #define PRINT_STAMP()           log(LOG_EMG, "%s:%d\n", __func__, __LINE__)
 

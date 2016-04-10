@@ -4,7 +4,7 @@
 #include <libc.h>
 #include "timer.h"
 #include "log.h"
-#include "syscall.h"
+#include "systest.h"
 
 extern u32 os_tick;
 extern struct __os_task__ tcb[TASK_NR_MAX];
@@ -16,12 +16,13 @@ char *task_state_desc[] = {
     "TASK_READY",
 };
 
-void test_task()
+s32 test_task(u32 arg)
 {
     while (1) {
         PRINT_EMG("in %s \n", __func__);
         mdelay(1000);
     }
+    return 0;
 }
 
 
@@ -37,7 +38,7 @@ void dump_tcb(u32 i)
         PRINT_EMG("\tstack:       [0x%x]\n", tcb[i].stack);
         PRINT_EMG("\tstack_size:  [%d]\n", tcb[i].stack_size);
         PRINT_EMG("\ttask_entry:  [0x%x]\n", tcb[i].entry);
-        dump_mem(tcb[i].stack, tcb[i].stack_size);
+        dump_mem((u32)(tcb[i].stack), tcb[i].stack_size);
     }
 
 }
@@ -74,10 +75,9 @@ s32 dump_list()
 
 s32 test_os_all(u32 argc, char **argv)
 {
-    u64 sc;
-    u32 clo, chi;
     s32 ret = 0;
     u32 i, arg1;
+
     i    = atoi(argv[2]);
     arg1 = atoi(argv[3]);
 

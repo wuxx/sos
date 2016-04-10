@@ -1,5 +1,6 @@
 #ifndef __STDARG_H__
 #define __STDARG_H__
+#include <types.h>
 
 typedef char* va_list;
 
@@ -14,4 +15,5 @@ typedef char* va_list;
 
 #define va_end(va_list) ((void)0)
 
+int vsnprintf(char *buf, u32 size, const char *fmt, va_list args);
 #endif /* __STDARG_H__ */

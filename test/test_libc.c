@@ -2,6 +2,7 @@
 #include <libc.h>
 
 #include "log.h"
+#include "uart.h"
 
 static char buf[1024] = {0};
 

@@ -5,7 +5,11 @@
 #include "cpu.h"
 #include "syscall.h"
 
-extern void dump_mem(u32 addr, u32 word_nr);
+extern void  dump_mem(u32 addr, u32 word_nr);
+extern char* get_cpu_mode(u32 *m);
+extern void  dump_ctx(struct cpu_context *ctx);
+extern void dump_tcb_all();
+
 extern struct __syscall__ syscall_table[];
 
 struct __os_task__ *current_task;
@@ -13,15 +17,16 @@ struct cpu_context *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
 
-PUBLIC void General_Irq_Handler()
+PRIVATE void General_Irq_Handler()
 {
-    u32 i, j, cpsr;
+    u32 i, j;
     u32 pend[3], enable[3];
     u32 irq_nr;
     func_1 irq_func = NULL;
 
-    cpsr = __get_cpsr();
 #if 0
+    u32 cpsr;
+    cpsr = __get_cpsr();
     PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
     PRINT_DEBUG("\ncurrent_context: %x\n", current_context);
     dump_mem((u32)current_context, 20);
@@ -114,7 +119,7 @@ __attribute__((naked)) void IrqHandler()
     );
 }
 
-PUBLIC void General_Exc_Handler()
+PRIVATE void General_Exc_Handler()
 {
     u32 cpsr, nr, mode;
     s32 ret;
@@ -243,6 +248,7 @@ PUBLIC s32 enable_irq(u32 irq_nr)
     rv = readl(enable_base);
     set_bit(&rv, offset, 1);
     writel(enable_base, rv);
+    return 0;
 }
 
 PUBLIC s32 disable_irq(u32 irq_nr)
@@ -275,6 +281,7 @@ PUBLIC s32 disable_irq(u32 irq_nr)
     rv = readl(disable_base);
     set_bit(&rv, offset, 1);
     writel(disable_base, rv);
+    return 0;
 }
 
 PUBLIC s32 disable_irq_all()
@@ -282,6 +289,7 @@ PUBLIC s32 disable_irq_all()
     writel(IRQ_DISABLE_BASIC, 0xFFFFFFFF);
     writel(IRQ_DISABLE1, 0xFFFFFFFF);
     writel(IRQ_DISABLE2, 0xFFFFFFFF);
+    return 0;
 }
 
 PUBLIC void lock_irq()
@@ -318,7 +326,7 @@ PUBLIC s32 lockup()
     while(1);
 }
 
-PUBLIC s32 _assert(char *file_name, char *func_name, u32 line_num, char *desc)
+PUBLIC s32 _assert(const char *file_name, const char *func_name, u32 line_num, char *desc)
 {
     PRINT_EMG("[%s][%s][%d]: %s\n", file_name, func_name, line_num, desc);
     lockup();

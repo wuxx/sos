@@ -5,7 +5,7 @@
 
 extern struct __os_list__ os_sleep_list;
 
-s32 os_sleep_expire()
+PUBLIC s32 os_sleep_expire()
 {
     struct __os_task__ *pprev, *pcurr;
 
@@ -30,4 +30,5 @@ s32 os_sleep_expire()
         }
     }
 
+    return 0;
 }

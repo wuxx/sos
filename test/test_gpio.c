@@ -2,6 +2,7 @@
 #include <libc.h>
 #include "gpio.h"
 #include "log.h"
+#include "systest.h"
 
 /* GPIO17 -> GPIO_GEN0 -> 11 */
 /* GPIO18 -> GPIO_GEN1 -> 12 */

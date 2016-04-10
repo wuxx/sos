@@ -95,7 +95,6 @@ PUBLIC void set_gpio_value(u32 gpio, u32 val)
     u32 offset1 = 0;
     u32 base = 0;
     u32 tmp = 0;
-    u32 mask = 0;
     if (gpio > 53) {
         return;
     }

@@ -2,11 +2,10 @@
 #include <memory_map.h>
 #include "log.h"
 #include "cpu.h"
+#include "systest.h"
 
 static inline void swi(u32 i)
 {
-    u32 word;
-    func_0 _swi;
 #if 1
     asm volatile (
             "swi 0x1\n\t"
@@ -15,6 +14,8 @@ static inline void swi(u32 i)
             :
             );
 #else
+    u32 word;
+    func_0 _swi;
     word = 0xef << 24 | i & 0xFFFFFFFF ;
     _swi = (func_0)word;
     _swi();

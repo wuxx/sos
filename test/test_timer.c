@@ -2,6 +2,7 @@
 #include <libc.h>
 #include "timer.h"
 #include "log.h"
+#include "systest.h"
 
 void systimer_irq_handler(u32 irq_nr)
 {

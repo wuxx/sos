@@ -5,6 +5,7 @@
 #include "uart.h"
 #include "shell.h"
 #include "gpio.h"
+#include "timer.h"
 
 #define UART0       /* pl011 uart */
 /*#define UART1*/   /* mini uart, need debug. */
@@ -79,7 +80,7 @@ PRIVATE s32 uart_irq_handler(u32 irq_nr)
         if (uart_recv_buf_index == (UART_IO_SIZE - 1) && ch != '\r') {
             uart_puts("cmd too long!\n");
             uart_recv_buf_index = 0;
-            return;
+            return EINVAL;
 
         }
 

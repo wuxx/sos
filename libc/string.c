@@ -1,6 +1,6 @@
 #include <libc.h>
 
-u32 strlen(char *str)
+u32 strlen(const char *str)
 {
     u32 i = 0;
     while(str[i] != '\0') {
@@ -100,6 +100,7 @@ void *memset(void *s, s32 c, u32 size)
     for(i=0;i<size;i++) {
         _s[i] = c;
     }
+    return s;
 }
 
 void *memcpy(void *dst, void *src, u32 size)

@@ -41,7 +41,11 @@ s32 request_irq(u32 irq_nr, func_1 irq_handler);
 s32 release_irq(u32 irq_nr);
 s32 enable_irq(u32 irq_nr);
 s32 disable_irq(u32 irq_nr);
+s32 panic();
 s32 lockup();
+void lock_irq();
+void unlock_irq();
+s32 _assert(const char *file_name, const char *func_name, u32 line_num, char *desc);
 s32 int_init();
 
 #endif /* __INT_H__ */

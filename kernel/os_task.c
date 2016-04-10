@@ -3,8 +3,10 @@
 #include <os.h>
 #include "log.h"
 
-struct __os_task__ tcb[TASK_NR_MAX]        __attribute__((__aligned__(0x100))) = {0};
-u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100))) = {0};
+PRIVATE void task_sched(struct __os_task__ *best_task);
+
+struct __os_task__ tcb[TASK_NR_MAX]        __attribute__((__aligned__(0x100)));
+u32 task_stack[TASK_NR_MAX][TASK_STK_SIZE] __attribute__((__aligned__(0x100)));
 
 /* get current task id, little hack */
 PRIVATE u32 get_current_task()
@@ -14,7 +16,7 @@ PRIVATE u32 get_current_task()
 
     task_id = (sp - (u32)task_stack) / (TASK_STK_SIZE * 4);
     PRINT_EMG("task_id: %d\n", task_id);
-    assert(task_id <= TASK_NR_MAX);
+    kassert(task_id <= TASK_NR_MAX);
     return task_id;
 }
 
@@ -46,7 +48,7 @@ PUBLIC struct __os_task__ * get_task_ready()
 #endif
 }
 
-PRIVATE struct __os_task__ * tcb_alloc()
+PUBLIC struct __os_task__ * tcb_alloc()
 {
     u32 i;
 
@@ -70,7 +72,7 @@ PRIVATE void task_matrix(u32 addr, u32 arg)
     while(1);
 }
 
-PRIVATE s32 tcb_init(struct __os_task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
+/* PRIVATE */ s32 tcb_init(struct __os_task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
 {
     struct cpu_context *cc;
 
@@ -163,5 +165,48 @@ PUBLIC s32 task_sleep(u32 ticks)
 {
     current_task->state = TASK_SLEEP;
     task_dispatch();
+    return 0;
+}
+
+/*
+   1. update current_task
+   2. delete the best_task from os_ready_list
+   3. insert old_task into os_sleep_list or os_ready_list or sem_list.
+*/
+PRIVATE void task_sched(struct __os_task__ *best_task)
+{
+    struct __os_task__ *old_task;
+    struct __os_semaphore__ *psem;
+
+    old_task     = current_task;
+    current_task = best_task;
+
+    current_task->state = TASK_RUNNING;
+    os_ready_delete(best_task);
+
+    switch (old_task->state) {
+        case (TASK_UNUSED):     /* current task self-destruction */
+            break;
+        case (TASK_RUNNING):    /* current task create higher prio task  */
+            old_task->state = TASK_READY;
+            os_ready_insert(old_task);
+            break;
+        case (TASK_SLEEP):      /* current task invoke os_task_sleep sleep */
+            os_sleep_insert(old_task);
+            break;
+        case (TASK_WAIT_SEM):   /* current task wait for sem */
+            psem = (struct __os_semaphore__ *)(current_task->private_data);
+            os_sem_insert(psem, current_task);
+            break;
+        default:
+            kassert(0);
+    }   
+
+    /* dump_list(); */
+    PRINT_DEBUG("schedule %d \n", current_task->id);
+}
+
+PUBLIC s32 task_init()
+{
     return 0;
 }

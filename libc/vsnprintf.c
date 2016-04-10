@@ -1,7 +1,8 @@
 #include <stdarg.h>
 #include <types.h>
+#include <string.h>
 
-u32 buf_putc(char *buf, u32 size, u32 *offset, u8 c)
+PRIVATE u32 buf_putc(char *buf, u32 size, u32 *offset, u8 c)
 {
     u32 off = *offset;
     if (off < size) {
@@ -11,7 +12,7 @@ u32 buf_putc(char *buf, u32 size, u32 *offset, u8 c)
     return 0;
 }
 
-u32 buf_puts(char *buf, u32 size, u32 *offset, char *s)
+PRIVATE u32 buf_puts(char *buf, u32 size, u32 *offset, char *s)
 {
     u32 i;
     for(i=0;s[i]!='\0';i++) {
@@ -20,8 +21,8 @@ u32 buf_puts(char *buf, u32 size, u32 *offset, char *s)
     return 0;
 }
 
-/* buf size: 10 radix = 10; 8 radix = 16 */
-char * itoa(char *buf, u32 x, u32 radix)
+/* buf size: 10 if radix == 10; 8 if radix == 16 */
+PUBLIC char * itoa(char *buf, u32 x, u32 radix)
 {
     s32 i;
     memset(buf, 0, 10);
@@ -57,13 +58,12 @@ char * itoa(char *buf, u32 x, u32 radix)
 
 /* as simple as possible, only support %c %d %x %s, and don't care the negative num */
 /* of course, I don't care the efficiency as well */
-int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
+PUBLIC int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
 {
     u32 i, offset, len;
     u8  c;
     u32 d, x;
     char *s, *b;
-    va_list ap;
 
     char num[11]; /* 2^32 = 4294967296 + '\0' */
 
@@ -120,5 +120,5 @@ int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
     }
 
     buf[size-1] = '\0';
+    return 0;
 }
-

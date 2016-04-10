@@ -2,9 +2,10 @@
 
 #include "log.h"
 #include "int.h"
+#include "uart.h"
 
 PRIVATE u32 default_log_level = LOG_INFO;
-PRIVATE u8  log_buf[LOG_BUF_SIZE] = {0};
+PRIVATE char log_buf[LOG_BUF_SIZE] = {0};
 
 PUBLIC s32 set_log_level(u32 log_level)
 {
@@ -17,7 +18,7 @@ PUBLIC s32 set_log_level(u32 log_level)
     return 0;
 }
 
-PUBLIC s32 log(u32 log_level, char *format, ...)
+PUBLIC s32 log(u32 log_level, const char *format, ...)
 {
     va_list args;
     if (log_level <= default_log_level) {
