@@ -5,12 +5,12 @@
 #define SYSCALL_ARG_MAX (4)
 
 
-s32 do_task_create(u32 args);
-s32 do_task_sleep (u32 args);
-s32 do_sem_create (u32 args);
-s32 do_sem_get    (u32 args);
-s32 do_sem_put    (u32 args);
-s32 do_sem_delete (u32 args);
+s32 do_task_create(u32 *args);
+s32 do_task_sleep (u32 *args);
+s32 do_sem_create (u32 *args);
+s32 do_sem_get    (u32 *args);
+s32 do_sem_put    (u32 *args);
+s32 do_sem_delete (u32 *args);
 
 struct __syscall__ syscall_table[] = {
     {SYS_TASK_CREATE,  do_task_create},
@@ -20,6 +20,16 @@ struct __syscall__ syscall_table[] = {
     {SYS_SEM_PUT,      do_sem_put    }, /* not available now */
     {SYS_SEM_DELETE,   do_sem_delete }, /* not available now */
 };
+
+s32 system_call(u32 nr, u32 *args)
+{
+    s32 ret;
+    PRINT_EMG("syscall %d \n", nr);
+    PRINT_STAMP();
+    ret = syscall_table[nr].handler(args);   /* syscall handler may invoke task_dispatch */
+    PRINT_STAMP();
+    return ret;
+}
 
 s32 os_task_create(func_1 entry, u32 arg, u32 prio)
 {
@@ -82,38 +92,36 @@ s32 os_sem_create(u32 tokens)
     return 0;
 }
 
-s32 do_task_create(u32 _args)
+s32 do_task_create(u32 *args)
 {
-    u32 *args = (u32*)_args;
     PRINT_STAMP();
     PRINT_EMG("%x %x %x \n", args[0], args[1], args[2]);
     return task_create(args[0], args[1], args[2]);
 }
 
-s32 do_task_sleep(u32 _args)
+s32 do_task_sleep(u32 *args)
 {
-    u32 *args = (u32*)_args;
     task_sleep(args[0]);
     return 0;
 }
 
-s32 do_sem_create(u32 _args)
+s32 do_sem_create(u32 *args)
 {
-    u32 tokens = _args;
+    u32 tokens = args[0];
     return semaphore_create(tokens);
 }
 
-s32 do_sem_get(u32 _args)
+s32 do_sem_get(u32 *args)
 {
     return 0;
 }
 
-s32 do_sem_put(u32 _args)
+s32 do_sem_put(u32 *args)
 {
     return 0;
 }
 
-s32 do_sem_delete(u32 _args)
+s32 do_sem_delete(u32 *args)
 {
     return 0;
 }

@@ -90,9 +90,6 @@ s32 test_os_all(u32 argc, char **argv)
         case (1):
             dump_tcb_all();
             break;
-        case (10):  /* task create */
-            task_create((func_1)test_task, 0, 0);
-            break;
         case (99):  /* slip to case 100 */
             set_log_level(LOG_DEBUG);
         case (100):

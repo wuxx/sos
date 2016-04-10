@@ -8,12 +8,14 @@
 #include "log.h"
 #include "gpio.h"
 
+char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
+
 extern struct cpu_context *current_context;
 
 volatile u32 os_tick = 0;
 volatile u32 idle_init = 0;
 
-/*PRIVATE*/ s32 idle_task(u32 arg)
+PRIVATE s32 idle_task(u32 arg)
 {
     if (idle_init == 0) {
         extern s32 dump_list();
@@ -63,7 +65,7 @@ PUBLIC void dump_ctx(struct cpu_context *ctx)
 
 /*
    1. update current_task
-   2. delete the current_task from os_ready_list
+   2. delete the best_task from os_ready_list
    3. insert old_task into os_sleep_list or os_ready_list or sem_list.
 */
 PRIVATE void task_sched(struct __os_task__ *best_task)
@@ -128,16 +130,70 @@ PRIVATE s32 coretimer_init()
     enable_irq(IRQ_CORE_TIMER);
 }
 
-PUBLIC s32 os_init()
+s32 os_main(u32 sp)
 {
+    u32 cpsr;
+    u32 pc;
+    u32 tid;
+
+    u8  ch;
+    struct __os_task__ *ptask;
+
+    int_init();
+    uart_init();
+    timer_init();
+
+    /* os_init(); */
+
+    PRINT_INFO("%s\n", sys_banner);
+    PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n",
+            get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
+    set_gpio_function(GPIO_16, OUTPUT);
+    set_gpio_output(GPIO_16, 0);
+    PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n",
+            get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
+
+    /* set_log_level(LOG_DEBUG); */
+
     coretimer_init();
     PRINT_STAMP();
+#if 0
     if (task_create(idle_task, 0, 100) != 0) {
         PRINT_EMG("idle_task create failed !\n");
         return ERROR;
     }
-    current_task = &tcb[0];  /* idle_task */
+#endif
+
+    /* create idle task */
+    if ((ptask = tcb_alloc()) == NULL) {
+        panic();
+    }
+
+    tcb_init(ptask, idle_task, 0, 256);
+
+    /*os_ready_insert(ptask);*/
+
+    current_task = &tcb[0];  /* assume that this is idle_task */
     PRINT_STAMP();
-    /* FIXME: create main() task */
+
+    /* create main task */
+    if ((ptask = tcb_alloc()) == NULL) {
+        panic();
+    }
+
+extern s32 main_task(u32 arg);
+    tcb_init(ptask, main_task, 0, 100);
+
+    os_ready_insert(ptask);
+
+    PRINT_STAMP();
+
+    /* 'slip into idle task', cause the os_main() is not a task (it's the god code of system) */
+    __set_sp(&(task_stack[0][TASK_STK_SIZE]));
+    current_task->state = TASK_RUNNING;
+    idle_task(0);
+
+    kassert(0);
+    return 0;
 }
 

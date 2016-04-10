@@ -9,8 +9,8 @@
 #define os_sleep_insert(task)   list_insert(&os_sleep_list, task)
 #define os_sleep_delete(task)   list_delete(&os_sleep_list, task)
 
-#define os_sem_insert(sem, task)   list_insert(&sem, task)
-#define os_sem_delete(sem, task)   list_delete(&sem, task)
+#define os_sem_insert(psem, task)   list_insert((struct __os_list__ *)psem, task)
+#define os_sem_delete(psem, task)   list_delete((struct __os_list__ *)psem, task)
 
 enum CB_TYPE_E {
     OS_READY,

@@ -146,6 +146,8 @@ PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
 
     os_ready_insert(ptask); /* FIXME: do task switch immediately if a higher task created. */
 
+    task_dispatch();
+
     return ptask->id;
 }
 

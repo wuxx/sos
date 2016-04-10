@@ -39,7 +39,7 @@ __get_sp:
 .global __set_sp
 .type __set_sp, %function
 __set_sp:
-    mov sp, r0  /* note: once you re-set the sp, you lost the call-stack FOREVER */
+    mov sp, r0  /* note: once you re-set the sp, you lost the call-stack FOREVER, no local var you can use any more */
     bx lr
 
 .end
