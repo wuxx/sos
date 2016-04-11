@@ -163,7 +163,8 @@ PUBLIC s32 task_delete(u32 task_id)
 
 PUBLIC s32 task_sleep(u32 ticks)
 {
-    current_task->state = TASK_SLEEP;
+    current_task->sleep_ticks = ticks;
+    current_task->state       = TASK_SLEEP;
     task_dispatch();
     return 0;
 }

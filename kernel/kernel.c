@@ -19,16 +19,10 @@ char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
 extern struct cpu_context *current_context;
 
 volatile u32 os_tick = 0;
-volatile u32 idle_init = 0;
 
 PRIVATE s32 idle_task(u32 arg)
 {
-    if (idle_init == 0) {
-        extern s32 dump_list();
-        dump_list();
-        idle_init = 1;
-        unlock_irq();   /* kick off the system, will switch to the main_task */
-    }
+    unlock_irq();   /* kick off the system, will switch to the main_task */
 
     while(1) {
         PRINT_INFO("in %s\n", __func__);
@@ -138,6 +132,8 @@ s32 os_main(u32 sp)
     timer_init();
 
     PRINT_INFO("%s\n", sys_banner);
+
+    coretimer_init();
     task_init();
     semaphore_init();
 
@@ -149,9 +145,6 @@ s32 os_main(u32 sp)
 
     /* set_log_level(LOG_DEBUG); */
 
-    coretimer_init();
-    PRINT_STAMP();
-
     /* create idle task */
     if ((ptask = tcb_alloc()) == NULL) {
         panic();
@@ -162,7 +155,6 @@ s32 os_main(u32 sp)
     /*os_ready_insert(ptask);*/
 
     current_task = &tcb[0];  /* assume that this is idle_task */
-    PRINT_STAMP();
 
     /* create main task */
     if ((ptask = tcb_alloc()) == NULL) {
@@ -172,8 +164,6 @@ s32 os_main(u32 sp)
     tcb_init(ptask, main_task, 0, 100);
 
     os_ready_insert(ptask);
-
-    PRINT_STAMP();
 
     /* 'slip into idle task', cause the os_main() is not a task (it's the god code of system) */
     __set_sp(&(task_stack[0][TASK_STK_SIZE]));

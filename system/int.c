@@ -130,11 +130,10 @@ PRIVATE void General_Exc_Handler()
     ptask = current_task;
     cpsr  = __get_cpsr();
     pctx  = (struct cpu_context *)(ptask->sp);
-    /*pctx->pc += 4;*/  /* assume that we are in a irq */
 
-    PRINT_EMG("in %s \n", __func__);
-    PRINT_EMG("cpsr %x; %s\n", cpsr, get_cpu_mode(&mode));
-    dump_ctx(current_context);
+    PRINT_DEBUG("in %s \n", __func__);
+    PRINT_DEBUG("cpsr %x; %s\n", cpsr, get_cpu_mode(&mode));
+    /* dump_ctx(current_context); */
 
     args[0] = current_context->r0;
     args[1] = current_context->r1;
@@ -146,7 +145,6 @@ PRIVATE void General_Exc_Handler()
         ret = system_call(nr, args);
 
         pctx->r0  = ret;
-        /* current_context->pc += 4; */ /* FIXME: if we need this ?? */
     } else {
         panic();
         while(1);

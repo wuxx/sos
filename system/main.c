@@ -22,6 +22,7 @@ s32 blink_task(u32 arg)
         set_gpio_output(16, 0);     /* led on */
         mdelay(1000);
         set_gpio_output(16, 1);     /* led off */
+        mdelay(1000);
 
     }   
     return 0;
@@ -31,7 +32,7 @@ s32 blink_task(u32 arg)
 static s32 test_task(u32 arg)
 {
     while (1) {
-        PRINT_STAMP();
+        PRINT_INFO("in %s\n", __func__);
         mdelay(1000);
     }
 
@@ -53,7 +54,7 @@ PUBLIC s32 main_task(u32 arg)
     PRINT_EMG("blink_task tid %d\n", tid);
 
     while (1) {
-        PRINT_STAMP();
+        PRINT_INFO("in %s\n", __func__);
         mdelay(1000);
     }
     return 0;
