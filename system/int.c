@@ -7,7 +7,6 @@
 
 extern void  dump_mem(u32 addr, u32 word_nr);
 extern char* get_cpu_mode(u32 *m);
-extern void  dump_ctx(struct cpu_context *ctx);
 extern void dump_tcb_all();
 
 extern struct __syscall__ syscall_table[];
@@ -16,6 +15,28 @@ struct __os_task__ *current_task;
 struct cpu_context *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
+
+PUBLIC void dump_ctx(struct cpu_context *ctx)
+{
+#define DUMP_VAR(c, var) PRINT_EMG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
+    DUMP_VAR(ctx, cpsr);
+    DUMP_VAR(ctx, r0);
+    DUMP_VAR(ctx, r1);
+    DUMP_VAR(ctx, r2);
+    DUMP_VAR(ctx, r3);
+    DUMP_VAR(ctx, r4);
+    DUMP_VAR(ctx, r5);
+    DUMP_VAR(ctx, r6);
+    DUMP_VAR(ctx, r7);
+    DUMP_VAR(ctx, r8);
+    DUMP_VAR(ctx, r9);
+    DUMP_VAR(ctx, r10);
+    DUMP_VAR(ctx, r11);
+    DUMP_VAR(ctx, r12);
+    DUMP_VAR(ctx, sp);
+    DUMP_VAR(ctx, lr);
+    DUMP_VAR(ctx, pc);
+}
 
 PRIVATE void General_Irq_Handler()
 {
@@ -312,6 +333,7 @@ PUBLIC void unlock_irq()
 
 PUBLIC s32 panic()
 {
+    dump_ctx(current_context);
     dump_tcb_all();
     lockup();
     while(1);

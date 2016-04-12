@@ -41,28 +41,6 @@ PUBLIC s32 os_sleep(u32 ms)
     return 0;
 }
 
-PUBLIC void dump_ctx(struct cpu_context *ctx)
-{
-#define DUMP_VAR(c, var) PRINT_EMG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
-    DUMP_VAR(ctx, cpsr);
-    DUMP_VAR(ctx, r0);
-    DUMP_VAR(ctx, r1);
-    DUMP_VAR(ctx, r2);
-    DUMP_VAR(ctx, r3);
-    DUMP_VAR(ctx, r4);
-    DUMP_VAR(ctx, r5);
-    DUMP_VAR(ctx, r6);
-    DUMP_VAR(ctx, r7);
-    DUMP_VAR(ctx, r8);
-    DUMP_VAR(ctx, r9);
-    DUMP_VAR(ctx, r10);
-    DUMP_VAR(ctx, r11);
-    DUMP_VAR(ctx, r12);
-    DUMP_VAR(ctx, sp);
-    DUMP_VAR(ctx, lr);
-    DUMP_VAR(ctx, pc);
-}
-
 PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
 {
     os_tick ++ ;

@@ -62,7 +62,7 @@ PUBLIC s32 os_task_sleep(u32 ticks)
     __r0 = (u32)ticks;
     /* invoke the swi */
     asm (
-            "swi " SYS_TASK_CREATE "\n\t"
+            "swi " SYS_TASK_SLEEP "\n\t"
         :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
         : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
         :"cc"

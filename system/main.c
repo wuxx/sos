@@ -55,7 +55,7 @@ PUBLIC s32 main_task(u32 arg)
 
     while (1) {
         PRINT_INFO("in %s\n", __func__);
-        mdelay(1000);
+        os_task_sleep(10*OS_HZ); /* 10 s */
     }
     return 0;
 }
