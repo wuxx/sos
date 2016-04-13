@@ -19,7 +19,6 @@ char sys_banner[] = {"SOS system buildtime [" __TIME__ " " __DATE__ "]"};
 extern struct cpu_context *current_context;
 
 volatile u32 os_tick = 0;
-
 PRIVATE s32 idle_task(u32 arg)
 {
     unlock_irq();   /* kick off the system, will switch to the main_task */
@@ -67,38 +66,6 @@ PRIVATE s32 coretimer_init()
     request_irq(IRQ_CORE_TIMER, coretimer_irq_handler);
     enable_irq(IRQ_CORE_TIMER);
     return 0;
-}
-
-PUBLIC char* get_cpu_mode(u32 *m) 
-{
-    u32 cpsr, mode;
-    cpsr = __get_cpsr();
-    mode = cpsr & 0x1f;
-
-    if (m != NULL) {
-        *m = mode;
-    }   
-
-    switch (mode) {
-        case (16):
-            return "user mode";
-        case (17):
-            return "fiq mode";
-        case (18):
-            return "irq mode";
-        case (19):
-            return "supervisor mode";
-        case (22):
-            return "secmonitor mode";
-        case (23):
-            return "abort mode";
-        case (27):
-            return "undefined mode";
-        case (31):
-            return "system mode";
-        default:
-            return "unknown mode";
-    }   
 }
 
 s32 os_main(u32 sp)

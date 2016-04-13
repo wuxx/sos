@@ -38,6 +38,49 @@ PUBLIC void dump_ctx(struct cpu_context *ctx)
     DUMP_VAR(ctx, pc);
 }
 
+PUBLIC char* get_cpu_mode(u32 *m)
+{
+    u32 cpsr, mode;
+    cpsr = __get_cpsr();
+    mode = cpsr & 0x1f;
+
+    if (m != NULL) {
+        *m = mode;
+    }
+
+    switch (mode) {
+        case (16):
+            return "user mode";
+        case (17):
+            return "fiq mode";
+        case (18):
+            return "irq mode";
+        case (19):
+            return "supervisor mode";
+        case (22):
+            return "secmonitor mode";
+        case (23):
+            return "abort mode";
+        case (27):
+            return "undefined mode";
+        case (31):
+            return "system mode";
+        default:
+            return "unknown mode";
+    }
+}
+
+PUBLIC u32 in_interrupt()
+{
+    u32 mode;
+    get_cpu_mode(&mode);
+    if (mode == MODE_IRQ || mode == MODE_FIQ) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 PRIVATE void General_Irq_Handler()
 {
     u32 i, j;

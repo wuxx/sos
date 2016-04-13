@@ -37,6 +37,7 @@ enum IRQ_NR_E {
     IRQ_MAX         = 32 * 3,
 };
 
+char* get_cpu_mode(u32 *m);
 s32 request_irq(u32 irq_nr, func_1 irq_handler);
 s32 release_irq(u32 irq_nr);
 s32 enable_irq(u32 irq_nr);

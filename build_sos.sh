@@ -29,8 +29,9 @@ while [ ! -z "$1" ]; do
     esac
 done
 
-echo "make cflags=$cflag"
-make cflags=$cflag
+echo "cflags=$cflag"
+CPU_NUM=$(cat /proc/cpuinfo | grep processor | wc -l)
+make cflags=$cflag -j ${CPU_NUM}
 
 if [ $? -eq 0 ]; then
     echo -e "\033[32mbuild ok!\033[0"
