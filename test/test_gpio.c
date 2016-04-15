@@ -28,6 +28,8 @@ s32 test_gpio_all(u32 argc, char **argv)
     i    = atoi(argv[2]);
     arg1 = atoi(argv[3]);
     arg2 = atoi(argv[4]);
+
+    PRINT_EMG("i: %x; arg1: %x; arg2: %x\n", i, arg1, arg2);
     switch(i) {
         case (0):
             dump_mem(GPIO_BASE, 40);

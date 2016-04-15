@@ -115,9 +115,10 @@ PRIVATE s32 parse_cmd(char *cmd)
 
         argv[j++] = &cmd[i];
         if (j == SHELL_ARGS_MAX) {
-            return 0;
+            break;  /* not gonna to process the left args */
         }
 
+        /* walk though this arg */
         while(cmd[i] != ' ' && cmd[i] != '\0') {
             i++;
         }
@@ -156,15 +157,15 @@ PUBLIC s32 shell(char *cmd)
     PRINT_EMG("\n");
 
     parse_cmd(cmd);
+
 #if 0
     for(i=0;i<len;i++) {
-        PRINT_EMG("[0x%x]: %x\n", &cmd[i], cmd[i]);
+        PRINT_EMG("[0x%x]: %x [%c]\n", &cmd[i], cmd[i], cmd[i]);
     }
     for(i=0;i<SHELL_ARGS_MAX;i++) {
         PRINT_EMG("argv[%d]: 0x%x [%s]\n", i, argv[i], argv[i]);
     }
 #endif
-
 
     if ((i=get_cmd_index(argv[0])) == -1) {
         PRINT_EMG("illegal cmd [%s] \n", argv[0]);

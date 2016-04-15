@@ -1,6 +1,6 @@
 #include <types.h>
 
-#define SHELL_ARGS_MAX  (5)
+#define SHELL_ARGS_MAX  (7)
 struct shell_cmd_info {
     char *name;
     func_0 func;
