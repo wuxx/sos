@@ -210,6 +210,7 @@ PRIVATE void General_Exc_Handler()
 
         pctx->r0  = ret;
     } else {
+        PRINT_EMG("in %s \n", __func__);
         panic();
         while(1);
 
@@ -376,6 +377,9 @@ PUBLIC void unlock_irq()
 
 PUBLIC s32 panic()
 {
+    u32 lr = __get_lr();
+    PRINT_EMG("in %s, cpu_mode: [%s]; lr: [%x]; current_task_id: %d\n\n", 
+            __func__, get_cpu_mode(NULL), lr, current_task != NULL ? current_task->id: -1);
     dump_ctx(current_context);
     dump_tcb_all();
     lockup();

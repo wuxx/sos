@@ -37,7 +37,7 @@ PUBLIC void udelay(u32 us)
 PUBLIC void mdelay(u32 ms)
 {
     u64 sc_start, sc_end;
-    u32 ticks;
+    u64 ticks;
 
     ms = ms > 100000 ? 100000 : ms; /* max of 100s */
     ticks = MS2TICK(ms);
