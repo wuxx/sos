@@ -1,5 +1,6 @@
 #include <libc.h>
 #include <os.h>
+#include <int.h>
 
 #include "log.h"
 
@@ -15,18 +16,24 @@ s32 do_sem_put    (u32 *args);
 s32 do_sem_delete (u32 *args);
 
 struct __syscall__ syscall_table[] = {
-    {SYS_TASK_CREATE,  do_task_create},
-    {SYS_TASK_SLEEP,   do_task_sleep }, /* not available now */
-    {SYS_SEM_CREATE,   do_sem_create }, /* not available now */
-    {SYS_SEM_GET,      do_sem_get    }, /* not available now */
-    {SYS_SEM_PUT,      do_sem_put    }, /* not available now */
-    {SYS_SEM_DELETE,   do_sem_delete }, /* not available now */
+    {SYS_TASK_CREATE,  do_task_create, 0},
+    {SYS_TASK_SLEEP,   do_task_sleep,  0}, /* not available now */
+    {SYS_SEM_CREATE,   do_sem_create,  0}, /* not available now */
+    {SYS_SEM_GET,      do_sem_get,     0}, /* not available now */
+    {SYS_SEM_PUT,      do_sem_put,     1}, /* not available now */
+    {SYS_SEM_DELETE,   do_sem_delete,  1}, /* not available now */
 };
 
 PUBLIC s32 system_call(u32 nr, u32 *args)
 {
     s32 ret;
     PRINT_DEBUG("syscall %d \n", nr);
+
+    if (in_interrupt() && (syscall_table[nr].free == 0)) {
+        PRINT_EMG("[%s] syscall %d fail \n", get_cpu_mode(NULL), nr);
+        return -1;
+    }
+
     ret = syscall_table[nr].handler(args);   /* syscall handler may invoke task_dispatch */
     return ret;
 }

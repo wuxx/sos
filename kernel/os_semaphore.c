@@ -2,18 +2,6 @@
 #include <libc.h>
 #include <os.h>
 
-enum SEM_STATUS_E {
-    SEM_FREE = 0,
-    SEM_USED = 1,
-};
-
-struct __os_semaphore__ {
-    u32 type;
-    struct __os_task__ *next;
-    u32 status; 
-    u32 token;
-};
-
 struct __os_semaphore__ os_semaphore[SEM_NR_MAX];
 
 PRIVATE s32 get_free_sem()
@@ -73,8 +61,9 @@ PUBLIC s32 semaphore_put(u32 sem_id)
             ptask = sem->next;
             sem->next = sem->next->next;
             if (ptask->prio < current_task->prio) {
-                os_ready_insert(ptask);
                 task_dispatch();
+            } else {
+                os_ready_insert(ptask);
             }
         }
     }
@@ -96,7 +85,7 @@ PUBLIC s32 semaphore_delete(u32 sem_id)
     return 0;
 }
 
-struct __os_semaphore__ * semaphore_init()
+PUBLIC struct __os_semaphore__ * semaphore_init()
 {
     u32 i;
     for(i=0;i<SEM_NR_MAX;i++) {

@@ -130,7 +130,6 @@ all:init build_objs
 	$(OBJDUMP) -s $(TARGET_ELF) > $(TARGET_SECINFO)
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
 	cp $(TARGET_IMG) $(BUILD)/kernel.img
-	@echo "CFLAGS: $(CFLAGS)"
 
 tags:
 	ctags -R $(KERNEL_DIR) $(SYSTEM_DIR) $(LIBC_DIR) $(DRIVER_DIR) $(TEST_DIR) $(INCLUDE_DIR)

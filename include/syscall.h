@@ -14,6 +14,7 @@
 struct __syscall__ {
     char *desc;
     s32 (*handler)(u32 *arg);
+    u32 free;   /* if the run context (normal|int) is free  */
 };
 s32 system_call(u32 nr, u32 *args);
 

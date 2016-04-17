@@ -44,6 +44,7 @@ s32 enable_irq(u32 irq_nr);
 s32 disable_irq(u32 irq_nr);
 s32 panic();
 s32 lockup();
+u32 in_interrupt();
 void lock_irq();
 void unlock_irq();
 s32 _assert(const char *file_name, const char *func_name, u32 line_num, char *desc);
