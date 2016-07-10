@@ -33,7 +33,7 @@ enum CPU_MODE_E {
 };
 
 struct cpu_context {
-    u32 cpsr;   /* banked as spsr_xxx in irq mode */
+    u32 cpsr;   /* banked as spsr_xxx in irq mode, each task has its own cpsr */
     u32 r0;
     u32 r1;
     u32 r2;

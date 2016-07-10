@@ -137,50 +137,52 @@ PRIVATE void cpu_context_restore()
     /* dump_ctx((struct cpu_context *)(current_task->sp)); */
     memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct cpu_context));
 }
+#define CPU_CONTEXT_SAVE()                                                                              \
+    asm volatile (                      /* cpu context save, please check the struct cpu_context */     \
+            "stmfd sp!, {lr}\n\t"       /* user/system pc = irq lr - 4  */                              \
+            "stmfd sp!, {r0-r14}^\n\t"  /* the ^ means user/system mode reg */                          \
+            "sub sp, sp, #4\n\t"        /* em... get space to place the user/system mode cpsr, sp */    \
+                                                                                                        \
+            "push {r0-r1}\n\t"                                                                          \
+                                                                                                        \
+            "add r1, sp, #8\n\t"        /* (r1 = sp + 8) the context frame base. */                     \
+                                                                                                        \
+            "mrs r0, spsr\n\t"          /* user/system mode cpsr is backup in spsr */                   \
+            "str r0, [r1, #0x0]\n\t"    /* store the cpsr */                                            \
+                                                                                                        \
+            "ldr r0, =current_context\n\t"                                                              \
+            "str r1, [r0]\n\t"          /* store the context frame point in current_context */          \
+                                                                                                        \
+            "pop  {r0-r1}\n\t"                                                                          \
+                                                                                                        \
+            "bl cpu_context_save\n\t"                                                                   \
+            :                                                                                           \
+            :                                                                                           \
+            : "memory"                                                                                  \
+            )
+
+#define CPU_CONTEXT_RESTORE()                                                                           \
+    __asm__ volatile (                                                                                  \
+            "bl cpu_context_restore\n\t"                                                                \
+                                                                                                        \
+            "pop {r0}\n\t"              /* spsr -> r0 */                                                \
+            "msr SPSR_cxsf, r0\n\t"     /* ready to restore cpsr */                                     \
+                                                                                                        \
+            "ldmfd sp!, {r0-r14}^\n\t"  /* restore user/system mode r0-r14 */                           \
+            "ldmfd sp!, {lr}\n\t"       /*  user/system mode pc -> irq mode lr */                       \
+            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, launching into the user/system mode code */  \
+            "nop\n\t"                                                                                   \
+            :                                                                                           \
+            :                                                                                           \
+            : "memory"                                                                                  \
+    )
 
 /* when irq happen, = user/system mode [pc] +4 -> irq mode [lr]  */
 __attribute__((naked)) void IrqHandler()
 {
-    asm volatile (  /* cpu context save, please check the struct cpu_context */
-            "stmfd sp!, {lr}\n\t"       /* user/system pc = irq lr - 4  */
-            "stmfd sp!, {r0-r14}^\n\t"  /* the ^ means user/system mode reg */
-            "sub sp, sp, #4\n\t"        /* eh... get space to place the user/system mode cpsr, sp */
-
-            "push {r0-r1}\n\t"
-
-            "add r1, sp, #8\n\t"        /* (r1 = sp + 8) the context frame base. */
-
-            "mrs r0, spsr\n\t"          /* user/system mode cpsr is backup in spsr */
-            "str r0, [r1, #0x0]\n\t"    /* store the cpsr */
-
-            "ldr r0, =current_context\n\t"
-            "str r1, [r0]\n\t"          /* store the context frame point in current_context */
-
-            "pop  {r0-r1}\n\t"
-
-            "bl cpu_context_save\n\t"
-            :
-            :
-            : "memory"
-            );
-
+    CPU_CONTEXT_SAVE();
     General_Irq_Handler();
-
-    __asm__ volatile (  /* cpu context restore */
-
-            "bl cpu_context_restore\n\t"
-
-            "pop {r0}\n\t"              /* spsr -> r0 */
-            "msr SPSR_cxsf, r0\n\t"     /* ready to restore cpsr */
-
-            "ldmfd sp!, {r0-r14}^\n\t"  /* restore user/system mode r0-r14 */
-            "ldmfd sp!, {lr}\n\t"       /*  user/system mode pc -> irq mode lr */
-            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, launching into the user/system mode code */
-            "nop\n\t"
-            :
-            :
-            : "memory"
-    );
+    CPU_CONTEXT_RESTORE();
 }
 
 PRIVATE void General_Exc_Handler()
@@ -205,12 +207,11 @@ PRIVATE void General_Exc_Handler()
     args[3] = current_context->r3;
 
     if (mode == MODE_SVC) {
-        nr  = readl(current_context->pc - 8) & 0xFFFFFF;
+        nr  = readl(current_context->pc - 8) & 0xFFFFFF;    /* swi {syscall_nr} */
         ret = system_call(nr, args);
 
         pctx->r0  = ret;
     } else {
-        PRINT_EMG("in %s \n", __func__);
         panic();
         while(1);
 
@@ -220,45 +221,9 @@ PRIVATE void General_Exc_Handler()
 __attribute__((naked)) void ExcHandler()
 {
     asm volatile ( "add lr, lr, #4" ); /* irq mode lr = user/system mode pc + 4, but in svc mode lr = user/system mode pc   */
-    asm volatile (
-            "stmfd sp!, {lr}\n\t"
-            "stmfd sp!, {r0-r14}^\n\t"  /* the ^ means user/system mode reg */
-            "sub sp, sp, #4\n\t"        /* eh... get space to place the user/system mode cpsr, sp */
-
-            "push {r0-r1}\n\t"
-
-            "add r1, sp, #8\n\t"    /* (r1 = sp + 8) the context frame base. */
-
-            "mrs r0, spsr\n\t"      /* user/system mode cpsr is backup in spsr */
-            "str r0, [r1, #0x0]\n\t"
-
-            "ldr r0, =current_context\n\t"
-            "str r1, [r0]\n\t"      /* store the context frame */
-
-            "pop  {r0-r1}\n\t"
-
-            "bl cpu_context_save\n\t"
-            :
-            :
-            : "memory"
-            );
+    CPU_CONTEXT_SAVE();
     General_Exc_Handler();
-    __asm__ volatile (
-
-            "bl cpu_context_restore\n\t"
-
-            "pop {r0}\n\t"              /* spsr -> r0 */
-            "msr SPSR_cxsf, r0\n\t"     /* restore cpsr */
-
-            "ldmfd sp!, {r0-r14}^\n\t"
-            "ldmfd sp!, {lr}\n\t"       /* user/system mode pc -> irq mode lr */
-            "subs pc, lr, #4\n\t"       /* (lr - 4) -> pc, rerun the user/system mode code */
-            "nop\n\t"
-            :
-            :
-            : "memory"
-    );
-
+    CPU_CONTEXT_RESTORE();
 }
 
 PUBLIC s32 request_irq(u32 irq_nr, func_1 irq_handler)
