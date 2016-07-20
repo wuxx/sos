@@ -2,7 +2,7 @@
 #define __LOG_H__
 #include  <libc.h>
 
-#define LOG_BUF_SIZE 200
+#define FORMAT_BUF_SIZE 200
 enum LOG_LEVEL_E {
     LOG_EMG = 0,
     LOG_ERR,
@@ -14,6 +14,7 @@ enum LOG_LEVEL_E {
 
 s32 set_log_level(u32 log_level);
 s32 log(u32 log_level, const char *format, ...);
+s32 dump_log();
 
 #define PRINT_STAMP()           log(LOG_EMG, "%s:%d\n", __func__, __LINE__)
 

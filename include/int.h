@@ -44,6 +44,7 @@ s32 enable_irq(u32 irq_nr);
 s32 disable_irq(u32 irq_nr);
 s32 panic();
 s32 lockup();
+s32 reset();
 u32 in_interrupt();
 void lock_irq();
 void unlock_irq();

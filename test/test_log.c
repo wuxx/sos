@@ -18,7 +18,7 @@ s32 test_log_all(u32 argc, char **argv)
     u32 i, arg1;
     i    = atoi(argv[2]);
     arg1 = atoi(argv[3]);
-    switch(i) {
+    switch (i) {
         case (0):
             arg1 = arg1 > LOG_MAX ? LOG_MAX : arg1;
             PRINT_EMG("set loglevel [%s]\n", loglevel_desc[arg1]);

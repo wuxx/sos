@@ -4,6 +4,8 @@
 #include <libc.h>
 
 enum {
+
+    /* peripherals */
     SYSTIMER_BASE = 0x20003000,
         SYSTMCS  = (SYSTIMER_BASE + 0x00),
         SYSTMCLO = (SYSTIMER_BASE + 0x04),
@@ -35,6 +37,10 @@ enum {
         CORETMRELD  = (CORETIMER_BASE + 0x18),
         CORETMPRED  = (CORETIMER_BASE + 0x1C),
         CORETMFRC   = (CORETIMER_BASE + 0x20),
+
+    WATCHDOG_BASE = 0x20100000,
+        WATCHDOG_RSTC = (WATCHDOG_BASE + 0x1C),
+        WATCHDOG_WDOG = (WATCHDOG_BASE + 0x24),
 
     GPIO_BASE = 0x20200000,
         GPFSEL0 = (GPIO_BASE + 0x00),

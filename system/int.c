@@ -3,6 +3,7 @@
 #include <os_task.h>
 #include "log.h"
 #include "cpu.h"
+#include "watchdog.h"
 #include "syscall.h"
 
 extern void  dump_mem(u32 addr, u32 word_nr);
@@ -197,7 +198,7 @@ PRIVATE void General_Exc_Handler()
     cpsr  = __get_cpsr();
     pctx  = (struct cpu_context *)(ptask->sp);
 
-    PRINT_DEBUG("in %s \n", __func__);
+    PRINT_DEBUG("in %s lr: %x\n", __func__, __get_lr());
     PRINT_DEBUG("cpsr %x; %s\n", cpsr, get_cpu_mode(&mode));
     /* dump_ctx(current_context); */
 
@@ -340,11 +341,21 @@ PUBLIC void unlock_irq()
             : [_cpsr]"r"(_cpsr));
 }
 
+PUBLIC s32 reset()
+{
+    watchdog_init();
+    watchdog_ctrl(WDT_SET_TIMEOUT, 1);
+    watchdog_ctrl(WDT_START);
+    while(1);
+
+}
+
 PUBLIC s32 panic()
 {
     u32 lr = __get_lr();
     PRINT_EMG("in %s, cpu_mode: [%s]; lr: [%x]; current_task_id: %d\n\n", 
             __func__, get_cpu_mode(NULL), lr, current_task != NULL ? current_task->id: -1);
+    dump_log();
     dump_ctx(current_context);
     dump_tcb_all();
     lockup();

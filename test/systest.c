@@ -8,6 +8,7 @@ s32 test_gpio_all(u32 argc, char **argv);
 s32 test_libc_all(u32 argc, char **argv);
 s32 test_log_all(u32 argc, char **argv);
 s32 test_os_all(u32 argc, char **argv);
+s32 test_wdt_all(u32 argc, char **argv);
 
 s32 sub_cmd_help();
 
@@ -18,6 +19,7 @@ struct shell_cmd_info sub_ci[] =  {
     { .name = "libc",  .func = test_libc_all,  .desc = ""},
     { .name = "log",   .func = test_log_all,   .desc = ""},
     { .name = "os",    .func = test_os_all,    .desc = ""},
+    { .name = "wdt",   .func = test_wdt_all,   .desc = ""},
     { .name = "help",  .func = sub_cmd_help,   .desc = ""},
 };
 
@@ -25,15 +27,20 @@ PUBLIC void dump_mem(u32 addr, u32 word_nr)
 {
     u32 i;
     u32 *p = (u32 *)addr;
-    for(i=0;i<word_nr;i++) {
-        PRINT_EMG("[0x%X]: 0x%X\n", &p[i], p[i]);
+    for(i = 0; i < word_nr; i++) {
+        if (i % 4 == 0) {
+            PRINT_EMG("\n[0x%X]: ", &p[i]);
+        }
+        PRINT_EMG("0x%X ", p[i]);
     }
+
+    PRINT_EMG("\n");
 }
 
 PRIVATE s32 sub_cmd_help()
 {
     u32 i;
-    for(i=0; i<(sizeof(sub_ci)/sizeof(sub_ci[0])); i++) {
+    for(i = 0; i < (sizeof(sub_ci)/sizeof(sub_ci[0])); i++) {
         PRINT_EMG("%s:\t\t\t%s\n", sub_ci[i].name, sub_ci[i].desc);
     }
     return 0;
@@ -42,7 +49,7 @@ PRIVATE s32 sub_cmd_help()
 PRIVATE static s32 get_cmd_index(char *cmd)
 {
     u32 i;
-    for(i=0; i<(sizeof(sub_ci)/sizeof(sub_ci[0])); i++) {
+    for(i = 0; i < (sizeof(sub_ci)/sizeof(sub_ci[0])); i++) {
         if (strcmp(sub_ci[i].name, cmd) == 0) {
             return i;
         }

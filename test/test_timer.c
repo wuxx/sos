@@ -45,7 +45,7 @@ s32 test_timer_all(u32 argc, char **argv)
 
     PRINT_EMG("arg1: %d\n", arg1);
 
-    switch(i) {
+    switch (i) {
         case (0):
             dump_mem(CORETIMER_BASE, 9);
             break;

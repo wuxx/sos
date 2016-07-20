@@ -15,9 +15,6 @@
 PRIVATE u32  uart_recv_buf_index = 0;
 PRIVATE char uart_recv_buf[UART_IO_SIZE] = {0};
 
-PRIVATE char uart_send_buf[UART_IO_SIZE] = {0};
-PRIVATE char format_buf[UART_IO_SIZE] = {0};
-
 PRIVATE void uart_wait_fifo_empty()
 {
     while(1) {
@@ -27,7 +24,7 @@ PRIVATE void uart_wait_fifo_empty()
     }
 }
 
-PRIVATE void uart_putc(u8 byte) {
+PUBLIC void uart_putc(u8 byte) {
 #ifdef UART0
     // wait for UART to become ready to transmit
     while (1) {

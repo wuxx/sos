@@ -2,6 +2,7 @@
 #include <memory_map.h>
 #include "log.h"
 #include "cpu.h"
+#include "int.h"
 #include "systest.h"
 
 static inline void swi(u32 i)
@@ -33,7 +34,7 @@ s32 test_cpu_all(u32 argc, char **argv)
 
     PRINT_EMG("arg1: %x\n", arg1);
 
-    switch(i) {
+    switch (i) {
         case (0):
             dump_mem(IRQ_BASE, 10);
             break;
@@ -56,6 +57,9 @@ s32 test_cpu_all(u32 argc, char **argv)
             arg1 = 0x12345678;
             func = (func_0)arg1;
             func();
+            break;
+        case (110):
+            reset();
             break;
         case (200): /* enable irq */
             enable_irq(arg1);

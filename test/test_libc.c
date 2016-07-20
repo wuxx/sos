@@ -11,7 +11,7 @@ s32 test_libc_all(u32 argc, char **argv)
     s32 ret = 0;
     u32 i;
     i = atoi(argv[2]);
-    switch(i) {
+    switch (i) {
         case (0): /* itoa test */
             itoa(buf, 0x12345678, 10);
             uart_puts(buf);

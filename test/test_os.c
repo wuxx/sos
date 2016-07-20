@@ -83,7 +83,7 @@ s32 test_os_all(u32 argc, char **argv)
 
     PRINT_EMG("arg1: %d\n", arg1);
 
-    switch(i) {
+    switch (i) {
         case (0):
             PRINT_EMG("os_tick: 0x%x\n", os_tick);
             break;

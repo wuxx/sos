@@ -54,10 +54,11 @@ LIBC_SRCS = \
 		$(LIBC_DIR)/vsnprintf.c
 
 DRIVER_SRCS = \
-		$(DRIVER_DIR)/gpio/gpio.c       \
-		$(DRIVER_DIR)/timer/timer.c     \
-		$(DRIVER_DIR)/log/log.c         \
-		$(DRIVER_DIR)/shell/shell.c     \
+		$(DRIVER_DIR)/gpio/gpio.c           \
+		$(DRIVER_DIR)/timer/timer.c         \
+		$(DRIVER_DIR)/watchdog/watchdog.c   \
+		$(DRIVER_DIR)/log/log.c             \
+		$(DRIVER_DIR)/shell/shell.c         \
 		$(DRIVER_DIR)/uart/uart.c
 
 TEST_SRCS = \
@@ -67,6 +68,7 @@ TEST_SRCS = \
 		$(TEST_DIR)/test_timer.c        \
 		$(TEST_DIR)/test_log.c          \
 		$(TEST_DIR)/test_os.c           \
+		$(TEST_DIR)/test_wdt.c          \
 		$(TEST_DIR)/test_gpio.c
 
 ALL_SRCS = $(KERNEL_SRCS) $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS)
@@ -101,7 +103,7 @@ TARGET_SECINFO = $(BUILD)/$(TARGET).secinfo #section info
 LDS = $(ROOT)/$(TARGET).ld
 
 #-march=armv6
-CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -mfloat-abi=soft -Wall -I$(INCLUDE_DIR)
+CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -mfloat-abi=soft -Wall -g -I$(INCLUDE_DIR)
 ASFLAGS += 
 
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 
