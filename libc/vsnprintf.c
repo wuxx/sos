@@ -120,5 +120,5 @@ PUBLIC int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
     }
 
     buf[size-1] = '\0';
-    return size;
+    return size; /* FIXME: return the length of c string (strlen(string), not include the '\0') */
 }

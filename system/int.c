@@ -1,6 +1,7 @@
 #include <libc.h>
 #include <memory_map.h>
 #include <os_task.h>
+#include "int.h"
 #include "log.h"
 #include "cpu.h"
 #include "watchdog.h"
@@ -92,7 +93,7 @@ PRIVATE void General_Irq_Handler()
 #if 0
     u32 cpsr;
     cpsr = __get_cpsr();
-    PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode());
+    PRINT_DEBUG("enter %s 0x%x %s\n", __func__, cpsr, get_cpu_mode(NULL));
     PRINT_DEBUG("\ncurrent_context: %x\n", current_context);
     dump_mem((u32)current_context, 20);
     dump_mem(VIC_BASE, 10);
@@ -366,6 +367,7 @@ PUBLIC s32 lockup()
 {
     PRINT_EMG("lockup!\n");
     lock_irq();
+    reset();
     while(1);
 }
 

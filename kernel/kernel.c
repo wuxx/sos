@@ -21,11 +21,16 @@ extern struct cpu_context *current_context;
 volatile u32 os_tick = 0;
 PRIVATE s32 idle_task(u32 arg)
 {
+    u32 i;
     unlock_irq();   /* kick off the system, will switch to the main_task */
 
     while(1) {
-        PRINT_INFO("in %s\n", __func__);
-        mdelay(1000);
+        PRINT_INFO("in %s %d cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
+                __func__, __LINE__, get_cpu_mode(NULL), __get_lr(), __get_sp(),  __get_cpsr());
+
+        for(i = 10000000; i > 0; i--);
+        PRINT_INFO("in %s %d cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
+                __func__, __LINE__, get_cpu_mode(NULL), __get_lr(), __get_sp(),  __get_cpsr());
     }
     return 0;
 }

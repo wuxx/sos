@@ -11,12 +11,12 @@ __stacks_total_size__   = __und_stack_size__ + __abt_stack_size__ + __fiq_stack_
         SYSTEM_RAM : ORIGIN = 0x8000, LENGTH = 0x06000000 - 0x20
 }*/
 
-__ram_start__ = 0x8000;
+__ram_start__ = 0x200000;
 __ram_end__   = 0x8000 + 0x06000000 - 0x20;
 
 SECTIONS {
     __sys_start__  = __ram_start__;
-    .init 0x8000 : {
+    .init 0x200000 : {
         *(.init)
     } 
 

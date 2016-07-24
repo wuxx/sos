@@ -61,7 +61,7 @@ FiqHandler:
 
 .global ResetHandler
 ResetHandler:
-    mov r0,#0x8000
+    mov r0,#0x200000
     mov r1,#0x0000
     /* branch instructions 8 words */
     ldmia r0!,{r2,r3,r4,r5,r6,r7,r8,r9}

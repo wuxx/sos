@@ -42,6 +42,7 @@ PUBLIC s32 log(u32 log_level, const char *format, ...)
     }
 
     memcpy(&log_buffer[lbindex], format_buf, len);
+    lbindex += len;
 
     return OK;
 }
@@ -49,9 +50,11 @@ PUBLIC s32 log(u32 log_level, const char *format, ...)
 PUBLIC s32 dump_log()
 {
     u32 i;
+#if 0
     for(i = 0; i < sizeof(log_buffer); i++) {
         uart_putc(log_buffer[i]);
     }
+#endif
 
     return 0;
 }
