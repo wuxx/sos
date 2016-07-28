@@ -367,6 +367,7 @@ PUBLIC s32 lockup()
 {
     PRINT_EMG("lockup!\n");
     lock_irq();
+    uart_wait_fifo_empty();
     reset();
     while(1);
 }

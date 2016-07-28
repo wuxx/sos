@@ -79,7 +79,7 @@ PRIVATE s32 cmd_dump()
     p       = (u32*)addr;
 
     for(i=0;i<word_nr;i++) {
-        PRINT_EMG("[0x%x]: 0x%x\r\n", &p[i], p[i]);
+        PRINT_EMG("[0x%X]: 0x%X\r\n", &p[i], p[i]);
     }
 
     return 0;

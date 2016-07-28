@@ -61,7 +61,7 @@ FiqHandler:
 
 .global ResetHandler
 ResetHandler:
-    mov r0,#0x200000
+    ldr r0, =_start
     mov r1,#0x0000
     /* branch instructions 8 words */
     ldmia r0!,{r2,r3,r4,r5,r6,r7,r8,r9}
@@ -78,7 +78,7 @@ clear_bss:
     strlo   r0, [r1], #4
     blo     clear_bss
 
-    ldr     r0, =__ram_end__
+    ldr     r0, =__stack_end__
 
     /* Undef */
     msr     CPSR_c, #MODE_UND | I_BIT | F_BIT

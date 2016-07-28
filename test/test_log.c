@@ -12,12 +12,20 @@ char *loglevel_desc[] = {
         "LOG_MAX",
 };
 
+
 s32 test_log_all(u32 argc, char **argv)
 {
     s32 ret = 0;
-    u32 i, arg1;
+    u32 i, arg1, arg2;
+
     i    = atoi(argv[2]);
     arg1 = atoi(argv[3]);
+    arg2 = atoi(argv[4]);
+
+    SHOW_VAR(i);
+    SHOW_VAR(arg1);
+    SHOW_VAR(arg2);
+
     switch (i) {
         case (0):
             arg1 = arg1 > LOG_MAX ? LOG_MAX : arg1;
@@ -30,6 +38,12 @@ s32 test_log_all(u32 argc, char **argv)
             log(LOG_WARN,  "%d: %s\n", __LINE__, "hello, world!");
             log(LOG_INFO,  "%d: %s\n", __LINE__, "hello, world!");
             log(LOG_DEBUG, "%d: %s\n", __LINE__, "hello, world!");
+            break;
+        case (2):
+            dump_log();
+            break;
+        case (3):
+            dumpb((void *)arg1, arg2);
             break;
         default:
             return -1;

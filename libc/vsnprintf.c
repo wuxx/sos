@@ -56,8 +56,9 @@ PUBLIC char * itoa(char *buf, u32 x, u32 radix)
 
 }
 
-/* as simple as possible, only support %c %d %x %s, and don't care the negative num */
+/* as simple as possible, only support %c %d %x %X(not omit the high '0') %s, and don't care the negative num */
 /* of course, I don't care the efficiency as well */
+/* return: the strlen(string), that is, not include the '\0' */
 PUBLIC int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
 {
     u32 i, offset, len;
@@ -120,5 +121,18 @@ PUBLIC int vsnprintf(char *buf, u32 size, const char *fmt, va_list args)
     }
 
     buf[size-1] = '\0';
-    return size; /* FIXME: return the length of c string (strlen(string), not include the '\0') */
+    return offset; /* FIXME: return the length of c string (strlen(string), not include the '\0') */
+}
+
+
+PUBLIC int snprintf(char *buf, u32 size, const char *fmt, ...)
+{
+    u32 len;
+    va_list args;
+
+    va_start(args, fmt);
+    len = vsnprintf(buf, size, fmt, args);
+    va_end(args);
+
+    return len;
 }

@@ -2,14 +2,18 @@
 ===
 
 simple OS for raspberry pi model B
+1. use u-boot as bootloader
+U-Boot> loady 0x200000 (because sos is link to 0x200000, please checkout the sos.ld)
+U-Boot> go 0x200000
 
-more information about rpi
+
+2. more information about rpi
 https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/
 
-arm inline asm 
+3. arm inline asm 
 http://www.ethernut.de/en/documents/arm-inline-asm.html
 
-from linux kernel document
+4. from linux kernel document
 The interrupt sources are as follows:
 
 Bank 0:

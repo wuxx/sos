@@ -15,7 +15,7 @@
 PRIVATE u32  uart_recv_buf_index = 0;
 PRIVATE char uart_recv_buf[UART_IO_SIZE] = {0};
 
-PRIVATE void uart_wait_fifo_empty()
+PUBLIC void uart_wait_fifo_empty()
 {
     while(1) {
         if ((readl(UART0_FR) & (1 << 7))) {
@@ -104,6 +104,21 @@ PRIVATE s32 uart_irq_handler(u32 irq_nr)
     }
 
     return 0;
+}
+
+PUBLIC s32 uart_printf(const char *format, ...)
+{
+    u32 len;
+    va_list args;
+    static char format_buf[UART_IO_SIZE] = {0};
+
+    va_start(args, format);
+    len = vsnprintf(format_buf, sizeof(format_buf), format, args);
+    va_end(args);
+
+    uart_puts(format_buf);
+
+    return OK; 
 }
 
 PUBLIC void uart_init() {
