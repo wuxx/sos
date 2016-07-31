@@ -2,9 +2,14 @@
 ===
 
 Simple OS for raspberry pi model B
-1. use u-boot as bootloader (https://github.com/wuxx/u-boot-pi)
+1. SOS use u-boot as bootloader (https://github.com/wuxx/u-boot-pi)
 U-Boot> loady 0x200000 (because sos is link to 0x200000, please checkout the sos.ld)
 U-Boot> go 0x200000
+
+2. use u-boot boot normal linux kernel
+(U-Boot> fatls mmc 0:1)
+(U-Boot> fatload mmc 0:1 0x8000 kernel.img.linux)
+(U-Boot> bootz 0x8000)
 
 
 2. more information about rpi

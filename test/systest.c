@@ -29,12 +29,12 @@ PUBLIC void dump_mem(u32 addr, u32 word_nr)
     u32 *p = (u32 *)addr;
     for(i = 0; i < word_nr; i++) {
         if (i % 4 == 0) {
-            PRINT_EMG("\n[0x%X]: ", &p[i]);
+            uart_printf("\n[0x%X]: ", &p[i]);
         }
-        PRINT_EMG("0x%X ", p[i]);
+        uart_printf("0x%X ", p[i]);
     }
 
-    PRINT_EMG("\n");
+    uart_printf("\n");
 }
 
 PRIVATE s32 sub_cmd_help()

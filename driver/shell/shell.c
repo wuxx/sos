@@ -94,7 +94,7 @@ PRIVATE s32 cmd_panic()
 {
     u32 x = 0x12345678;
 
-    lock_irq();
+    /* lock_irq(); */
 
     func_0 func;
     func = (func_0)x;

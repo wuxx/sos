@@ -30,7 +30,7 @@ while [ ! -z "$1" ]; do
 done
 
 echo "cflags=$cflag"
-CPU_NUM=$(cat /proc/cpuinfo | grep processor | wc -l)
+CPU_NUM=$(nproc)
 make cflags=$cflag -j ${CPU_NUM}
 
 if [ $? -eq 0 ]; then

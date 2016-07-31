@@ -63,6 +63,24 @@ s32 test_gpio_all(u32 argc, char **argv)
             enable_irq(IRQ_GPIO2);
             enable_irq(IRQ_GPIO3);
             break;
+        case (4):
+            /* gpio config for jtag */
+
+            /* please checkout http://sysprogs.com/VisualKernel/tutorials/raspberry/jtagsetup */
+
+            /* TDI */
+            set_gpio_function( 4, ALT_FUNC_5);
+            /* nTRST */
+            set_gpio_function(22, ALT_FUNC_4);
+            /* RTCK */
+            set_gpio_function(23, ALT_FUNC_4);
+            /* TDO */
+            set_gpio_function(24, ALT_FUNC_4);
+            /* TCK */
+            set_gpio_function(25, ALT_FUNC_4);
+            /* TMS */
+            set_gpio_function(27, ALT_FUNC_4);
+            break;
         default:
             return -1;
     }

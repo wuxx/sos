@@ -45,6 +45,7 @@ static s32 test_task(u32 arg)
 PUBLIC s32 main_task(u32 arg)
 {
     u32 tid;
+    u32 count = 0;
     if ((tid = os_task_create(test_task, 0, 100)) == -1) {
         PRINT_EMG("test_task create failed %d !\n", tid);
     }
@@ -56,7 +57,7 @@ PUBLIC s32 main_task(u32 arg)
     PRINT_EMG("blink_task tid %d\n", tid);
 
     while (1) {
-        PRINT_INFO("in %s\n", __func__);
+        PRINT_INFO("in %s %d\n", __func__, count++);
         os_task_sleep(10*OS_HZ); /* 10 s */
     }
     return 0;

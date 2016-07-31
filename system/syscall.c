@@ -60,7 +60,6 @@ PUBLIC s32 os_task_create(func_1 entry, u32 arg, u32 prio)
 
 PUBLIC s32 os_task_sleep(u32 ticks)
 {
-#if 1
     register s32 __r0 __asm("r0");
     register s32 __r1 __asm("r1");
     register s32 __r2 __asm("r2");
@@ -75,7 +74,6 @@ PUBLIC s32 os_task_sleep(u32 ticks)
         :"cc"
             );
     return __r0;
-#endif
 }
 
 PUBLIC s32 os_semaphore_create(u32 tokens)

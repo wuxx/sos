@@ -5,7 +5,6 @@
 #include "uart.h"
 
 PRIVATE u32 default_log_level = LOG_INFO;
-PRIVATE char format_buf[FORMAT_BUF_SIZE] = {0};
 
 u8 log_buffer[256*1024] = {0};
 u32 lbindex = 0;
@@ -26,6 +25,7 @@ PUBLIC s32 log(u32 log_level, const char *format, ...)
 {
     u32 len;
     va_list args;
+    char format_buf[FORMAT_BUF_SIZE] = {0};
 
     va_start(args, format);
     len = vsnprintf(format_buf, sizeof(format_buf), format, args);
@@ -63,7 +63,7 @@ u32 is_printable(u8 c)
 
 void dumpb(void *buf, u32 size)
 {
-#if 0
+#if 1
     u32 i, j;
     u32 line_nr;
     u8 *b = (u8 *)buf;
