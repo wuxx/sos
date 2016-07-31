@@ -7,7 +7,7 @@
 PRIVATE u32 default_log_level = LOG_INFO;
 PRIVATE char format_buf[FORMAT_BUF_SIZE] = {0};
 
-u8 log_buffer[4*1024] = {0};
+u8 log_buffer[256*1024] = {0};
 u32 lbindex = 0;
 
 PUBLIC s32 set_log_level(u32 log_level)
@@ -50,6 +50,10 @@ PUBLIC s32 log(u32 log_level, const char *format, ...)
 u32 is_printable(u8 c)
 {
     /* man ascii */
+    if (c == '\n') {
+        return 1;
+    }
+
     if (c >= 32 && c <= 126) {
         return 1;
     } else {
@@ -57,8 +61,9 @@ u32 is_printable(u8 c)
     }
 }
 
-void dumpb(void *buf, u32 len)
+void dumpb(void *buf, u32 size)
 {
+#if 0
     u32 i, j;
     u32 line_nr;
     u8 *b = (u8 *)buf;
@@ -66,7 +71,7 @@ void dumpb(void *buf, u32 len)
     char sbuf[3];
     char cbuf[17];
 
-    line_nr = len / 16;
+    line_nr = size / 16;
 
     uart_printf("[%X]:", b);
 
@@ -96,6 +101,20 @@ void dumpb(void *buf, u32 len)
 
         uart_printf("  %s\n[%X]:", cbuf, &b[16*i + j]);
     }
+#else
+    u32 i;
+    u8 *b = (u8 *)buf;
+
+    for (i = 0; i < size; i++) {
+            if (is_printable(b[i])) {
+                uart_printf("%c", b[i]);
+            } else {
+                /* uart_printf("."); */
+            }
+    
+    }
+    uart_printf("\n\n");
+#endif
 }
 
 PUBLIC s32 dump_log()

@@ -116,6 +116,7 @@ PRIVATE struct __os_task__ * need_schedule()
     struct __os_task__ *best_task;
 
     best_task = get_task_ready(); /* get the highest priority task in READY STATE */
+    PRINT_DEBUG("get best_task %x \n", best_task);
     if (best_task->prio <= current_task->prio || /* current_task create a higher prio task  */
         current_task->state == TASK_UNUSED    || /* current_task self-destruction  */
         current_task->state == TASK_SLEEP        /* current_task invoke os_sleep */

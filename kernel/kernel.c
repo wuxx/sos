@@ -56,9 +56,10 @@ PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
 
 PRIVATE s32 coretimer_irq_handler(u32 irq_nr)
 {
-    PRINT_DEBUG("in %s %d\n", __func__, irq_nr);
+    PRINT_DEBUG("%s start: %d %d\n", __func__, irq_nr, os_tick);
     os_clock_irq_hook(current_context);
     writel(CORETMCLR, 0x0);
+    PRINT_DEBUG("%s   end: %d %d\n", __func__, irq_nr, os_tick);
     return 0;
 }
 

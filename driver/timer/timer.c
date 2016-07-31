@@ -9,12 +9,15 @@
 /* increment syscounter */
 PUBLIC u64 get_syscounter()
 {
+#if 0
     u64 sc;
     u64 clo, chi;
     clo = readl(SYSTMCLO);
     chi = readl(SYSTMCHI);
     sc  = (chi << 32) | clo;
     return sc;
+#endif
+    return readl(SYSTMCLO);
 }
 
 PUBLIC void udelay(u32 us)

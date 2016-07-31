@@ -22,6 +22,7 @@ enum CB_TYPE_E {
 struct __os_list__ {
     u32 type;
     struct __os_task__ *next;
+    struct __os_task__ *prev;
 };
 
 extern struct __os_list__ os_ready_list;

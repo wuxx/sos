@@ -4,6 +4,7 @@
 #include "int.h"
 #include "log.h"
 #include "cpu.h"
+#include "uart.h"
 #include "watchdog.h"
 #include "syscall.h"
 
@@ -18,9 +19,31 @@ struct cpu_context *current_context;
 
 func_1 irq_table[IRQ_MAX] = {0};
 
+PUBLIC void dump_ctx_debug(struct cpu_context *ctx)
+{
+#define DUMP_VAR_DEBUG(c, var) PRINT_DEBUG("[0x%x]3:" #var "\t 0x%x\n", &c->var, c->var)
+    DUMP_VAR_DEBUG(ctx, cpsr);
+    DUMP_VAR_DEBUG(ctx, r0);
+    DUMP_VAR_DEBUG(ctx, r1);
+    DUMP_VAR_DEBUG(ctx, r2);
+    DUMP_VAR_DEBUG(ctx, r3);
+    DUMP_VAR_DEBUG(ctx, r4);
+    DUMP_VAR_DEBUG(ctx, r5);
+    DUMP_VAR_DEBUG(ctx, r6);
+    DUMP_VAR_DEBUG(ctx, r7);
+    DUMP_VAR_DEBUG(ctx, r8);
+    DUMP_VAR_DEBUG(ctx, r9);
+    DUMP_VAR_DEBUG(ctx, r10);
+    DUMP_VAR_DEBUG(ctx, r11);
+    DUMP_VAR_DEBUG(ctx, r12);
+    DUMP_VAR_DEBUG(ctx, sp);
+    DUMP_VAR_DEBUG(ctx, lr);
+    DUMP_VAR_DEBUG(ctx, pc);
+}
+
 PUBLIC void dump_ctx(struct cpu_context *ctx)
 {
-#define DUMP_VAR(c, var) PRINT_EMG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
+#define DUMP_VAR(c, var) PRINT_EMG("[0x%x]2:" #var "\t 0x%x\n", &c->var, c->var)
     DUMP_VAR(ctx, cpsr);
     DUMP_VAR(ctx, r0);
     DUMP_VAR(ctx, r1);
@@ -111,7 +134,7 @@ PRIVATE void General_Irq_Handler()
         for(j=0;j<32;j++) {
             if (get_bit(pend[i], j) && get_bit(enable[i], j)) {
                 irq_nr = i * 32 + j;
-                /* PRINT_DEBUG("irq_nr: %d\n", irq_nr); */
+                PRINT_DEBUG("irq: %d\n", irq_nr);
                 irq_func = irq_table[irq_nr];
                 if (irq_func != NULL) {
                     irq_func(irq_nr);
@@ -129,16 +152,17 @@ PRIVATE void cpu_context_save()
     current_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
 
     memcpy((void *)(current_task->sp), (void *)current_context, sizeof(struct cpu_context));
-    PRINT_DEBUG("save %d \n", current_task->id);
-    /* dump_ctx((struct cpu_context *)(current_task->sp)); */
+    PRINT_DEBUG("cpu_context_save %d \n", current_task->id);
+    dump_ctx_debug((struct cpu_context *)(current_task->sp));
 }
 
 PRIVATE void cpu_context_restore()
 {
-    PRINT_DEBUG("restore %d \n", current_task->id); 
-    /* dump_ctx((struct cpu_context *)(current_task->sp)); */
+    PRINT_DEBUG("cpu_context_restore %d \n", current_task->id); 
+    dump_ctx_debug((struct cpu_context *)(current_task->sp));
     memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct cpu_context));
 }
+
 #define CPU_CONTEXT_SAVE()                                                                              \
     asm volatile (                      /* cpu context save, please check the struct cpu_context */     \
             "stmfd sp!, {lr}\n\t"       /* user/system pc = irq lr - 4  */                              \
@@ -201,7 +225,7 @@ PRIVATE void General_Exc_Handler()
 
     PRINT_DEBUG("in %s lr: %x\n", __func__, __get_lr());
     PRINT_DEBUG("cpsr %x; %s\n", cpsr, get_cpu_mode(&mode));
-    /* dump_ctx(current_context); */
+    dump_ctx_debug(current_context);
 
     args[0] = current_context->r0;
     args[1] = current_context->r1;
@@ -357,6 +381,7 @@ PUBLIC s32 panic()
     PRINT_EMG("in %s, cpu_mode: [%s]; lr: [%x]; current_task_id: %d\n\n", 
             __func__, get_cpu_mode(NULL), lr, current_task != NULL ? current_task->id: -1);
     dump_log();
+    PRINT_EMG("current_context: \n");
     dump_ctx(current_context);
     dump_tcb_all();
     lockup();

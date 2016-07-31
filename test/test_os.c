@@ -28,8 +28,12 @@ s32 test_task(u32 arg)
 
 void dump_tcb(u32 i)
 {
-    PRINT_EMG("[%d]: [%s]\n", i, task_state_desc[tcb[i].state]);
+    struct cpu_context *ctx = (struct cpu_context *)(tcb[i].sp);
+
+    PRINT_EMG("\n[%d]: [%s]\n", i, task_state_desc[tcb[i].state]);
+
     if (tcb[i].state != TASK_UNUSED) {
+        dump_ctx(ctx);
         PRINT_EMG("\ttask_id:     [%d]\n", tcb[i].id);
         PRINT_EMG("\tstate:       [%s]\n", task_state_desc[tcb[i].state]);
         PRINT_EMG("\tprio:        [%d]\n", tcb[i].prio);

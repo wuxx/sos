@@ -16,12 +16,19 @@ PUBLIC s32 os_sleep_expire()
     while (pcurr != NULL) {
         pcurr->sleep_ticks--;
         if (pcurr->sleep_ticks == 0) {
-            pcurr->next = NULL;
-            pprev->next = pcurr->next;
-            pprev       = pcurr->next->prev;
+
+            if (pcurr->next == NULL) {
+                pcurr->prev = NULL;
+                pprev->next = NULL;
+            } else {
+                pprev->next = pcurr->next;
+                pcurr->next->prev = pprev;
+            }
 
             pcurr->state = TASK_READY;
             os_ready_insert(pcurr);
+
+            /* pick next task */
             pcurr = pprev->next;
 
         } else {

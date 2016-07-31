@@ -1,4 +1,5 @@
 #include <libc.h>
+#include <int.h>
 
 #include "uart.h"
 #include "log.h"
@@ -15,12 +16,16 @@ s32 cmd_exec();
 s32 cmd_dump();
 s32 cmd_help();
 s32 cmd_systest();
+s32 cmd_panic();
+s32 cmd_reset();
 
 struct shell_cmd_info ci[] = {
     { .name = "r",       .func = cmd_read,    .desc = "r [addr]                  read    any addr"},
     { .name = "w",       .func = cmd_write,   .desc = "w [addr] [data]           write   any addr"},
     { .name = "x",       .func = cmd_exec,    .desc = "x [addr]                  execute any addr"},
     { .name = "dump",    .func = cmd_dump,    .desc = "dump [addr] [word_num]    dump    any addr"},
+    { .name = "panic",   .func = cmd_panic,   .desc = "panic                     system panic"    },
+    { .name = "reset",   .func = cmd_reset,   .desc = "reset                     system reset"    },
     { .name = "systest", .func = cmd_systest, .desc = "systest [module] [i]      system test"     },
     { .name = "help",    .func = cmd_help,    .desc = "help                      print cmd info"  },
 };
@@ -82,6 +87,27 @@ PRIVATE s32 cmd_dump()
         PRINT_EMG("[0x%X]: 0x%X\r\n", &p[i], p[i]);
     }
 
+    return 0;
+}
+
+PRIVATE s32 cmd_panic()
+{
+    u32 x = 0x12345678;
+
+    lock_irq();
+
+    func_0 func;
+    func = (func_0)x;
+    func();
+
+    assert(0);
+    return 0;
+}
+
+PRIVATE s32 cmd_reset()
+{
+    reset();
+    assert(0);
     return 0;
 }
 

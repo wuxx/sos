@@ -1,8 +1,8 @@
 ﻿SOS
 ===
 
-simple OS for raspberry pi model B
-1. use u-boot as bootloader
+Simple OS for raspberry pi model B
+1. use u-boot as bootloader (https://github.com/wuxx/u-boot-pi)
 U-Boot> loady 0x200000 (because sos is link to 0x200000, please checkout the sos.ld)
 U-Boot> go 0x200000
 

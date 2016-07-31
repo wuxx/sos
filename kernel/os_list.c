@@ -5,8 +5,8 @@
 
 #include "log.h"
 
-struct __os_list__ os_ready_list = {.next = NULL};
-struct __os_list__ os_sleep_list = {.next = NULL};
+struct __os_list__ os_ready_list = {.type = OS_READY, .next = NULL, .prev = NULL};
+struct __os_list__ os_sleep_list = {.type = OS_SLEEP, .next = NULL, .prev = NULL};
 
 s32 list_insert(struct __os_list__ *list, struct __os_task__ *ptask)
 {

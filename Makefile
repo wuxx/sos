@@ -128,7 +128,7 @@ init:
 all:init build_objs
 	$(LD) $(ALL_OBJS) $(LDFLAGS) -o $(TARGET_ELF)
 	$(OBJCOPY) $(TARGET_ELF) -O binary $(TARGET_IMG)
-	$(OBJDUMP) -d $(TARGET_ELF) > $(TARGET_DISASM)
+	$(OBJDUMP) -S $(TARGET_ELF) > $(TARGET_DISASM)
 	$(OBJDUMP) -s $(TARGET_ELF) > $(TARGET_SECINFO)
 	$(READELF) -a $(TARGET_ELF) > $(TARGET_ELFINFO)
 	cp $(TARGET_IMG) $(BUILD)/kernel.img
