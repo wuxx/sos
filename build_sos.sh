@@ -7,12 +7,15 @@ help() {
 }
 
 #default build config
-cflags=""
+export cflags=""
+export REVISION="__REVISION__=\\\""$(git log --abbrev-commit --pretty=oneline | head -n 1 | awk '{print $1}')"\\\""
+
+echo $REVISION
 
 while [ ! -z "$1" ]; do
     case "$1" in
         "--debug")
-            cflag="-DDEBUG"
+            export cflags="-DDEBUG"
             shift
             ;;
         "--help")
@@ -29,9 +32,11 @@ while [ ! -z "$1" ]; do
     esac
 done
 
+export cflags="${cflags} -D${REVISION}"
+
 echo "cflags=$cflag"
 CPU_NUM=$(nproc)
-make cflags=$cflag -j ${CPU_NUM}
+make -j ${CPU_NUM}
 
 if [ $? -eq 0 ]; then
     echo -e "\033[32mbuild ok!\033[0"

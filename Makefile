@@ -2,7 +2,7 @@
 
 #from build_sos.sh
 CFLAGS = $(cflags)
-
+$(warning CFLAGS: $(CFLAGS))
 HOST_IS_ARM = $(shell uname -m | grep "arm")
 
 #$(warning HOST_IS_ARM: $(HOST_IS_ARM))
