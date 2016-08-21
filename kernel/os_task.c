@@ -111,29 +111,33 @@ PRIVATE void task_matrix(u32 addr, u32 arg)
     return 0;
 }
 
-PRIVATE struct __os_task__ * need_schedule()
+PUBLIC struct __os_task__ * get_best_task()
 {
-    struct __os_task__ *best_task;
+    struct __os_task__ *best_task = NULL;
 
     best_task = get_task_ready(); /* get the highest priority task in READY STATE */
+
+    kassert(best_task != NULL);
     PRINT_DEBUG("get best_task %x \n", best_task);
+#if 0
     if (best_task->prio <= current_task->prio || /* current_task create a higher prio task  */
         current_task->state == TASK_UNUSED    || /* current_task self-destruction  */
-        current_task->state == TASK_SLEEP        /* current_task invoke os_sleep */
+        current_task->state == TASK_SLEEP     || /* current_task invoke os_sleep */
+        current_task->state == TASK_WAIT_SEM     /* current_task wait for semaphore */
         ) {
         PRINT_DEBUG("schedule task %d \n", best_task->id);
         return best_task;
     }
-    return NULL;
+#endif
+    return best_task;
 }
 
 PUBLIC s32 task_dispatch()
 {
     struct __os_task__ *best_task;
 
-    if ((best_task = need_schedule()) != NULL) {
-        task_sched(best_task);
-    }
+    best_task = get_best_task();
+    task_sched(best_task);
 
     return 0;
 }
@@ -149,7 +153,10 @@ PUBLIC s32 task_create(func_1 entry, u32 arg, u32 prio)
 
     os_ready_insert(ptask); /* FIXME: do task switch immediately if a higher task created. */
 
-    task_dispatch();
+    if (ptask->prio < current_task->prio) {
+        current_task->state = TASK_READY;
+        task_dispatch();
+    }
 
     return ptask->id;
 }
@@ -171,6 +178,7 @@ PUBLIC s32 task_sleep(u32 ticks)
 }
 
 /*
+   FIXME: do task switch immediately
    1. update current_task
    2. delete the best_task from os_ready_list
    3. insert old_task into os_sleep_list or os_ready_list or sem_list.
@@ -189,8 +197,13 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
     switch (old_task->state) {
         case (TASK_UNUSED):     /* current task self-destruction */
             break;
+#if 0
         case (TASK_RUNNING):    /* current task create higher prio task  */
             old_task->state = TASK_READY;
+            os_ready_insert(old_task);
+            break;
+#endif
+        case (TASK_READY):      /* current task create higher prio task  */
             os_ready_insert(old_task);
             break;
         case (TASK_SLEEP):      /* current task invoke os_task_sleep sleep */
@@ -202,7 +215,7 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
             break;
         default:
             kassert(0);
-    }   
+    }
 
     /* dump_list(); */
     PRINT_DEBUG("schedule %d \n", current_task->id);

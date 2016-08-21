@@ -8,7 +8,6 @@ help() {
 
 #default build config
 export cflags=""
-export REVISION="__REVISION__=\\\""$(git log --abbrev-commit --pretty=oneline | head -n 1 | awk '{print $1}')"\\\""
 
 echo $REVISION
 
@@ -32,7 +31,7 @@ while [ ! -z "$1" ]; do
     esac
 done
 
-export cflags="${cflags} -D${REVISION}"
+export cflags="${cflags}"
 
 echo "cflags=$cflag"
 CPU_NUM=$(nproc)

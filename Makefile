@@ -2,7 +2,8 @@
 
 #from build_sos.sh
 CFLAGS = $(cflags)
-$(warning CFLAGS: $(CFLAGS))
+
+#$(warning CFLAGS: $(CFLAGS))
 HOST_IS_ARM = $(shell uname -m | grep "arm")
 
 #$(warning HOST_IS_ARM: $(HOST_IS_ARM))
@@ -104,6 +105,7 @@ LDS = $(ROOT)/$(TARGET).ld
 
 #-march=armv6
 CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -mfloat-abi=soft -Wall -g -I$(INCLUDE_DIR)
+CFLAGS  += -D__REVISION__=\""$(shell git log --abbrev-commit --pretty=oneline | head -n 1 | awk '{print $$1}')"\"
 ASFLAGS += 
 
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 

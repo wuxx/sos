@@ -7,7 +7,7 @@ struct __os_semaphore__ os_semaphore[SEM_NR_MAX];
 PRIVATE s32 get_free_sem()
 {
     u32 i;
-    for(i=0;i<SEM_NR_MAX;i++) {
+    for(i = 0; i < SEM_NR_MAX; i++) {
         if (os_semaphore[i].status == SEM_FREE) {
             return i;
         }
@@ -34,8 +34,8 @@ PUBLIC s32 semaphore_get(u32 sem_id)
     sem = &os_semaphore[sem_id];
 
     if (sem->token == 0) {
-        current_task->state = TASK_WAIT_SEM;
         current_task->private_data = sem;
+        current_task->state = TASK_WAIT_SEM;
         task_dispatch();
     } else {
         sem->token -- ;
@@ -55,15 +55,19 @@ PUBLIC s32 semaphore_put(u32 sem_id)
     sem = &os_semaphore[sem_id];
 
     sem->token ++;
-    if (sem->token == 1) {
-        /* */
+    if (sem->token == 1) {  /* 0 -> 1 */
         if (sem->next != NULL) { /* somebody is waiting for the sem */
+#if 0
             ptask = sem->next;
             sem->next = sem->next->next;
+#endif
+            ptask->state = TASK_READY;
+            os_sem_delete(sem, ptask);
+            os_ready_insert(ptask);
+
             if (ptask->prio < current_task->prio) {
+                current_task->state = TASK_READY;
                 task_dispatch();
-            } else {
-                os_ready_insert(ptask);
             }
         }
     }
@@ -88,7 +92,7 @@ PUBLIC s32 semaphore_delete(u32 sem_id)
 PUBLIC struct __os_semaphore__ * semaphore_init()
 {
     u32 i;
-    for(i=0;i<SEM_NR_MAX;i++) {
+    for(i = 0; i < SEM_NR_MAX; i++) {
         os_semaphore[i].type   = OS_SEM;
         os_semaphore[i].next   = NULL;
         os_semaphore[i].status = SEM_FREE;

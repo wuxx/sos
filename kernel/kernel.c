@@ -47,11 +47,17 @@ PUBLIC s32 os_sleep(u32 ms)
 
 PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
 {
+    struct __os_task__ *best_task;
+
     os_tick ++ ;
     
     os_sleep_expire();
 
-    task_dispatch();
+    best_task = get_best_task();
+    if (best_task->prio <= current_task->prio) {
+        current_task->state = TASK_READY;
+        task_dispatch();
+    }
 }
 
 PRIVATE s32 coretimer_irq_handler(u32 irq_nr)

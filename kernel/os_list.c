@@ -56,7 +56,7 @@ s32 list_delete(struct __os_list__ *list, struct __os_task__ *ptask)
     pprev = (struct __os_task__ *)list;
     pcurr = list->next;
 
-    /* PRINT_EMG("delete %x \n", ptask); */
+    PRINT_DEBUG("list delete %x \n", ptask);
     while (pcurr != ptask && pcurr != NULL) {
         pprev = pcurr;
         pcurr = pcurr->next;

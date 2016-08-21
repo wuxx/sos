@@ -9,44 +9,6 @@ PRIVATE u32 default_log_level = LOG_INFO;
 u8 log_buffer[256*1024] = {0};
 u32 lbindex = 0;
 
-PUBLIC s32 set_log_level(u32 log_level)
-{
-    if ((log_level >= LOG_EMG) && (log_level <= LOG_DEBUG)) {
-        default_log_level = log_level;
-        return OK;
-    } else {
-        return EINVAL;
-    }
-
-    return 0;
-}
-
-PUBLIC s32 log(u32 log_level, const char *format, ...)
-{
-    u32 len;
-    va_list args;
-    char format_buf[FORMAT_BUF_SIZE] = {0};
-
-    va_start(args, format);
-    len = vsnprintf(format_buf, sizeof(format_buf), format, args);
-    va_end(args);
-
-    if (log_level <= default_log_level) {
-        /*lock_irq(); */
-        uart_puts(format_buf);
-        /*unlock_irq();*/
-    }
-
-    if (len > (sizeof(log_buffer) - (lbindex + 1))) {
-        lbindex = 0;
-    }
-
-    memcpy(&log_buffer[lbindex], format_buf, len + 1);
-    lbindex += len + 1;
-
-    return OK;
-}
-
 u32 is_printable(u8 c)
 {
     /* man ascii */
@@ -115,6 +77,44 @@ void dumpb(void *buf, u32 size)
     }
     uart_printf("\n\n");
 #endif
+}
+
+PUBLIC s32 set_log_level(u32 log_level)
+{
+    if ((log_level >= LOG_EMG) && (log_level <= LOG_DEBUG)) {
+        default_log_level = log_level;
+        return OK;
+    } else {
+        return EINVAL;
+    }
+
+    return 0;
+}
+
+PUBLIC s32 log(u32 log_level, const char *format, ...)
+{
+    u32 len;
+    va_list args;
+    char format_buf[FORMAT_BUF_SIZE] = {0};
+
+    va_start(args, format);
+    len = vsnprintf(format_buf, sizeof(format_buf), format, args);
+    va_end(args);
+
+    if (log_level <= default_log_level) {
+        /*lock_irq(); */
+        uart_puts(format_buf);
+        /*unlock_irq();*/
+    }
+
+    if (len > (sizeof(log_buffer) - (lbindex + 1))) {
+        lbindex = 0;
+    }
+
+    memcpy(&log_buffer[lbindex], format_buf, len + 1);
+    lbindex += len + 1;
+
+    return OK;
 }
 
 PUBLIC s32 dump_log()

@@ -8,6 +8,7 @@
 
 extern u32 os_tick;
 extern struct __os_task__ tcb[TASK_NR_MAX];
+extern void dump_ctx(struct cpu_context *ctx);
 
 char *task_state_desc[] = {
     "TASK_UNUSED",

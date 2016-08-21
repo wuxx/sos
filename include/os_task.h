@@ -45,6 +45,7 @@ s32 task_create(func_1 entry, u32 arg, u32 prio);
 s32 task_delete(u32 task_id);
 s32 task_sleep(u32 ticks);
 s32 task_dispatch();
+struct __os_task__ * get_best_task();
 s32 task_delete(u32 task_id);
 s32 task_init();
 #endif /* __OS_TASK_H__ */

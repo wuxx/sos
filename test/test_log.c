@@ -3,6 +3,8 @@
 #include "log.h"
 #include "systest.h"
 
+extern void dumpb(void *buf, u32 size);
+
 char *loglevel_desc[] = {
         "LOG_EMG",
         "LOG_ERR",

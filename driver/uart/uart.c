@@ -118,7 +118,7 @@ PUBLIC s32 uart_printf(const char *format, ...)
 
     uart_puts(format_buf);
 
-    return OK; 
+    return len; 
 }
 
 PUBLIC void uart_init() {

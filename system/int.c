@@ -236,7 +236,7 @@ PRIVATE void General_Exc_Handler()
         nr  = readl(current_context->pc - 8) & 0xFFFFFF;    /* swi {syscall_nr} */
         ret = system_call(nr, args);
 
-        pctx->r0  = ret;
+        pctx->r0 = ret;
     } else {
         panic();
         while(1);
