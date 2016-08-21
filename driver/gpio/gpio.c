@@ -64,6 +64,30 @@ PUBLIC s32 set_gpio_function(u32 gpio_index, u32 func_index)
     return 0;
 }
 
+PUBLIC u32 get_gpio_function(u32 gpio_index)
+{
+    u32 i, fsel_addr;
+    u32 rvalue;
+    u32 func_index;
+
+
+    if (gpio_index >= GPIO_NR_MAX) {
+        PRINT_EMG("invalid para %d \n", gpio_index);
+        return -1;
+    }
+
+    /* which reg */
+    fsel_addr = GPFSEL0 + 4*(gpio_index / 10);
+    i = gpio_index % 10;
+
+    rvalue = readl(fsel_addr);
+#if 0
+    PRINT_EMG("%d %x %x\n", i, fr.value, func_index);
+#endif
+    func_index = (rvalue >> (3 * i)) & 0x7;
+    return func_index;
+}
+
 PUBLIC s32 set_gpio_output(u32 gpio_index, u32 bit)
 {
     u32 output_set_addr, output_clear_addr;
@@ -88,39 +112,3 @@ PUBLIC s32 set_gpio_output(u32 gpio_index, u32 bit)
 
     return 0;
 }
-
-PUBLIC void set_gpio_value(u32 gpio, u32 val)
-{
-    u32 offset0 = 0;
-    u32 offset1 = 0;
-    u32 base = 0;
-    u32 tmp = 0;
-    if (gpio > 53) {
-        return;
-    }
-
-    switch(val) {
-        case (0):
-            base = 10;  /* offset 40  output 0 */
-            break;
-
-        case (1):
-            base = 7;   /* offset 28 output 1 */
-            break;
-
-        default:
-            base = 7;
-            val = 1;
-            break;
-    }
-
-    offset0 = gpio / 32;
-    offset1 = gpio % 32;
-
-    tmp = *((u32 *)GPIO_BASE + base + offset0);
-
-    tmp |= (1 << offset1);
-    *((u32 *)GPIO_BASE + base + offset0) = tmp;
-
-}
-

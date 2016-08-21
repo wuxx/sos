@@ -60,14 +60,14 @@ enum {
 };
 
 enum {
-    INPUT = 0,
-    OUTPUT,
-    ALT_FUNC_4, /* yes, the arrange is strange */
-    ALT_FUNC_5,
-    ALT_FUNC_0,
-    ALT_FUNC_1,
-    ALT_FUNC_2,
-    ALT_FUNC_3,
+    INPUT = 0,  /* 0 */
+    OUTPUT,     /* 1 */
+    ALT_FUNC_5, /* 2 */ /* yes, the arrange is strange */
+    ALT_FUNC_4, /* 3 */
+    ALT_FUNC_0, /* 4 */
+    ALT_FUNC_1, /* 5 */
+    ALT_FUNC_2, /* 6 */
+    ALT_FUNC_3, /* 7 */
     ALT_FUNC_MAX,
 };
 
@@ -91,7 +91,8 @@ union gpio_fsel_reg {
 };
 
 s32 set_gpio_function(u32 gpio_index, u32 func_index);
+u32 get_gpio_function(u32 gpio_index);
+
 s32 set_gpio_output(u32 gpio_index, u32 bit);
-void set_gpio_value(u32 gpio, u32 val);
 
 #endif /* __GPIO_H__ */

@@ -81,6 +81,20 @@ s32 test_gpio_all(u32 argc, char **argv)
             /* TMS */
             set_gpio_function(27, ALT_FUNC_4);
             break;
+        case (5):
+            /* TDI */
+            PRINT_EMG("gpio4: %d\n", get_gpio_function(4));
+            /* nTRST */
+            PRINT_EMG("gpio22: %d\n", get_gpio_function(22));
+            /* RTCK */
+            PRINT_EMG("gpio23: %d\n", get_gpio_function(23));
+            /* TDO */
+            PRINT_EMG("gpio24: %d\n", get_gpio_function(24));
+            /* TCK */
+            PRINT_EMG("gpio25: %d\n", get_gpio_function(25));
+            /* TMS */
+            PRINT_EMG("gpio27: %d\n", get_gpio_function(27));
+            break;
         default:
             return -1;
     }
