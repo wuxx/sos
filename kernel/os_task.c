@@ -210,8 +210,8 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
             os_sleep_insert(old_task);
             break;
         case (TASK_WAIT_SEM):   /* current task wait for sem */
-            psem = (struct __os_semaphore__ *)(current_task->private_data);
-            os_sem_insert(psem, current_task);
+            psem = (struct __os_semaphore__ *)(old_task->private_data);
+            os_sem_insert(psem, old_task);
             break;
         default:
             kassert(0);

@@ -133,7 +133,7 @@ PRIVATE s32 parse_cmd(char *cmd)
 
     /* first, set the argv */
     j = 0;
-    for(i=0;cmd[i]!='\0';) {
+    for(i = 0; cmd[i] != '\0';) {
 
         while(cmd[i] == ' ') {
             i++;
@@ -152,7 +152,7 @@ PRIVATE s32 parse_cmd(char *cmd)
     }
 
     /* replace all ' ' to '\0' */
-    for(i=0;cmd[i]!='\0';i++) {
+    for(i = 0; cmd[i] != '\0'; i++) {
         if (cmd[i] == ' ') {
             cmd[i] = '\0';
         }
@@ -181,7 +181,6 @@ PUBLIC s32 shell(char *cmd)
     }
 
     PRINT_EMG("\n");
-
     parse_cmd(cmd);
 
 #if 0

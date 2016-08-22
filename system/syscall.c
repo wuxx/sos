@@ -45,6 +45,8 @@ PUBLIC s32 os_task_create(func_1 entry, u32 arg, u32 prio)
     register int __r2 __asm("r2");
     register int __r3 __asm("r3");
 
+    kassert(!in_interrupt());
+
     __r0 = (u32)entry;
     __r1 = arg;
     __r2 = prio;
@@ -65,6 +67,8 @@ PUBLIC s32 os_task_sleep(u32 ticks)
     register s32 __r2 __asm("r2");
     register s32 __r3 __asm("r3");
 
+    kassert(!in_interrupt());
+
     __r0 = (u32)ticks;
     /* invoke the swi */
     asm (
@@ -82,6 +86,8 @@ PUBLIC s32 os_semaphore_create(u32 tokens)
     register s32 __r1 __asm("r1");
     register s32 __r2 __asm("r2");
     register s32 __r3 __asm("r3");
+
+    kassert(!in_interrupt());
 
     __r0 = (u32)tokens;
     /* invoke the swi */
@@ -101,6 +107,8 @@ PUBLIC s32 os_semaphore_delete(u32 sem_id)
     register s32 __r2 __asm("r2");
     register s32 __r3 __asm("r3");
 
+    kassert(!in_interrupt());
+
     __r0 = (u32)sem_id;
     /* invoke the swi */
     asm (
@@ -119,6 +127,8 @@ PUBLIC s32 os_semaphore_get(u32 sem_id)
     register s32 __r2 __asm("r2");
     register s32 __r3 __asm("r3");
 
+    kassert(!in_interrupt());
+
     __r0 = (u32)sem_id;
     /* invoke the swi */
     asm (
@@ -136,6 +146,8 @@ PUBLIC s32 os_semaphore_put(u32 sem_id)
     register s32 __r1 __asm("r1");
     register s32 __r2 __asm("r2");
     register s32 __r3 __asm("r3");
+
+    kassert(!in_interrupt());
 
     __r0 = (u32)sem_id;
     /* invoke the swi */

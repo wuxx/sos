@@ -16,10 +16,16 @@
 
 s32 blink_task(u32 arg)
 {
+    s32 sem_id;
     u32 count = 0;
     set_gpio_function(16, OUTPUT);
+    if ((sem_id = os_semaphore_create(1) == -1)) {
+        PRINT_ERR("%s create sem fail! \n", __func__);
+    }
+
     while(1) {
         PRINT_INFO("in %s %d\n", __func__, count++);
+        os_semaphore_get(sem_id);
         set_gpio_output(16, 0);     /* led on */
         mdelay(1000);
         set_gpio_output(16, 1);     /* led off */

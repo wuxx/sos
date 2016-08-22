@@ -1,7 +1,6 @@
 #include <system_config.h>
 #include <libc.h>
-#include <os_task.h>
-#include <os_list.h>
+#include <os.h>
 
 #include "log.h"
 
@@ -62,7 +61,7 @@ s32 list_delete(struct __os_list__ *list, struct __os_task__ *ptask)
         pcurr = pcurr->next;
     }
 
-    assert(pcurr != NULL); /* FIXME: kassert */
+    kassert(pcurr != NULL);
 
     pprev->next = ptask->next;
 

@@ -19,8 +19,12 @@ PUBLIC s32 semaphore_create(u32 res_num)
 {
     s32 sem_id;
     sem_id = get_free_sem();
-    os_semaphore[sem_id].status = SEM_USED;
-    os_semaphore[sem_id].token = res_num;
+
+    if (sem_id != -1) {
+        os_semaphore[sem_id].status = SEM_USED;
+        os_semaphore[sem_id].token = res_num;
+    }
+
     return sem_id;
 }
 

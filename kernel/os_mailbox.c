@@ -13,17 +13,17 @@ struct __os_mailbox__ {
 
 struct __os_mailbox__ mailbox[MBX_NR_MAX];
 
-s32 os_mail_put(struct __os_mailbox__ *mailbox, void *mail)
+s32 mail_put(struct __os_mailbox__ *mailbox, void *mail)
 {
     return 0;
 }
 
-s32 os_mail_get(struct __os_mailbox__ *mailbox)
+s32 mail_get(struct __os_mailbox__ *mailbox)
 {
     return 0;
 }
 
-s32 os_mailbox_init(void *mem, u32 size, u32 mail_nr)
+s32 mailbox_init(void *mem, u32 size, u32 mail_nr)
 {
     return 0;
 }

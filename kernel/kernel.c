@@ -40,8 +40,9 @@ PUBLIC s32 os_sleep(u32 ms)
 
     u32 ticks = (ms * OS_HZ) / 1000;
     current_task->sleep_ticks = ticks;
+
     current_task->state = TASK_SLEEP;
-    /* FIXME: need do task switch immediately */
+    task_dispatch();
     return 0;
 }
 
