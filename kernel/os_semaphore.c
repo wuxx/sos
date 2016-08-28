@@ -48,6 +48,14 @@ PUBLIC s32 semaphore_get(u32 sem_id)
     return 0;
 }
 
+/*
+    TODO:   1. task A prio 10 is waiting for sem, but token == 0, so put it in sem list
+            2. task D prio 20 running, it create a task B prio 5
+            3. task B prio  5 running, it put the sem, token -> 1, then put task A in ready list
+            4. task B exit, then assume task C prio 7 running, get the sem, token -> 0; 
+            5. at this point, task B should not run, but task B is in ready list!
+*/
+
 PUBLIC s32 semaphore_put(u32 sem_id)
 {
     struct __os_semaphore__ *sem = NULL;
@@ -61,10 +69,8 @@ PUBLIC s32 semaphore_put(u32 sem_id)
     sem->token ++;
     if (sem->token == 1) {  /* 0 -> 1 */
         if (sem->next != NULL) { /* somebody is waiting for the sem */
-#if 0
+
             ptask = sem->next;
-            sem->next = sem->next->next;
-#endif
             ptask->state = TASK_READY;
             os_sem_delete(sem, ptask);
             os_ready_insert(ptask);

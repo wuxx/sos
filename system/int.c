@@ -1,6 +1,6 @@
 #include <libc.h>
 #include <memory_map.h>
-#include <os_task.h>
+#include <os.h>
 #include "int.h"
 #include "log.h"
 #include "cpu.h"
@@ -14,14 +14,23 @@ extern void dump_tcb_all();
 
 extern struct __syscall__ syscall_table[];
 
+/* int nest level (interrupt include: 1. irq, fiq; 2. exception) */
+#define INT_NLEVEL_MAX  (2)     /* permit the irq context invoke swi */
+volatile s32 int_nlevel = 0;
+
 struct __os_task__ *current_task;
-struct cpu_context *current_context;
+struct __os_task__ *new_task = NULL;
+
+struct __cpu_context__ *current_context;
+
+struct __cpu_context__ *cpu_context[INT_NLEVEL_MAX];
+
 
 func_1 irq_table[IRQ_MAX] = {0};
 
-PUBLIC void dump_ctx_debug(struct cpu_context *ctx)
+PUBLIC void dump_ctx_debug(struct __cpu_context__ *ctx)
 {
-#define DUMP_VAR_DEBUG(c, var) PRINT_DEBUG("[0x%x]3:" #var "\t 0x%x\n", &c->var, c->var)
+#define DUMP_VAR_DEBUG(c, var) PRINT_DEBUG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
     DUMP_VAR_DEBUG(ctx, cpsr);
     DUMP_VAR_DEBUG(ctx, r0);
     DUMP_VAR_DEBUG(ctx, r1);
@@ -41,9 +50,9 @@ PUBLIC void dump_ctx_debug(struct cpu_context *ctx)
     DUMP_VAR_DEBUG(ctx, pc);
 }
 
-PUBLIC void dump_ctx(struct cpu_context *ctx)
+PUBLIC void dump_ctx(struct __cpu_context__ *ctx)
 {
-#define DUMP_VAR(c, var) PRINT_EMG("[0x%x]2:" #var "\t 0x%x\n", &c->var, c->var)
+#define DUMP_VAR(c, var) PRINT_EMG("[0x%x]:" #var "\t 0x%x\n", &c->var, c->var)
     DUMP_VAR(ctx, cpsr);
     DUMP_VAR(ctx, r0);
     DUMP_VAR(ctx, r1);
@@ -149,22 +158,37 @@ PRIVATE void General_Irq_Handler()
 /* cpu_context save into /restore from user/system mode stack */
 PRIVATE void cpu_context_save()
 {
-    current_task->sp = current_context->sp - sizeof(struct cpu_context);    /* store context in task's stack (but the task don't know) */
+    cpu_context[int_nlevel] = current_context;
+    kassert((++int_nlevel) <= INT_NLEVEL_MAX);
 
-    memcpy((void *)(current_task->sp), (void *)current_context, sizeof(struct cpu_context));
+    current_task->sp = current_context->sp - sizeof(struct __cpu_context__);    /* store context in current task's stack (but the task don't know) */
+
+    memcpy((void *)(current_task->sp), (void *)current_context, sizeof(struct __cpu_context__));
     PRINT_DEBUG("cpu_context_save %d \n", current_task->id);
-    dump_ctx_debug((struct cpu_context *)(current_task->sp));
+    dump_ctx_debug((struct __cpu_context__ *)(current_task->sp));
 }
 
 PRIVATE void cpu_context_restore()
 {
+    --int_nlevel;
+    current_context = cpu_context[int_nlevel];
+
+    if (new_task != NULL && int_nlevel == 0) {
+        current_task = new_task;
+        new_task     = NULL;
+    }
+
     PRINT_DEBUG("cpu_context_restore %d \n", current_task->id); 
-    dump_ctx_debug((struct cpu_context *)(current_task->sp));
-    memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct cpu_context));
+    dump_ctx_debug((struct __cpu_context__ *)(current_task->sp));
+    memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct __cpu_context__));
+
+    if (int_nlevel > 0) {
+        current_context = cpu_context[int_nlevel - 1];
+    }
 }
 
 #define CPU_CONTEXT_SAVE()                                                                              \
-    asm volatile (                      /* cpu context save, please check the struct cpu_context */     \
+    asm volatile (                      /* cpu context save, please check the struct __cpu_context__ */     \
             "stmfd sp!, {lr}\n\t"       /* user/system pc = irq lr - 4  */                              \
             "stmfd sp!, {r0-r14}^\n\t"  /* the ^ means user/system mode reg */                          \
             "sub sp, sp, #4\n\t"        /* em... get space to place the user/system mode cpsr, sp */    \
@@ -217,11 +241,11 @@ PRIVATE void General_Exc_Handler()
     s32 ret;
     u32 args[4]; /* r0-r3 */
     struct __os_task__ *ptask;
-    struct cpu_context *pctx;
+    struct __cpu_context__ *pctx;
 
     ptask = current_task;
     cpsr  = __get_cpsr();
-    pctx  = (struct cpu_context *)(ptask->sp);
+    pctx  = (struct __cpu_context__ *)(ptask->sp);
 
     PRINT_DEBUG("in %s lr: %x\n", __func__, __get_lr());
     PRINT_DEBUG("cpsr %x; %s\n", cpsr, get_cpu_mode(&mode));
@@ -242,6 +266,7 @@ PRIVATE void General_Exc_Handler()
         while(1);
 
     }
+
 }
 
 __attribute__((naked)) void ExcHandler()

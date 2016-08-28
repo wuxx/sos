@@ -23,36 +23,18 @@ PRIVATE u32 get_current_task()
 /* get the highest priority task in os_ready_list */
 PUBLIC struct __os_task__ * get_task_ready()
 {
-#if 0
-    u32 i;
-    u32 best = 256;
-    u32 prio = TASK_PRIO_MAX;
-    for(i=0;i<TASK_NR_MAX;i++) {
-        if (tcb[i].state == TASK_READY && tcb[i].prio < prio) {
-            prio = tcb[i].prio;
-            best = i;
-        }   
-    }   
-    /*PRINT_EMG("get %d \n", best);*/
-    if (best == 256) {
-        return NULL;
-    } else {
-        return &tcb[best];
-    }   
-#else
     struct __os_task__ *ptask;
     ptask = os_ready_list.next;
     PRINT_DEBUG("get_task_ready %x \n", ptask);
-    assert(ptask != NULL);
+    kassert(ptask != NULL);
     return ptask;
-#endif
 }
 
 PUBLIC struct __os_task__ * tcb_alloc()
 {
     u32 i;
 
-    for(i=0;i<sizeof(tcb)/sizeof(tcb[0]);i++) {
+    for(i = 0; i < sizeof(tcb)/sizeof(tcb[0]); i++) {
         if (tcb[i].state == TASK_UNUSED) {
             tcb[i].id = i;
             return &tcb[i];
@@ -74,7 +56,7 @@ PRIVATE void task_matrix(u32 addr, u32 arg)
 
 /* PRIVATE */ s32 tcb_init(struct __os_task__ *ptask, func_1 task_entry, u32 arg, u32 priority)
 {
-    struct cpu_context *cc;
+    struct __cpu_context__ *cc;
 
     ptask->state = TASK_READY;
     ptask->prio = priority;
@@ -83,8 +65,8 @@ PRIVATE void task_matrix(u32 addr, u32 arg)
     ptask->entry = task_entry;
 
     /* task context init */
-    cc = (struct cpu_context *)
-        (&(ptask->stack[TASK_STK_SIZE - (sizeof(struct cpu_context) / 4)]));
+    cc = (struct __cpu_context__ *)
+        (&(ptask->stack[TASK_STK_SIZE - (sizeof(struct __cpu_context__) / 4)]));
 
     cc->cpsr = 0x15F;   /* irq enable, fiq disable, arm instruction, system mode */
     cc->r0   = (u32)task_entry;
@@ -178,8 +160,7 @@ PUBLIC s32 task_sleep(u32 ticks)
 }
 
 /*
-   FIXME: do task switch immediately
-   1. update current_task
+   1. update new_task   (request a task switch)
    2. delete the best_task from os_ready_list
    3. insert old_task into os_sleep_list or os_ready_list or sem_list.
 */
@@ -188,10 +169,10 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
     struct __os_task__ *old_task;
     struct __os_semaphore__ *psem;
 
-    old_task     = current_task;
-    current_task = best_task;
+    old_task = current_task;
+    new_task = best_task;
 
-    current_task->state = TASK_RUNNING;
+    new_task->state = TASK_RUNNING;
     os_ready_delete(best_task);
 
     switch (old_task->state) {
@@ -218,7 +199,7 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
     }
 
     /* dump_list(); */
-    PRINT_DEBUG("schedule %d \n", current_task->id);
+    PRINT_DEBUG("schedule %d \n", new_task->id);
 }
 
 PUBLIC s32 task_init()

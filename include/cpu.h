@@ -32,7 +32,7 @@ enum CPU_MODE_E {
     MODE_SYSTEM = 31,
 };
 
-struct cpu_context {
+struct __cpu_context__ {
     u32 cpsr;   /* banked as spsr_xxx in irq mode, each task has its own cpsr */
     u32 r0;
     u32 r1;

@@ -14,7 +14,9 @@
 struct __syscall__ {
     char *desc;
     s32 (*handler)(u32 *arg);
+#if 0
     u32 free;   /* if the run context (task context | irq context) is free  */
+#endif
 };
 s32 system_call(u32 nr, u32 *args);
 

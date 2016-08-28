@@ -17,6 +17,7 @@ char *task_state_desc[] = {
     "TASK_RUNNING",
     "TASK_SUSPEND",
     "TASK_READY",
+    "TASK_WAIT_SEM",
 };
 
 s32 test_task(u32 arg)
@@ -42,6 +43,7 @@ void dump_tcb(u32 i)
         PRINT_EMG("\tprio:        [%d]\n", tcb[i].prio);
         PRINT_EMG("\tsleep_ticks: [%d]\n", tcb[i].sleep_ticks);
         
+        PRINT_EMG("\tsp:          [0x%x]\n", tcb[i].sp);
         PRINT_EMG("\tstack:       [0x%x]\n", tcb[i].stack);
         PRINT_EMG("\tstack_size:  [%d]\n", tcb[i].stack_size);
         PRINT_EMG("\ttask_entry:  [0x%x]\n", tcb[i].entry);
