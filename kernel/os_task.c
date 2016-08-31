@@ -26,7 +26,6 @@ PUBLIC struct __os_task__ * get_task_ready()
     struct __os_task__ *ptask;
     ptask = os_ready_list.next;
     PRINT_DEBUG("get_task_ready %x \n", ptask);
-    kassert(ptask != NULL);
     return ptask;
 }
 
@@ -99,7 +98,6 @@ PUBLIC struct __os_task__ * get_best_task()
 
     best_task = get_task_ready(); /* get the highest priority task in READY STATE */
 
-    kassert(best_task != NULL);
     PRINT_DEBUG("get best_task %x \n", best_task);
 #if 0
     if (best_task->prio <= current_task->prio || /* current_task create a higher prio task  */

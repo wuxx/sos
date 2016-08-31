@@ -21,14 +21,13 @@ extern struct cpu_context *current_context;
 volatile u32 os_tick = 0;
 PRIVATE s32 idle_task(u32 arg)
 {
-    u32 i;
-    unlock_irq();   /* kick off the system, will switch to the main_task */
 
+    unlock_irq();   /* kick off the system, will switch to the main_task */
     while(1) {
         PRINT_INFO("in %s %d cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
                 __func__, __LINE__, get_cpu_mode(NULL), __get_lr(), __get_sp(),  __get_cpsr());
 
-        for(i = 10000000; i > 0; i--);
+        mdelay(100000);
         PRINT_INFO("in %s %d cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
                 __func__, __LINE__, get_cpu_mode(NULL), __get_lr(), __get_sp(),  __get_cpsr());
     }
@@ -55,7 +54,9 @@ PRIVATE void os_clock_irq_hook(struct cpu_context *ctx)
     os_sleep_expire();
 
     best_task = get_best_task();
-    if (best_task->prio <= current_task->prio) {
+    if (best_task == NULL) {
+        kassert(current_task == &tcb[IDLE_TASK_ID]);
+    } else if (best_task->prio <= current_task->prio) {
         current_task->state = TASK_READY;
         task_dispatch();
     }
@@ -112,7 +113,7 @@ s32 os_main(u32 sp)
 
     /*os_ready_insert(ptask);*/
 
-    current_task = &tcb[0];  /* assume that this is idle_task */
+    current_task = &tcb[IDLE_TASK_ID];  /* assume that this is idle_task */
 
     /* create main task */
     if ((ptask = tcb_alloc()) == NULL) {

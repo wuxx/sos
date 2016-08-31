@@ -14,7 +14,9 @@ enum TASK_STATE_E {
     TASK_STATE_MAX,
 };
 /* task priority */
-#define TASK_PRIO_MAX  255  /* 0: the highest priority, 255: the lowest priority */
+#define TASK_PRIO_MAX   (255)  /* 0: the highest priority, 255: the lowest priority */
+
+#define IDLE_TASK_ID    (0) /* idle task id */
 
 struct __os_task__
 {

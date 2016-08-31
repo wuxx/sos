@@ -20,7 +20,7 @@ char *task_state_desc[] = {
     "TASK_WAIT_SEM",
 };
 
-s32 test_task(u32 arg)
+static s32 test_task(u32 arg)
 {
     while (1) {
         PRINT_EMG("in %s \n", __func__);

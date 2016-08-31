@@ -29,7 +29,7 @@ struct __syscall__ syscall_table[] = {
 PUBLIC s32 system_call(u32 nr, u32 *args)
 {
     s32 ret;
-    PRINT_DEBUG("syscall %d \n", nr);
+    PRINT_EMG("syscall %d \n", nr);
 
     ret = syscall_table[nr].handler(args);   /* syscall handler may invoke task_dispatch */
     return ret;

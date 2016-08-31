@@ -16,16 +16,11 @@
 
 s32 blink_task(u32 arg)
 {
-    s32 sem_id;
     u32 count = 0;
     set_gpio_function(16, OUTPUT);
-    if ((sem_id = os_semaphore_create(1) == -1)) {
-        PRINT_ERR("%s create sem fail! \n", __func__);
-    }
 
     while(1) {
-        PRINT_INFO("in %s %d\n", __func__, count++);
-        os_semaphore_get(sem_id);
+        PRINT_INFO("in %s %d;\n", __func__, count++);
         set_gpio_output(16, 0);     /* led on */
         mdelay(1000);
         set_gpio_output(16, 1);     /* led off */
@@ -35,8 +30,7 @@ s32 blink_task(u32 arg)
     return 0;
 }
 
-#if 1
-static s32 test_task(u32 arg)
+s32 test_task(u32 arg)
 {
     u32 count = 0;
     while (1) {
@@ -46,12 +40,15 @@ static s32 test_task(u32 arg)
 
     return 0;
 }
-#endif
 
+u32 test_flag = 0;
 PUBLIC s32 main_task(u32 arg)
 {
     u32 tid;
     u32 count = 0;
+    s32 sem_id;
+
+#if 0
     if ((tid = os_task_create(test_task, 0, 100)) == -1) {
         PRINT_EMG("test_task create failed %d !\n", tid);
     }
@@ -61,10 +58,25 @@ PUBLIC s32 main_task(u32 arg)
         PRINT_EMG("blink_task create failed %d !\n", tid);
     }
     PRINT_EMG("blink_task tid %d\n", tid);
+#endif
+
+    if ((sem_id = os_semaphore_create(1) == -1)) {
+        PRINT_ERR("%s create sem fail! \n", __func__);
+    }
 
     while (1) {
-        PRINT_INFO("in %s %d\n", __func__, count++);
+        PRINT_INFO("in %s %d %d\n", __func__, __LINE__, count++);
         os_task_sleep(10*OS_HZ); /* 10 s */
+        os_semaphore_get(sem_id);
+        PRINT_INFO("in %s %d %d\n", __func__, __LINE__, count++);
+#if 0
+        if (test_flag == 1) {
+            PRINT_INFO("in %s start\n", __func__);
+            os_semaphore_put(0);
+            PRINT_INFO("in %s   end\n", __func__);
+            test_flag = 0;
+        }
+#endif
     }
     return 0;
 }
