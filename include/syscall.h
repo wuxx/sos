@@ -9,6 +9,11 @@
 #define SYS_SEM_PUT     "0x4"
 #define SYS_SEM_DELETE  "0x5"
 
+#define SYS_MBX_CREATE  "0x6"
+#define SYS_MBX_GET     "0x7"
+#define SYS_MBX_PUT     "0x8"
+#define SYS_MBX_DELETE  "0x9"
+
 #define SYS_CALL_MAX    "0x100"
 
 struct __syscall__ {
@@ -28,4 +33,9 @@ s32 os_semaphore_create(u32 tokens);
 s32 os_semaphore_delete(u32 sem_id);
 s32 os_semaphore_get(u32 sem_id);
 s32 os_semaphore_put(u32 sem_id);
+
+s32 os_mailbox_create(void *addr, u32 mail_size, u32 mail_nr);
+s32 os_mailbox_delete(u32 mbx_id);
+s32 os_mailbox_get(u32 mbx_id);
+s32 os_mailbox_put(u32 mbx_id, void *mail);
 #endif /* __SYSCALL_H__ */

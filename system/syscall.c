@@ -8,22 +8,28 @@
 
 #define SYSCALL_ARG_MAX (4)
 
-extern struct __os_semaphore__ os_semaphore[SEM_NR_MAX];
-
-s32 do_task_create(u32 *args);
-s32 do_task_sleep (u32 *args);
+s32 do_tsk_create(u32 *args);
+s32 do_tsk_sleep (u32 *args);
 s32 do_sem_create (u32 *args);
 s32 do_sem_get    (u32 *args);
 s32 do_sem_put    (u32 *args);
 s32 do_sem_delete (u32 *args);
+s32 do_mbx_create (u32 *args);
+s32 do_mbx_get    (u32 *args);
+s32 do_mbx_put    (u32 *args);
+s32 do_mbx_delete (u32 *args);
 
 struct __syscall__ syscall_table[] = {
-    {SYS_TASK_CREATE,  do_task_create,},
-    {SYS_TASK_SLEEP,   do_task_sleep, },
+    {SYS_TASK_CREATE,  do_tsk_create,},
+    {SYS_TASK_SLEEP,   do_tsk_sleep, },
     {SYS_SEM_CREATE,   do_sem_create, },
     {SYS_SEM_GET,      do_sem_get,    },
     {SYS_SEM_PUT,      do_sem_put,    },
     {SYS_SEM_DELETE,   do_sem_delete, },
+    {SYS_MBX_CREATE,   do_mbx_create, },
+    {SYS_MBX_GET,      do_mbx_get,    },
+    {SYS_MBX_PUT,      do_mbx_put,    },
+    {SYS_MBX_DELETE,   do_mbx_delete, },
 };
 
 PUBLIC s32 system_call(u32 nr, u32 *args)
@@ -136,10 +142,6 @@ PUBLIC s32 os_semaphore_get(u32 sem_id)
         :"cc"
             );
 
-#if 0 
-    kassert(os_semaphore[sem_id].token > 0);
-    os_semaphore[sem_id].token --;
-#endif
     return __r0;
 }
 
@@ -163,7 +165,90 @@ PUBLIC s32 os_semaphore_put(u32 sem_id)
     return __r0;
 }
 
-PUBLIC s32 do_task_create(u32 *args)
+PUBLIC s32 os_mailbox_create(void *addr, u32 mail_size, u32 mail_nr)
+{
+    register s32 __r0 __asm("r0");
+    register s32 __r1 __asm("r1");
+    register s32 __r2 __asm("r2");
+    register s32 __r3 __asm("r3");
+
+    kassert(!in_interrupt());
+
+    __r0 = (u32)addr;
+    __r1 = (u32)mail_size;
+    __r2 = (u32)mail_nr;
+    /* invoke the swi */
+    asm (
+            "swi " SYS_MBX_CREATE "\n\t"
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
+        :"cc"
+            );
+    return __r0;
+}
+
+PUBLIC s32 os_mailbox_delete(u32 mbx_id)
+{
+    register s32 __r0 __asm("r0");
+    register s32 __r1 __asm("r1");
+    register s32 __r2 __asm("r2");
+    register s32 __r3 __asm("r3");
+
+    kassert(!in_interrupt());
+
+    __r0 = (u32)mbx_id;
+    /* invoke the swi */
+    asm (
+            "swi " SYS_MBX_DELETE "\n\t"
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
+        :"cc"
+            );
+    return __r0;
+}
+
+PUBLIC s32 os_mailbox_get(u32 mbx_id)
+{
+    register s32 __r0 __asm("r0");
+    register s32 __r1 __asm("r1");
+    register s32 __r2 __asm("r2");
+    register s32 __r3 __asm("r3");
+
+    kassert(!in_interrupt());
+
+    __r0 = (u32)mbx_id;
+    /* invoke the swi */
+    asm (
+            "swi " SYS_MBX_GET "\n\t"
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
+        :"cc"
+            );
+
+    return __r0;
+}
+
+PUBLIC s32 os_mailbox_put(u32 mbx_id, void *mail)
+{
+    register s32 __r0 __asm("r0");
+    register s32 __r1 __asm("r1");
+    register s32 __r2 __asm("r2");
+    register s32 __r3 __asm("r3");
+
+    /* kassert(!in_interrupt()); */
+
+    __r0 = (u32)mbx_id;
+    __r1 = (u32)mail;
+    /* invoke the swi */
+    asm (
+            "swi " SYS_MBX_PUT "\n\t"
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
+        :"cc"
+            );
+    return __r0;
+}
+PUBLIC s32 do_tsk_create(u32 *args)
 {
     func_1 entry; 
     u32 arg; 
@@ -174,7 +259,7 @@ PUBLIC s32 do_task_create(u32 *args)
     return task_create(entry, arg, prio);
 }
 
-PRIVATE s32 do_task_sleep(u32 *args)
+PRIVATE s32 do_tsk_sleep(u32 *args)
 {
     task_sleep(args[0]);
     return 0;
@@ -202,4 +287,32 @@ PRIVATE s32 do_sem_delete(u32 *args)
 {
     u32 sem_id = args[0];
     return semaphore_delete(sem_id);
+}
+
+PRIVATE s32 do_mbx_create(u32 *args)
+{
+    void *addr    = (void *)args[0];
+    u32 mail_size = args[1];
+    u32 mail_nr   = args[2];
+
+    return mailbox_create(addr, mail_size, mail_nr);
+}
+
+PRIVATE s32 do_mbx_get(u32 *args)
+{
+    u32 mbx_id = args[0];
+    return mailbox_get(mbx_id);
+}
+
+PRIVATE s32 do_mbx_put(u32 *args)
+{
+    u32 mbx_id = args[0];
+    void *mail = (void *)args[1];
+    return mailbox_put(mbx_id, mail);
+}
+
+PRIVATE s32 do_mbx_delete(u32 *args)
+{
+    u32 mbx_id = args[0];
+    return mailbox_delete(mbx_id);
 }

@@ -1,5 +1,5 @@
-#ifndef __OS_SEMAPHORE__
-#define __OS_SEMAPHORE__
+#ifndef __OS_SEMAPHORE_H__
+#define __OS_SEMAPHORE_H__
 #include <types.h>
 
 enum SEM_STATUS_E {
@@ -21,4 +21,4 @@ s32 semaphore_delete(u32 sem_id);
 
 struct __os_semaphore__ * semaphore_init();
 
-#endif /* __OS_SEMAPHORE__ */
+#endif /* __OS_SEMAPHORE_H__ */
