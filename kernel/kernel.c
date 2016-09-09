@@ -24,12 +24,16 @@ PRIVATE s32 idle_task(u32 arg)
 
     unlock_irq();   /* kick off the system, will switch to the main_task */
     while(1) {
+#if 0
         PRINT_INFO("in %s %d cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
                 __func__, __LINE__, get_cpu_mode(NULL), __get_lr(), __get_sp(),  __get_cpsr());
 
-        mdelay(100000);
+#endif
+        /* mdelay(100000); */
+#if 0
         PRINT_INFO("in %s %d cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n", 
                 __func__, __LINE__, get_cpu_mode(NULL), __get_lr(), __get_sp(),  __get_cpsr());
+#endif
     }
     return 0;
 }

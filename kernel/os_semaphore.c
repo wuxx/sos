@@ -69,7 +69,7 @@ PUBLIC s32 semaphore_put(u32 sem_id)
     sem->token ++;
     if (sem->token == 1) {  /* 0 -> 1 */
         if (sem->next != NULL) { /* somebody is waiting for the sem */
-
+            sem->token --;
             ptask = sem->next;
             ptask->state = TASK_READY;
             os_sem_delete(sem, ptask);
@@ -110,3 +110,4 @@ PUBLIC struct __os_semaphore__ * semaphore_init()
     }
     return 0;
 }
+

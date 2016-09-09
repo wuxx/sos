@@ -117,6 +117,7 @@ PUBLIC s32 task_dispatch()
     struct __os_task__ *best_task;
 
     best_task = get_best_task();
+    PRINT_DEBUG("task_dispatch %d \n", best_task->id);
     task_sched(best_task);
 
     return 0;

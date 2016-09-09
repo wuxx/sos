@@ -6,7 +6,7 @@
 
 PRIVATE u32 default_log_level = LOG_INFO;
 
-u8 log_buffer[1*1024] = {0};
+u8 log_buffer[64*1024] = {0};
 u32 lbindex = 0;
 
 u32 is_printable(u8 c)
@@ -25,7 +25,7 @@ u32 is_printable(u8 c)
 
 void dumpb(void *buf, u32 size)
 {
-#if 1
+#if 0
     u32 i, j;
     u32 line_nr;
     u8 *b = (u8 *)buf;
@@ -71,7 +71,7 @@ void dumpb(void *buf, u32 size)
             if (is_printable(b[i])) {
                 uart_printf("%c", b[i]);
             } else {
-                /* uart_printf("."); */
+                uart_printf(".");
             }
     
     }

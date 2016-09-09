@@ -10,7 +10,7 @@ extern u32 os_tick;
 extern struct __os_task__ tcb[TASK_NR_MAX];
 extern struct __os_semaphore__ os_semaphore[];
 
-extern void dump_ctx(struct cpu_context *ctx);
+extern void dump_ctx(struct __cpu_context__ *ctx);
 
 char *task_state_desc[] = {
     "TASK_UNUSED",
@@ -18,6 +18,11 @@ char *task_state_desc[] = {
     "TASK_SUSPEND",
     "TASK_READY",
     "TASK_WAIT_SEM",
+};
+
+char *semaphore_state_desc[] = {
+    "SEM_FREE",
+    "SEM_USED",
 };
 
 static s32 test_task(u32 arg)
@@ -32,7 +37,7 @@ static s32 test_task(u32 arg)
 
 void dump_tcb(u32 i)
 {
-    struct cpu_context *ctx = (struct cpu_context *)(tcb[i].sp);
+    struct __cpu_context__ *ctx = (struct __cpu_context__ *)(tcb[i].sp);
 
     PRINT_EMG("\n[%d]: [%s]\n", i, task_state_desc[tcb[i].state]);
 
@@ -57,6 +62,17 @@ void dump_tcb_all()
     u32 i;
     for(i=0;i<TASK_NR_MAX;i++) {
         dump_tcb(i);
+    }
+}
+
+void dump_scb_all()
+{
+    u32 i;
+    for (i = 0; i < SEM_NR_MAX; i++) {
+        PRINT_EMG("\n[%d]: [%s]\n", i, semaphore_state_desc[os_semaphore[i].status]);
+        if (os_semaphore[i].status != SEM_FREE) {
+            PRINT_EMG("\ttoken:     [%d]\n", os_semaphore[i].token);
+        }
     }
 }
 
@@ -114,6 +130,9 @@ s32 test_os_all(u32 argc, char **argv)
             break;
         case (1):
             dump_tcb_all();
+            break;
+        case (2):
+            dump_scb_all();
             break;
         case (99):  /* slip to case 100 */
             set_log_level(LOG_DEBUG);

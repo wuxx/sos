@@ -11,6 +11,7 @@
 extern void  dump_mem(u32 addr, u32 word_nr);
 extern char* get_cpu_mode(u32 *m);
 extern void dump_tcb_all();
+extern void dump_scb_all();
 
 extern struct __syscall__ syscall_table[];
 
@@ -161,28 +162,34 @@ PRIVATE void cpu_context_save()
     cpu_context[int_nlevel] = current_context;
     kassert((++int_nlevel) <= INT_NLEVEL_MAX);
 
-    current_task->sp = current_context->sp - sizeof(struct __cpu_context__);    /* store context in current task's stack (but the task don't know) */
+    if (int_nlevel == 1) {
+        current_task->sp = current_context->sp - sizeof(struct __cpu_context__);    /* store context in current task's stack (but the task don't know) */
 
-    memcpy((void *)(current_task->sp), (void *)current_context, sizeof(struct __cpu_context__));
-    PRINT_DEBUG("cpu_context_save %d \n", current_task->id);
-    dump_ctx_debug((struct __cpu_context__ *)(current_task->sp));
+        memcpy((void *)(current_task->sp), (void *)current_context, sizeof(struct __cpu_context__));
+        PRINT_DEBUG("cpu_context_save %d level: %d\n", current_task->id, int_nlevel);
+        dump_ctx_debug((struct __cpu_context__ *)(current_task->sp));
+
+    }
 }
 
 PRIVATE void cpu_context_restore()
 {
     --int_nlevel;
+    kassert(int_nlevel >= 0);
     current_context = cpu_context[int_nlevel];
 
-    if (new_task != NULL && int_nlevel == 0) {
-        current_task = new_task;
-        new_task     = NULL;
-    }
+    if (int_nlevel == 0) {
 
-    PRINT_DEBUG("cpu_context_restore %d \n", current_task->id); 
-    dump_ctx_debug((struct __cpu_context__ *)(current_task->sp));
-    memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct __cpu_context__));
+        if (new_task != NULL) {
+            current_task = new_task;
+            new_task     = NULL;
+        }
 
-    if (int_nlevel > 0) {
+        PRINT_DEBUG("cpu_context_restore %d level: %d\n", current_task->id, int_nlevel); 
+        dump_ctx_debug((struct __cpu_context__ *)(current_task->sp));
+        memcpy((void *)current_context, (void *)(current_task->sp), sizeof(struct __cpu_context__));
+
+    } else if (int_nlevel > 0) {
         current_context = cpu_context[int_nlevel - 1];
     }
 }
@@ -409,6 +416,7 @@ PUBLIC s32 panic()
     PRINT_EMG("current_context: \n");
     dump_ctx(current_context);
     dump_tcb_all();
+    dump_scb_all();
     lockup();
     while(1);
 }
