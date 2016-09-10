@@ -10,9 +10,11 @@
 #define SYS_SEM_DELETE  "0x5"
 
 #define SYS_MBX_CREATE  "0x6"
-#define SYS_MBX_GET     "0x7"
-#define SYS_MBX_PUT     "0x8"
-#define SYS_MBX_DELETE  "0x9"
+#define SYS_MAIL_ALLOC  "0x7"
+#define SYS_MAIL_FREE   "0x8"
+#define SYS_MBX_GET     "0x9"
+#define SYS_MBX_PUT     "0xA"
+#define SYS_MBX_DELETE  "0xB"
 
 #define SYS_CALL_MAX    "0x100"
 
