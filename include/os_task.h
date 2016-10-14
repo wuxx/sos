@@ -6,11 +6,12 @@
 
 /* task state */
 enum TASK_STATE_E {
-    TASK_UNUSED   = 0,
-    TASK_RUNNING  = 1,
-    TASK_SLEEP    = 2,
-    TASK_READY    = 3,
-    TASK_WAIT_SEM = 4,
+    TASK_UNUSED     = 0,
+    TASK_RUNNING    = 1,
+    TASK_SLEEP      = 2,
+    TASK_READY      = 3,
+    TASK_WAIT_SEM   = 4,
+    TASK_WAIT_EVENT = 5,
     TASK_STATE_MAX,
 };
 /* task priority */
@@ -30,6 +31,7 @@ struct __os_task__
     void *private_data;
 
     u32 sleep_ticks;
+    u32 events;
 
     u32 sp;
     u32 *stack;

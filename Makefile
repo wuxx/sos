@@ -40,6 +40,8 @@ KERNEL_SRCS = \
 		$(KERNEL_DIR)/os_sleep.c        \
 		$(KERNEL_DIR)/os_semaphore.c    \
 		$(KERNEL_DIR)/os_mailbox.c      \
+		$(KERNEL_DIR)/os_event.c        \
+		$(KERNEL_DIR)/os_memory.c       \
 		$(KERNEL_DIR)/os_list.c
 
 SYSTEM_SRCS = \
@@ -52,6 +54,7 @@ SYSTEM_SRCS = \
 LIBC_SRCS = \
 		$(LIBC_DIR)/string.c	\
 		$(LIBC_DIR)/signal.c	\
+		$(LIBC_DIR)/bitmap.c	\
 		$(LIBC_DIR)/vsnprintf.c
 
 DRIVER_SRCS = \

@@ -9,6 +9,7 @@
 #include <os_mailbox.h>
 #include <os_list.h>
 #include <os_sleep.h>
+#include <os_memory.h>
 
 #include <syscall.h>
 

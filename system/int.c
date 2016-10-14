@@ -26,7 +26,6 @@ struct __cpu_context__ *current_context;
 
 struct __cpu_context__ *cpu_context[INT_NLEVEL_MAX];
 
-
 func_1 irq_table[IRQ_MAX] = {0};
 
 PUBLIC void dump_ctx_debug(struct __cpu_context__ *ctx)

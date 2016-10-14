@@ -62,6 +62,8 @@ PRIVATE void task_matrix(u32 addr, u32 arg)
     ptask->stack = &task_stack[ptask->id][0];
     ptask->stack_size = TASK_STK_SIZE;
     ptask->entry = task_entry;
+    ptask->sleep_ticks = 0;
+    ptask->events = 0;
 
     /* task context init */
     cc = (struct __cpu_context__ *)
