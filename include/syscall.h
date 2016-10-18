@@ -16,6 +16,9 @@
 #define SYS_MBX_PUT     "0xA"
 #define SYS_MBX_DELETE  "0xB"
 
+#define SYS_EVT_WAIT    "0xC"
+#define SYS_EVT_RELEASE "0xD"
+
 #define SYS_CALL_MAX    "0x100"
 
 struct __syscall__ {
@@ -40,4 +43,7 @@ s32 os_mailbox_create(void *addr, u32 mail_size, u32 mail_nr);
 s32 os_mailbox_delete(u32 mbx_id);
 s32 os_mailbox_get(u32 mbx_id);
 s32 os_mailbox_put(u32 mbx_id, void *mail);
+
+s32 os_event_wait(u32 tsk_id, u16 event);
+s32 os_event_release(u32 tsk_id, u16 event);
 #endif /* __SYSCALL_H__ */

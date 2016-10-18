@@ -8,8 +8,8 @@
 
 #define SYSCALL_ARG_MAX (4)
 
-s32 do_tsk_create(u32 *args);
-s32 do_tsk_sleep (u32 *args);
+s32 do_tsk_create (u32 *args);
+s32 do_tsk_sleep  (u32 *args);
 s32 do_sem_create (u32 *args);
 s32 do_sem_get    (u32 *args);
 s32 do_sem_put    (u32 *args);
@@ -19,6 +19,9 @@ s32 do_mail_alloc (u32 *args);
 s32 do_mbx_get    (u32 *args);
 s32 do_mbx_put    (u32 *args);
 s32 do_mbx_delete (u32 *args);
+s32 do_evt_wait   (u32 *args);
+s32 do_evt_release(u32 *args);
+
 
 struct __syscall__ syscall_table[] = {
     {SYS_TASK_CREATE,  do_tsk_create,  },
@@ -32,6 +35,8 @@ struct __syscall__ syscall_table[] = {
     {SYS_MBX_GET,      do_mbx_get,     },
     {SYS_MBX_PUT,      do_mbx_put,     },
     {SYS_MBX_DELETE,   do_mbx_delete,  },
+    {SYS_EVT_WAIT,     do_evt_wait,    },
+    {SYS_EVT_RELEASE,  do_evt_release, },
 };
 
 PUBLIC s32 system_call(u32 nr, u32 *args)
@@ -291,6 +296,49 @@ PUBLIC s32 os_mailbox_put(u32 mbx_id, void *mail)
             );
     return __r0;
 }
+
+PUBLIC s32 os_event_wait(u32 tsk_id, u16 event)
+{
+    register s32 __r0 __asm("r0");
+    register s32 __r1 __asm("r1");
+    register s32 __r2 __asm("r2");
+    register s32 __r3 __asm("r3");
+
+    kassert(!in_interrupt());
+
+    __r0 = (u32)tsk_id;
+    __r1 = (u32)event;
+    /* invoke the swi */
+    asm (
+            "swi " SYS_EVT_WAIT "\n\t"
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
+        :"cc"
+            );
+    return __r0;
+}
+
+PUBLIC s32 os_event_release(u32 tsk_id, u16 event)
+{
+    register s32 __r0 __asm("r0");
+    register s32 __r1 __asm("r1");
+    register s32 __r2 __asm("r2");
+    register s32 __r3 __asm("r3");
+
+    kassert(!in_interrupt());
+
+    __r0 = (u32)tsk_id;
+    __r1 = (u32)event;
+    /* invoke the swi */
+    asm (
+            "swi " SYS_EVT_RELEASE "\n\t"
+        :"=r" (__r0), "=r" (__r1), "=r" (__r2), "=r" (__r3)
+        : "r" (__r0),  "r" (__r1),  "r" (__r2),  "r" (__r3)
+        :"cc"
+            );
+    return __r0;
+}
+
 PUBLIC s32 do_tsk_create(u32 *args)
 {
     func_1 entry; 
@@ -374,3 +422,18 @@ PRIVATE s32 do_mbx_delete(u32 *args)
     u32 mbx_id = args[0];
     return mailbox_delete(mbx_id);
 }
+
+PRIVATE s32 do_evt_wait(u32 *args)
+{
+    u32 tsk_id = args[0];
+    u16 event  = (u16)args[1];
+    return event_wait(tsk_id, event);
+}
+
+PRIVATE s32 do_evt_release(u32 *args)
+{
+    u32 tsk_id = args[0];
+    u16 event  = (u16)args[1];
+    return event_release(tsk_id, event);
+}
+

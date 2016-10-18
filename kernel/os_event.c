@@ -32,7 +32,7 @@ s32 event_wait(u32 task_id, u16 event)
     return 0;
 }
 
-s32 event_release(u32 task_id, u32 event)
+s32 event_release(u32 task_id, u16 event)
 {
     u8 i, bw, bp;
     u16 eventw, eventp;

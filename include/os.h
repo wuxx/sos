@@ -7,6 +7,7 @@
 #include <os_task.h>
 #include <os_semaphore.h>
 #include <os_mailbox.h>
+#include <os_event.h>
 #include <os_list.h>
 #include <os_sleep.h>
 #include <os_memory.h>
