@@ -9,6 +9,7 @@
 #include "int.h"
 #include "gpio.h"
 #include "uart.h"
+#include "mmc.h"
 
 extern struct __os_task__ * tcb_alloc();
 extern s32 tcb_init(struct __os_task__ *ptask, func_1 task_entry, u32 arg, u32 priority);
@@ -93,6 +94,7 @@ s32 os_main(u32 sp)
     int_init();
     uart_init();
     timer_init();
+    mmc_init();
 
     PRINT_INFO("%s\n", sys_banner);
 

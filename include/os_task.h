@@ -11,7 +11,8 @@ enum TASK_STATE_E {
     TASK_SLEEP      = 2,
     TASK_READY      = 3,
     TASK_WAIT_SEM   = 4,
-    TASK_WAIT_EVENT = 5,
+    TASK_WAIT_MBX   = 5,
+    TASK_WAIT_EVENT = 6,
     TASK_STATE_MAX,
 };
 /* task priority */

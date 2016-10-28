@@ -1,0 +1,7 @@
+dwc_otg-hcd.c:47:6:do_hang	8	static
+dwc_otg-hcd.c:56:6:handle_error	8	static
+dwc_otg-hcd.c:82:5:usb_lowlevel_init	16	static
+dwc_otg-hcd.c:127:5:usb_lowlevel_stop	8	static
+dwc_otg-hcd.c:456:5:submit_bulk_msg	96	static
+dwc_otg-hcd.c:591:5:submit_control_msg	104	static
+dwc_otg-hcd.c:757:5:submit_int_msg	16	static

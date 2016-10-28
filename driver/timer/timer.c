@@ -61,6 +61,36 @@ PUBLIC void clk_delay(u32 count) {
             : "cc");
 }
 
+PUBLIC s32 wait_value(u32 *addr, u32 value, u32 type, u32 timeout_us)
+{
+    u32 count = 0;
+    u32 mask  = value;
+
+    while (1) {
+
+        if (type == 0) {
+            if ((readl((u32)addr) & mask) != value) {
+                return 0;
+            }
+        } else {
+            if ((readl((u32)addr) & mask) == value) {
+                return 0;
+            }
+        }
+
+        if (count == timeout_us) {
+            break;
+        }
+
+        udelay(1);
+        count++;
+
+    }
+
+    return -1;
+
+}
+
 PUBLIC s32 timer_init()
 {
     return 0;

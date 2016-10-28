@@ -41,7 +41,7 @@ s32 mailbox_create(void *addr, u32 mail_size, u32 mail_nr)
 
 }
 
-/* for producer */
+/* producer */
 s32 mail_alloc(u32 mbx_id)
 {
     u32 mail_addr = 0;
@@ -55,70 +55,103 @@ s32 mail_alloc(u32 mbx_id)
     return mail_addr;
 }
 
-/* for producer */
+/* producer */
 s32 mailbox_put(u32 mbx_id, void *mail)
 {
-
     u32 mail_index;
+    struct __os_mailbox__ *pmbx;
+    struct __os_task__ *ptask;
+    struct __cpu_context__ *cc;
+
     kassert(mbx_id < MBX_NR_MAX);
 
-    mail_index = ((u32)mail - (u32)os_mailbox[mbx_id].mailbox) / os_mailbox[mbx_id].mail_size;
+    pmbx = &os_mailbox[mbx_id];
+    mail_index = ((u32)mail - (u32)(pmbx->mailbox)) / pmbx->mail_size;
 
-    kassert(mail_index == os_mailbox[mbx_id].tail);
+    kassert(mail_index == pmbx->tail);
 
-    os_mailbox[mbx_id].tail++ ;
-    os_mailbox[mbx_id].tail = os_mailbox[mbx_id].tail % os_mailbox[mbx_id].mail_nr;
+    pmbx->tail++ ;
+    pmbx->tail = pmbx->tail % pmbx->mail_nr;
 
-    if (os_mailbox[mbx_id].tail == os_mailbox[mbx_id].head) {
-        os_mailbox[mbx_id].status = MBX_FULL;
+    if (pmbx->tail == pmbx->head) {
+        pmbx->status = MBX_FULL;
     }
 
     /* somebody is waiting for mail, wake it up */
-    if (os_mailbox[mbx_id].next != NULL) {
+    if (pmbx->next != NULL) {
+        ptask = pmbx->next;
 
+        mail = (void *)((u32)(pmbx->mailbox) + pmbx->head * pmbx->mail_size);
+        pmbx->head++;
+        pmbx->head = pmbx->head % pmbx->mail_nr;
+
+        cc = (struct __cpu_context__ *)(ptask->sp);
+        cc->r0 = (u32)mail;
+
+        ptask->state = TASK_READY;
+        os_mbx_delete(pmbx, ptask);
+        os_ready_insert(ptask);
+
+        if (ptask->prio < current_task->prio) {
+            current_task->state = TASK_READY;
+            task_dispatch();
+        }
     }
 
     return 0;
 }
 
-/* for consumer */
+/* consumer */
 s32 mailbox_get(u32 mbx_id)
 {
     u32 mail;
+    struct __os_mailbox__ *pmbx = NULL;
+
+    pmbx = &os_mailbox[mbx_id];
+
+get_mail:
 
     if (os_mailbox[mbx_id].status != MBX_EMPTY) {
-        mail = (u32)(os_mailbox[mbx_id].mailbox) + os_mailbox[mbx_id].head * os_mailbox[mbx_id].mail_size;
+        mail = (u32)(pmbx->mailbox) + pmbx->head * pmbx->mail_size;
+        pmbx->head++;
+        pmbx->head = pmbx->head % pmbx->mail_nr;
     } else {
         /* wait in mbx list */
+        current_task->private_data = pmbx;
+        current_task->state = TASK_WAIT_MBX;
+        task_dispatch();
+        goto get_mail;  /* FIXME: we are in swi context, how can the task restore in swi context? need read the arm-v6 TRM */
     }
 
     return mail;
 }
 
-/* for consumer */
+/* consumer */
 s32 mail_free(u32 mbx_id, void *mail)
 {
     u32 mail_index;
+    struct __os_mailbox__ *pmbx = NULL;
+
     kassert(mbx_id < MBX_NR_MAX);
     kassert(mail != NULL);
     kassert(os_mailbox[mbx_id].status != MBX_EMPTY);
+    pmbx = &os_mailbox[mbx_id];
 
-    mail_index = ((u32)mail - (u32)os_mailbox[mbx_id].mailbox) / os_mailbox[mbx_id].mail_size;
+    mail_index = ((u32)mail - (u32)pmbx->mailbox) / pmbx->mail_size;
 
-    kassert(mail_index == os_mailbox[mbx_id].head);
+    kassert(mail_index == pmbx->head);
 
-    os_mailbox[mbx_id].head++;
+    pmbx->head++;
 
-    os_mailbox[mbx_id].head = os_mailbox[mbx_id].head % os_mailbox[mbx_id].mail_nr;
+    pmbx->head = pmbx->head % pmbx->mail_nr;
 
-    if (os_mailbox[mbx_id].tail == os_mailbox[mbx_id].head) {
-        os_mailbox[mbx_id].status = MBX_EMPTY;
+    if (pmbx->tail == pmbx->head) {
+        pmbx->status = MBX_EMPTY;
     }
 
-    if (os_mailbox[mbx_id].status == MBX_FULL) {
-        os_mailbox[mbx_id].status = MBX_IDLE;
+    if (pmbx->status == MBX_FULL) {
+        pmbx->status = MBX_IDLE;
     }
-
 
     return 0;
 }

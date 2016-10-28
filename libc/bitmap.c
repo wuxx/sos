@@ -37,7 +37,7 @@ u8 bitmap_set(void *map, u32 bit_max, u32 bit_index, u8 bit)
         pmap[word_index] = (pmap[word_index]) | bit_mask;
     }   
 
-    bit = pmap[word_index] & (0x1 << word_offset);
+    return 0;
 }
 
 /* find first zero */

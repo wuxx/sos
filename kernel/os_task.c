@@ -163,12 +163,13 @@ PUBLIC s32 task_sleep(u32 ticks)
 /*
    1. update new_task   (request a task switch)
    2. delete the best_task from os_ready_list
-   3. insert old_task into os_sleep_list or os_ready_list or sem_list.
+   3. insert old_task into os_sleep_list or os_ready_list or sem_list or mbx_list.
 */
 PRIVATE void task_sched(struct __os_task__ *best_task)
 {
     struct __os_task__ *old_task;
     struct __os_semaphore__ *psem;
+    struct __os_mailbox__ *pmbx;
 
     old_task = current_task;
     new_task = best_task;
@@ -191,9 +192,16 @@ PRIVATE void task_sched(struct __os_task__ *best_task)
         case (TASK_SLEEP):      /* current task invoke os_task_sleep sleep */
             os_sleep_insert(old_task);
             break;
-        case (TASK_WAIT_SEM):   /* current task wait for sem */
+        case (TASK_WAIT_SEM):
             psem = (struct __os_semaphore__ *)(old_task->private_data);
             os_sem_insert(psem, old_task);
+            break;
+        case (TASK_WAIT_MBX):
+            pmbx = (struct __os_mailbox__ *)(old_task->private_data);
+            os_mbx_insert(pmbx, old_task);
+            break;
+        case (TASK_WAIT_EVENT):
+            /* TODO */
             break;
         default:
             kassert(0);

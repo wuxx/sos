@@ -12,6 +12,9 @@
 #define os_sem_insert(psem, task)   list_insert((struct __os_list__ *)psem, task)
 #define os_sem_delete(psem, task)   list_delete((struct __os_list__ *)psem, task)
 
+#define os_mbx_insert(pmbx, task)   list_insert((struct __os_list__ *)pmbx, task)
+#define os_mbx_delete(pmbx, task)   list_delete((struct __os_list__ *)pmbx, task)
+
 enum CB_TYPE_E {
     OS_READY,
     OS_SLEEP,
