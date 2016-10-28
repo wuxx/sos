@@ -28,11 +28,11 @@ READELF = $(CROSS_COMPILE)readelf
 BUILD = $(ROOT)/build
 
 KERNEL_DIR  = $(ROOT)/kernel
-SYSTEM_DIR  = $(ROOT)/system
+SYSTEM_DIR  = $(ROOT)/platform
 LIBC_DIR    = $(ROOT)/libc
 DRIVER_DIR  = $(ROOT)/driver
 TEST_DIR    = $(ROOT)/test
-INCLUDE_DIR = $(ROOT)/include
+INCLUDE_DIR = $(ROOT)/include/driver -I$(ROOT)/include/kernel -I$(ROOT)/include/libc -I$(ROOT)/include/platform
 
 KERNEL_SRCS = \
 		$(KERNEL_DIR)/kernel.c          \
