@@ -28,62 +28,20 @@ READELF = $(CROSS_COMPILE)readelf
 BUILD = $(ROOT)/build
 
 KERNEL_DIR  = $(ROOT)/kernel
-SYSTEM_DIR  = $(ROOT)/platform
+PLATFORM_DIR  = $(ROOT)/platform
 LIBC_DIR    = $(ROOT)/libc
 DRIVER_DIR  = $(ROOT)/driver
 TEST_DIR    = $(ROOT)/test
+
 INCLUDE_DIR = $(ROOT)/include/driver -I$(ROOT)/include/kernel -I$(ROOT)/include/libc -I$(ROOT)/include/platform
 
-KERNEL_SRCS = \
-		$(KERNEL_DIR)/kernel.c          \
-		$(KERNEL_DIR)/os_task.c         \
-		$(KERNEL_DIR)/os_sleep.c        \
-		$(KERNEL_DIR)/os_semaphore.c    \
-		$(KERNEL_DIR)/os_mailbox.c      \
-		$(KERNEL_DIR)/os_event.c        \
-		$(KERNEL_DIR)/os_memory.c       \
-		$(KERNEL_DIR)/os_list.c
+include $(ROOT)/kernel/kernel.mk
+include $(ROOT)/platform/platform.mk
+include $(ROOT)/libc/libc.mk
+include $(ROOT)/driver/driver.mk
+include $(ROOT)/test/test.mk
 
-SYSTEM_SRCS = \
-		$(SYSTEM_DIR)/main.c 	 \
-		$(SYSTEM_DIR)/int.c 	 \
-		$(SYSTEM_DIR)/syscall.c  \
-		$(SYSTEM_DIR)/arm_v6.s 	 \
-		$(SYSTEM_DIR)/init.s
-
-LIBC_SRCS = \
-		$(LIBC_DIR)/string.c	\
-		$(LIBC_DIR)/signal.c	\
-		$(LIBC_DIR)/bitmap.c	\
-		$(LIBC_DIR)/vsnprintf.c
-
-#		$(DRIVER_DIR)/usb/eth/usb_ether.c       \
-		$(DRIVER_DIR)/usb/eth/smsc95xx.c        \
-		$(DRIVER_DIR)/usb/host/dwc_otg.c        \
-		$(DRIVER_DIR)/usb/host/dwc_otg-hcd.c
-
-DRIVER_SRCS = \
-		$(DRIVER_DIR)/gpio/gpio.c               \
-		$(DRIVER_DIR)/timer/timer.c             \
-		$(DRIVER_DIR)/watchdog/watchdog.c       \
-		$(DRIVER_DIR)/mailbox/mailbox.c         \
-		$(DRIVER_DIR)/mmc/mmc.c                 \
-		$(DRIVER_DIR)/mmc/sdhci.c               \
-		$(DRIVER_DIR)/log/log.c                 \
-		$(DRIVER_DIR)/shell/shell.c             \
-		$(DRIVER_DIR)/uart/uart.c
-
-TEST_SRCS = \
-		$(TEST_DIR)/systest.c           \
-		$(TEST_DIR)/test_libc.c         \
-		$(TEST_DIR)/test_cpu.c          \
-		$(TEST_DIR)/test_timer.c        \
-		$(TEST_DIR)/test_log.c          \
-		$(TEST_DIR)/test_os.c           \
-		$(TEST_DIR)/test_wdt.c          \
-		$(TEST_DIR)/test_gpio.c
-
-ALL_SRCS = $(KERNEL_SRCS) $(SYSTEM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS)
+ALL_SRCS = $(KERNEL_SRCS) $(PLATFORM_SRCS) $(LIBC_SRCS) $(DRIVER_SRCS) $(TEST_SRCS)
 
 C_SRCS   = $(filter %.c, $(ALL_SRCS))
 ASM_SRCS = $(filter %.s, $(ALL_SRCS)) 
@@ -116,7 +74,6 @@ LDS = $(ROOT)/$(TARGET).ld
 
 #-march=armv6
 CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -mfloat-abi=soft -Wall -g -I$(INCLUDE_DIR)
-CFLAGS  += -D__REVISION__=\""$(shell git log --abbrev-commit --pretty=oneline | head -n 1 | awk '{print $$1}')"\"
 ASFLAGS += 
 
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 
@@ -147,7 +104,7 @@ all:init build_objs
 	cp $(TARGET_IMG) $(BUILD)/kernel.img
 
 tags:
-	ctags -R $(KERNEL_DIR) $(SYSTEM_DIR) $(LIBC_DIR) $(DRIVER_DIR) $(TEST_DIR) $(INCLUDE_DIR)
+	ctags -R $(KERNEL_DIR) $(PLATFORM_DIR) $(LIBC_DIR) $(DRIVER_DIR) $(TEST_DIR) $(INCLUDE_DIR)
 
 ccount:
 	find . | egrep ".*\.[ch]$$" | xargs wc -l
