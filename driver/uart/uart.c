@@ -128,8 +128,8 @@ PUBLIC void uart_init()
 {
 
     // Setup the GPIO pin 14 && 15.
-    set_gpio_function(14, ALT_FUNC_0);
-    set_gpio_function(15, ALT_FUNC_0);
+    gpio_set_function(14, ALT_FUNC_0);
+    gpio_set_function(15, ALT_FUNC_0);
 
     // Disable PL011_UART.
     writel(UART0_CR, 0x00000000);

@@ -105,8 +105,8 @@ s32 os_main(u32 sp)
     PRINT_INFO("cpu_mode: %s; lr: 0x%x; sp: 0x%x; cpsr: 0x%x\n",
             get_cpu_mode(NULL), __get_lr(), sp, __get_cpsr());
 
-    set_gpio_function(GPIO_16, OUTPUT);
-    set_gpio_output(GPIO_16, 0);
+    gpio_set_function(GPIO_16, OUTPUT);
+    gpio_set_output(GPIO_16, 0);
 
     /* set_log_level(LOG_DEBUG); */
 

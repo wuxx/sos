@@ -4,7 +4,7 @@
 #include "log.h"
 #include "gpio.h"
 
-PUBLIC s32 set_gpio_function(u32 gpio_index, u32 func_index)
+PUBLIC s32 gpio_set_function(u32 gpio_index, u32 func_index)
 {
     u32 i, fsel_addr;
     union gpio_fsel_reg fr;
@@ -64,7 +64,7 @@ PUBLIC s32 set_gpio_function(u32 gpio_index, u32 func_index)
     return 0;
 }
 
-PUBLIC u32 get_gpio_function(u32 gpio_index)
+PUBLIC u32 gpio_get_function(u32 gpio_index)
 {
     u32 i, fsel_addr;
     u32 rvalue;
@@ -88,7 +88,7 @@ PUBLIC u32 get_gpio_function(u32 gpio_index)
     return func_index;
 }
 
-PUBLIC s32 set_gpio_output(u32 gpio_index, u32 bit)
+PUBLIC s32 gpio_set_output(u32 gpio_index, u32 bit)
 {
     u32 output_set_addr, output_clear_addr;
     u32 bit_offset;

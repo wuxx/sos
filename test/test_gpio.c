@@ -35,16 +35,16 @@ s32 test_gpio_all(u32 argc, char **argv)
             dump_mem(GPIO_BASE, 40);
             break;
         case (1):
-            ret = set_gpio_function(arg1, arg2);
+            ret = gpio_set_function(arg1, arg2);
             break;
         case (2):
-            ret = set_gpio_output(arg1, arg2);
+            ret = gpio_set_output(arg1, arg2);
             break;
         case (3):
-            set_gpio_function(17, OUTPUT);
-            set_gpio_output(17, 1);
+            gpio_set_function(17, OUTPUT);
+            gpio_set_output(17, 1);
 
-            set_gpio_function(18, INPUT);
+            gpio_set_function(18, INPUT);
             writel(GPREN0,  1 << 18);   /* rise trigger int */
 #if 0
             writel(GPHEN0,  1 << 18);   /* high trigger int */
@@ -69,31 +69,31 @@ s32 test_gpio_all(u32 argc, char **argv)
             /* please checkout http://sysprogs.com/VisualKernel/tutorials/raspberry/jtagsetup */
 
             /* TDI */
-            set_gpio_function( 4, ALT_FUNC_5);
+            gpio_set_function( 4, ALT_FUNC_5);
             /* nTRST */
-            set_gpio_function(22, ALT_FUNC_4);
+            gpio_set_function(22, ALT_FUNC_4);
             /* RTCK */
-            set_gpio_function(23, ALT_FUNC_4);
+            gpio_set_function(23, ALT_FUNC_4);
             /* TDO */
-            set_gpio_function(24, ALT_FUNC_4);
+            gpio_set_function(24, ALT_FUNC_4);
             /* TCK */
-            set_gpio_function(25, ALT_FUNC_4);
+            gpio_set_function(25, ALT_FUNC_4);
             /* TMS */
-            set_gpio_function(27, ALT_FUNC_4);
+            gpio_set_function(27, ALT_FUNC_4);
             break;
         case (5):
             /* TDI */
-            PRINT_EMG("gpio4: %d\n", get_gpio_function(4));
+            PRINT_EMG("gpio4: %d\n", gpio_get_function(4));
             /* nTRST */
-            PRINT_EMG("gpio22: %d\n", get_gpio_function(22));
+            PRINT_EMG("gpio22: %d\n", gpio_get_function(22));
             /* RTCK */
-            PRINT_EMG("gpio23: %d\n", get_gpio_function(23));
+            PRINT_EMG("gpio23: %d\n", gpio_get_function(23));
             /* TDO */
-            PRINT_EMG("gpio24: %d\n", get_gpio_function(24));
+            PRINT_EMG("gpio24: %d\n", gpio_get_function(24));
             /* TCK */
-            PRINT_EMG("gpio25: %d\n", get_gpio_function(25));
+            PRINT_EMG("gpio25: %d\n", gpio_get_function(25));
             /* TMS */
-            PRINT_EMG("gpio27: %d\n", get_gpio_function(27));
+            PRINT_EMG("gpio27: %d\n", gpio_get_function(27));
             break;
         default:
             return -1;

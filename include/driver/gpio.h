@@ -90,9 +90,9 @@ union gpio_fsel_reg {
     struct _gpio_fsel_reg reg;
 };
 
-s32 set_gpio_function(u32 gpio_index, u32 func_index);
-u32 get_gpio_function(u32 gpio_index);
+s32 gpio_set_function(u32 gpio_index, u32 func_index);
+u32 gpio_get_function(u32 gpio_index);
 
-s32 set_gpio_output(u32 gpio_index, u32 bit);
+s32 gpio_set_output(u32 gpio_index, u32 bit);
 
 #endif /* __GPIO_H__ */

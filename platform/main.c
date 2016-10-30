@@ -17,13 +17,13 @@
 s32 blink_task(u32 arg)
 {
     u32 count = 0;
-    set_gpio_function(16, OUTPUT);
+    gpio_set_function(16, OUTPUT);
 
     while(1) {
         PRINT_INFO("in %s %d;\n", __func__, count++);
-        set_gpio_output(16, 0);     /* led on */
+        gpio_set_output(16, 0);     /* led on */
         mdelay(1000);
-        set_gpio_output(16, 1);     /* led off */
+        gpio_set_output(16, 1);     /* led off */
         mdelay(1000);
 
     }   
