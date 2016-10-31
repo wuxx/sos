@@ -48,7 +48,7 @@ PUBLIC void uart_puts(const char *str) {
     }
 }
 
-s8 uart_recv()
+PRIVATE s8 uart_recv()
 {
 
     if ((readl(UART0_FR) & (1 << 4)) == 0) {    /* if RX FIFO not empty */

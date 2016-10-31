@@ -279,8 +279,7 @@ mmc_write_blocks(struct mmc *mmc, ulong start, unsigned long blkcnt, const void*
 
 struct mmc *find_mmc_device(int dev_num)
 { 
-    /* FIXME: */
-#if 0  
+#if 1
     struct mmc *m;
     struct list_head *entry;
 
