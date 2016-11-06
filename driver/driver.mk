@@ -6,6 +6,7 @@
 DRIVER_SRCS = \
         $(DRIVER_DIR)/gpio/gpio.c               \
         $(DRIVER_DIR)/timer/timer.c             \
+        $(DRIVER_DIR)/i2c/i2c.c                 \
         $(DRIVER_DIR)/watchdog/watchdog.c       \
         $(DRIVER_DIR)/mailbox/mailbox.c         \
         $(DRIVER_DIR)/mmc/mmc.c                 \
