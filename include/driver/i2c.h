@@ -1,6 +1,46 @@
 #ifndef __I2C_H__
 #define __I2C_H__
 
+#define BSC0_ADDR ((bscdevice_t *)0x20205000)
+#define BSC1_ADDR ((bscdevice_t *)0x20804000)
+#define BSC2_ADDR ((bscdevice_t *)0x20805000)
+
+#define BSC_CLOCK_FREQ 150000000
+
+/* I2C control flags */
+#define BSC_I2CEN BIT(15)
+#define BSC_INTR  BIT(10)
+#define BSC_INTT  BIT(9)
+#define BSC_INTD  BIT(8)
+#define BSC_ST    BIT(7)
+#define BSC_CLEAR BIT(4)
+#define BSC_READ  BIT(0)
+
+/* I2C status flags */
+#define BSC_TA   BIT(0) /** @brief Transfer active.*/
+#define BSC_DONE BIT(1) /** @brief Transfer done.*/
+#define BSC_TXW  BIT(2) /** @brief FIFO needs writing.*/
+#define BSC_RXR  BIT(3) /** @brief FIFO needs reading.*/
+#define BSC_TXD  BIT(4) /** @brief FIFO can accept data.*/
+#define BSC_RXD  BIT(5) /** @brief FIFO contains data.*/
+#define BSC_TXE  BIT(6) /** @brief FIFO empty.*/
+#define BSC_RXF  BIT(7) /** @brief FIFO full.*/
+#define BSC_ERR  BIT(8) /** @brief ACK error.*/
+#define BSC_CLKT BIT(9) /** @brief Clock stretch timeout.*/
+
+/* Rising/Falling Edge Delay Defaults.*/
+#define BSC_DEFAULT_FEDL       0x30
+#define BSC_DEFAULT_REDL       0x30
+
+/* Clock Stretch Timeout Defaults.*/
+#define BSC_DEFAULT_CLKT       0x40
+
+#define CLEAR_STATUS  BSC_CLKT|BSC_ERR|BSC_DONE
+
+#define START_READ    BSC_I2CEN|BSC_ST|BSC_CLEAR|BSC_READ
+#define START_WRITE   BSC_I2CEN|BSC_ST
+
+
 #define I2CD_NO_ERROR               0x00   /**< @brief No error.            */
 #define I2CD_BUS_ERROR              0x01   /**< @brief Bus Error.           */
 #define I2CD_ARBITRATION_LOST       0x02   /**< @brief Arbitration Lost

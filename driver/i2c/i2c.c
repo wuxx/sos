@@ -117,17 +117,15 @@ void i2c_lld_init(void)
  */
 void i2c_lld_start(I2CDriver *i2cp) 
 {
-#if 0
   /* Set up GPIO pins for I2C */
-  bcm2835_gpio_fnsel(GPIO0_PAD, GPFN_ALT0);
-  bcm2835_gpio_fnsel(GPIO1_PAD, GPFN_ALT0);
+  gpio_set_function(0, ALT_FUNC_0);
+  gpio_set_function(1, ALT_FUNC_0);
 
   u32 speed = i2cp->config->ic_speed;
   if (speed != 0 && speed != 100000)
     i2cp->device->clockDivider = BSC_CLOCK_FREQ / i2cp->config->ic_speed;
 
   i2cp->device->control |= BSC_I2CEN;
-#endif
 }
 
 /**
@@ -139,13 +137,11 @@ void i2c_lld_start(I2CDriver *i2cp)
  */
 void i2c_lld_stop(I2CDriver *i2cp) 
 {
-#if 0
   /* Set GPIO pin function to default */
-  bcm2835_gpio_fnsel(GPIO0_PAD, GPFN_IN);
-  bcm2835_gpio_fnsel(GPIO1_PAD, GPFN_IN);
+  gpio_set_function(0, INPUT);
+  gpio_set_function(1, INPUT);
 
   i2cp->device->control &= ~BSC_I2CEN;
-#endif
 }
 
 /**
