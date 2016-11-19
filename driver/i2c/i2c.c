@@ -62,10 +62,9 @@ static void i2c_lld_safety_timeout(void *p)
 /* Driver interrupt handlers.                                                */
 /*===========================================================================*/
 
-void i2c_lld_serve_interrupt(I2CDriver *i2cp) 
+volatile u32 i2c_done = 0;
+void i2c_irq_handler(I2CDriver *i2cp) 
 {
-#if 0
-  UNUSED(i2cp);
   bscdevice_t *device = i2cp->device;
   u32 status = device->status;
 
@@ -88,7 +87,7 @@ void i2c_lld_serve_interrupt(I2CDriver *i2cp)
     while ((i2cp->rxidx < i2cp->rxbytes) && (status & BSC_RXD))
       i2cp->rxbuf[i2cp->rxidx++] = device->dataFifo;
   }
-#endif
+  i2c_done = 1;
 }
 
 /*===========================================================================*/
@@ -102,10 +101,7 @@ void i2c_lld_serve_interrupt(I2CDriver *i2cp)
  */
 void i2c_lld_init(void) 
 {
-#if 0
-  I2C0.device = BSC0_ADDR;
-  i2cObjectInit(&I2C0);
-#endif
+    request_irq(IRQ_I2C, i2c_irq_handler);
 }
 
 /**
@@ -165,51 +161,46 @@ s32 i2c_lld_master_transmit_timeout(I2CDriver *i2cp, u16 addr,
                                        u8 *rxbuf, const u8 rxbytes, 
                                        u32 timeout) 
 {
+
 #if 0
-  VirtualTimer vt;
+    VirtualTimer vt;
 
-  /* Global timeout for the whole operation.*/
-  if (timeout != TIME_INFINITE)
-    chVTSetI(&vt, timeout, i2c_lld_safety_timeout, (void *)i2cp);
+    /* Global timeout for the whole operation.*/
+    if (timeout != TIME_INFINITE)
+        chVTSetI(&vt, timeout, i2c_lld_safety_timeout, (void *)i2cp);
 
-  i2cp->addr = addr;
-  i2cp->txbuf = txbuf;
-  i2cp->txbytes = txbytes;
-  i2cp->txidx = 0;
-  i2cp->rxbuf = rxbuf;
-  i2cp->rxbytes = rxbytes;
-  i2cp->rxidx = 0;
-
-  bscdevice_t *device = i2cp->device;
-  device->slaveAddress = addr;
-  device->dataLength = txbytes;
-  device->status = CLEAR_STATUS;
-
-  /* Enable Interrupts and start transfer.*/
-  device->control |= (BSC_INTT | BSC_INTD | START_WRITE);
-
-  /* Is this really needed? there is an outer lock already */
-  chSysLock();
-
-  i2cp->thread = chThdSelf();
-  chSchGoSleepS(THD_STATE_SUSPENDED);
-  if ((timeout != TIME_INFINITE) && chVTIsArmedI(&vt))
-    chVTResetI(&vt);
-
-  chSysUnlock();
-
-  s32 status = chThdSelf()->p_u.rdymsg;
-
-  if (status == RDY_OK && rxbytes > 0) {
-    /* The TIMEOUT_INFINITE prevents receive from setting up it's own timer.*/
-    status = i2c_lld_master_receive_timeout(i2cp, addr, rxbuf, 
-					    rxbytes, TIME_INFINITE);
-    if ((timeout != TIME_INFINITE) && chVTIsArmedI(&vt))
-      chVTResetI(&vt);
-  }
-
-  return status;
 #endif
+    u32 status;
+
+    i2cp->addr = addr;
+    i2cp->txbuf = txbuf;
+    i2cp->txbytes = txbytes;
+    i2cp->txidx = 0;
+    i2cp->rxbuf = rxbuf;
+    i2cp->rxbytes = rxbytes;
+    i2cp->rxidx = 0;
+
+    bscdevice_t *device = i2cp->device;
+    device->slaveAddress = addr;
+    device->dataLength = txbytes;
+    device->status = CLEAR_STATUS;
+
+    /* Enable Interrupts and start transfer.*/
+    device->control |= (BSC_INTT | BSC_INTD | START_WRITE);
+
+    while(i2c_done == 0);
+    i2c_done = 0;
+
+    if (rxbytes > 0) {
+        /* The TIMEOUT_INFINITE prevents receive from setting up it's own timer.*/
+        status = i2c_lld_master_receive_timeout(i2cp, addr, rxbuf, 
+                rxbytes, 0);
+
+        while(i2c_done == 0);
+        i2c_done = 0;
+    }
+
+    return status;
 }
 
 
@@ -231,39 +222,33 @@ s32 i2c_lld_master_receive_timeout(I2CDriver *i2cp, u16 addr,
 				     u8 *rxbuf, u32 rxbytes, 
 				     u32 timeout) 
 {
+
 #if 0
-  VirtualTimer vt;
+    VirtualTimer vt;
 
-  /* Global timeout for the whole operation.*/
-  if (timeout != TIME_INFINITE)
-    chVTSetI(&vt, timeout, i2c_lld_safety_timeout, (void *)i2cp);
-
-  i2cp->addr = addr;
-  i2cp->txbuf = NULL;
-  i2cp->txbytes = 0;
-  i2cp->txidx = 0;
-  i2cp->rxbuf = rxbuf;
-  i2cp->rxbytes = rxbytes;
-  i2cp->rxidx = 0;
-
-  /* Setup device.*/
-  bscdevice_t *device = i2cp->device;
-  device->slaveAddress = addr;
-  device->dataLength = rxbytes;
-  device->status = CLEAR_STATUS;
-
-  /* Enable Interrupts and start transfer.*/
-  device->control = (BSC_INTR | BSC_INTD | START_READ);
-
-  // needed? there is an outer lock already
-  chSysLock();
-  i2cp->thread = chThdSelf();
-  chSchGoSleepS(THD_STATE_SUSPENDED);
-  if ((timeout != TIME_INFINITE) && chVTIsArmedI(&vt))
-    chVTResetI(&vt);
-  chSysUnlock();
-
-  return chThdSelf()->p_u.rdymsg;
+    /* Global timeout for the whole operation.*/
+    if (timeout != TIME_INFINITE)
+        chVTSetI(&vt, timeout, i2c_lld_safety_timeout, (void *)i2cp);
 #endif
-  return 0;
+
+    i2cp->addr = addr;
+    i2cp->txbuf = NULL;
+    i2cp->txbytes = 0;
+    i2cp->txidx = 0;
+    i2cp->rxbuf = rxbuf;
+    i2cp->rxbytes = rxbytes;
+    i2cp->rxidx = 0;
+
+    /* Setup device.*/
+    bscdevice_t *device = i2cp->device;
+    device->slaveAddress = addr;
+    device->dataLength = rxbytes;
+    device->status = CLEAR_STATUS;
+
+    /* Enable Interrupts and start transfer.*/
+    device->control = (BSC_INTR | BSC_INTD | START_READ);
+
+    while(i2c_done == 0);
+    i2c_done = 0;
+    return 0;
 }
