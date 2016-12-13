@@ -367,7 +367,6 @@ int sdhci_init(struct mmc *mmc)
 			return -1;
 		}
 	}
-#define fls(x)      /* FIXME: find last 1 */
 	sdhci_set_power(host, fls(mmc->voltages) - 1);
 
 	if (host->quirks & SDHCI_QUIRK_NO_CD) {
@@ -596,7 +595,7 @@ int bcm2835_sdhci_init(u32 regbase, u32 emmc_freq)
 	host->ops = &bcm2835_ops;
 
 	host->version = sdhci_readw(host, SDHCI_HOST_VERSION);
-	add_sdhci(host, emmc_freq, MIN_FREQ); /* FIXME: uncomment this */
+	add_sdhci(host, emmc_freq, MIN_FREQ);
 
 	return 0;
 }

@@ -73,7 +73,7 @@ TARGET_SECINFO = $(BUILD)/$(TARGET).secinfo #section info
 LDS = $(ROOT)/$(TARGET).ld
 
 #-march=armv6
-CFLAGS  += -mcpu=arm1176jzf-s -fno-builtin -mno-thumb-interwork -mfloat-abi=soft -Wall -g -I$(INCLUDE_DIR)
+CFLAGS  += -mcpu=arm1176jzf-s -nostdlib -funwind-tables -fno-builtin -mno-thumb-interwork -mfloat-abi=soft -Wall -O3 -g -I$(INCLUDE_DIR)
 ASFLAGS += 
 
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 

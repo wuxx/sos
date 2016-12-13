@@ -115,3 +115,31 @@ void *memcpy(void *dst, void *src, u32 size)
     }
     return dst;
 }
+
+/* find first 1, ffs(0) = 0, ffs(1) = 1, ffs(0x80000010) = 5 */
+u32 ffs(u32 x)
+{
+    u32 i;
+    for(i = 0; i < 32; i++) {
+        if (x & (1 << i)) {
+            return i + 1;
+        }
+    }
+
+    return 0;
+}
+
+/* find last 1, fls(0) = 0, fls(1) = 1, fls(0x80000010) = 32 */
+u32 fls(u32 x)
+{
+    s32 i;
+    for(i = 31; i >= 0; i--) {
+        if (x & (1 << i)) {
+            return i + 1;
+        }
+    }
+
+    return 0;
+
+}
+

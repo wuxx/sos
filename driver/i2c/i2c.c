@@ -102,6 +102,7 @@ void i2c_irq_handler(I2CDriver *i2cp)
 void i2c_lld_init(void) 
 {
     request_irq(IRQ_I2C, i2c_irq_handler);
+    enable_irq(IRQ_I2C);
 }
 
 /**

@@ -1,3 +1,5 @@
+#ifndef __STRING_H__
+#define __STRING_H__
 #include <types.h>
 #include <stdarg.h>
 
@@ -7,4 +9,7 @@ u32 atoi(char *str);
 char * itoa(char *buf, u32 x, u32 radix);
 void * memset(void *s, s32 c, u32 size);
 void * memcpy(void *dst, void *src, u32 size);
+u32 ffs(u32 x);
+u32 fls(u32 x);
+#endif /* __STRING_H__ */
 

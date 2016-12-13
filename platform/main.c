@@ -13,6 +13,8 @@
 #include "gpio.h"
 #include "cpu.h"
 
+void __aeabi_unwind_cpp_pr0() {}
+void __aeabi_unwind_cpp_pr1() {}
 
 s32 blink_task(u32 arg)
 {
