@@ -46,6 +46,7 @@ s32 test_task(u32 arg)
 u32 test_flag = 0;
 PUBLIC s32 main_task(u32 arg)
 {
+#if 0
     u32 tid;
     u32 count = 0;
     s32 sem_id;
@@ -69,14 +70,7 @@ PUBLIC s32 main_task(u32 arg)
         os_task_sleep(5*OS_HZ); /* 10 s */
         os_semaphore_get(sem_id);
         PRINT_INFO("in %s %d %d\n", __func__, __LINE__, count++);
-#if 0
-        if (test_flag == 1) {
-            PRINT_INFO("in %s start\n", __func__);
-            os_semaphore_put(0);
-            PRINT_INFO("in %s   end\n", __func__);
-            test_flag = 0;
-        }
-#endif
     }
+#endif
     return 0;
 }

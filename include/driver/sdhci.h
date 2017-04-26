@@ -291,7 +291,7 @@ static inline void sdhci_writel(struct sdhci_host *host, u32 val, int reg)
 	if ((host->ops->write_l))
 		host->ops->write_l(host, val, reg);
 	else
-		writel(val, host->ioaddr + reg);
+		writel(host->ioaddr + reg, val);
 }
 
 static inline void sdhci_writew(struct sdhci_host *host, u16 val, int reg)
@@ -299,7 +299,7 @@ static inline void sdhci_writew(struct sdhci_host *host, u16 val, int reg)
 	if ((host->ops->write_w))
 		host->ops->write_w(host, val, reg);
 	else
-		writel(val, host->ioaddr + reg); /* FIXME: */
+		writel(host->ioaddr + reg, val); /* FIXME: */
 }
 
 static inline void sdhci_writeb(struct sdhci_host *host, u8 val, int reg)
@@ -307,7 +307,7 @@ static inline void sdhci_writeb(struct sdhci_host *host, u8 val, int reg)
 	if ((host->ops->write_b))
 		host->ops->write_b(host, val, reg);
 	else
-		writeb(val, host->ioaddr + reg);
+		writeb(host->ioaddr + reg, val);
 }
 
 static inline u32 sdhci_readl(struct sdhci_host *host, int reg)
@@ -338,17 +338,17 @@ static inline u8 sdhci_readb(struct sdhci_host *host, int reg)
 
 static inline void sdhci_writel(struct sdhci_host *host, u32 val, int reg)
 {
-	writel(val, host->ioaddr + reg);
+	writel(host->ioaddr + reg, val);
 }
 
 static inline void sdhci_writew(struct sdhci_host *host, u16 val, int reg)
 {
-	writew(val, host->ioaddr + reg);
+	writew(host->ioaddr + reg, val);
 }
 
 static inline void sdhci_writeb(struct sdhci_host *host, u8 val, int reg)
 {
-	writeb(val, host->ioaddr + reg);
+	writeb(host->ioaddr + reg, val);
 }
 static inline u32 sdhci_readl(struct sdhci_host *host, int reg)
 {

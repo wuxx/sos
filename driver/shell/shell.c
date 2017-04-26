@@ -20,9 +20,9 @@ s32 cmd_panic();
 s32 cmd_reset();
 
 struct shell_cmd_info ci[] = {
-    { .name = "r",       .func = cmd_read,    .desc = "r [addr]                  read    any addr"},
-    { .name = "w",       .func = cmd_write,   .desc = "w [addr] [data]           write   any addr"},
-    { .name = "x",       .func = cmd_exec,    .desc = "x [addr]                  execute any addr"},
+    { .name = "r",       .func = cmd_read,    .desc = "r    [addr]               read    any addr"},
+    { .name = "w",       .func = cmd_write,   .desc = "w    [addr] [data]        write   any addr"},
+    { .name = "x",       .func = cmd_exec,    .desc = "x    [addr]               execute any addr"},
     { .name = "dump",    .func = cmd_dump,    .desc = "dump [addr] [word_num]    dump    any addr"},
     { .name = "panic",   .func = cmd_panic,   .desc = "panic                     system panic"    },
     { .name = "reset",   .func = cmd_reset,   .desc = "reset                     system reset"    },

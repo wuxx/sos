@@ -22,6 +22,14 @@
 
 #define TIMEOUT (100 * 1000) /* 100mS in uS */
 
+PRIVATE s32 read_reg()
+{
+	struct bcm2835_mbox_regs *regs =
+		(struct bcm2835_mbox_regs *)BCM2835_MBOX_PHYSADDR;
+
+    readl(&regs->read);
+}
+
 int bcm2835_mbox_call_raw(u32 chan, u32 send, u32 *recv)
 {
 	struct bcm2835_mbox_regs *regs =
@@ -29,13 +37,13 @@ int bcm2835_mbox_call_raw(u32 chan, u32 send, u32 *recv)
 	u32 val;
 
 	if (send & BCM2835_CHAN_MASK) {
-		PRINT_ERR("mbox: Illegal mbox data 0x%08x\n", send);
+		PRINT_ERR("mbox: Illegal mbox data 0x%x\n", send);
 		return -1;
 	}
 
 	/* Drain any stale responses */
 
-    if (wait_value(&regs->status, BCM2835_MBOX_STATUS_RD_EMPTY, 0, 100) == -1) {
+    if (wait_value(&regs->status, BCM2835_MBOX_STATUS_RD_EMPTY, 1, 100, read_reg) == -1) {
         PRINT_ERR("mbox: Timeout draining stale responses\n");
         return -1;
     }
@@ -46,15 +54,14 @@ int bcm2835_mbox_call_raw(u32 chan, u32 send, u32 *recv)
         return -1;
     }
 
-
 	/* Send the request */
 
 	val = BCM2835_MBOX_PACK(chan, send);
-	PRINT_DEBUG("mbox: TX raw: 0x%08x\n", val);
+	PRINT_ERR("mbox: TX raw: 0x%x\n", val);
 	writel((u32)(&regs->write), val);
 
 	/* Wait for the response */
-    if (wait_value(&regs->status, BCM2835_MBOX_STATUS_RD_EMPTY, 0, 100) == -1) {
+    if (wait_value(&regs->status, BCM2835_MBOX_STATUS_RD_EMPTY, 0, 100, NULL) == -1) {
 			PRINT_ERR("mbox: Timeout waiting for response\n");
 			return -1;
     }
@@ -62,7 +69,7 @@ int bcm2835_mbox_call_raw(u32 chan, u32 send, u32 *recv)
 	/* Read the response */
 
 	val = readl((u32)(&regs->read));
-	PRINT_DEBUG("mbox: RX raw: 0x%08x\n", val);
+	PRINT_ERR("mbox: RX raw: 0x%x\n", val);
 
 	/* Validate the response */
 
@@ -86,7 +93,7 @@ void dump_buf(struct bcm2835_mbox_hdr *buffer)
 	p = (u32 *)buffer;
 	words = buffer->buf_size / 4;
 	for (i = 0; i < words; i++)
-		PRINT_ERR("    0x%04x: 0x%08x\n", i * 4, p[i]);
+		PRINT_ERR("    0x%x: 0x%x\n", i * 4, p[i]);
 }
 #endif
 
@@ -106,7 +113,7 @@ int bcm2835_mbox_call_prop(u32 chan, struct bcm2835_mbox_hdr *buffer)
 	if (ret)
 		return ret;
 	if (rbuffer != (u32)buffer) {
-		PRINT_ERR("mbox: Response buffer mismatch\n");
+		PRINT_ERR("mbox: Response buffer mismatch (0x%x 0x%x)\n", rbuffer, buffer);
 		return -1;
 	}
 

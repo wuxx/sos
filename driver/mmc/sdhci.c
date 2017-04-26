@@ -100,6 +100,7 @@ static int sdhci_transfer_data(struct sdhci_host *host, struct mmc_data *data,
 	return 0;
 }
 
+static void bcm2835_sdhci_writel(struct sdhci_host *host, u32 val, int reg);
 int sdhci_send_command(struct mmc *mmc, struct mmc_cmd *cmd,
 		       struct mmc_data *data)
 {
@@ -490,7 +491,7 @@ static inline void bcm2835_sdhci_raw_writel(struct sdhci_host *host, u32 val,
 	while (get_timer(last_write) < twoticks_delay)
 		;
 
-	writel(val, host->ioaddr + reg);
+	writel(host->ioaddr + reg, val);
 	last_write = get_timer(0);
 }
 
@@ -569,7 +570,7 @@ static const struct sdhci_ops bcm2835_ops = {
 
 int bcm2835_sdhci_init(u32 regbase, u32 emmc_freq)
 {
-	struct sdhci_host sh;
+	static struct sdhci_host sh;
 	struct sdhci_host *host = &sh;
 
 	/*

@@ -61,7 +61,7 @@ PUBLIC void clk_delay(u32 count) {
             : "cc");
 }
 
-PUBLIC s32 wait_value(u32 *addr, u32 value, u32 type, u32 timeout_us)
+PUBLIC s32 wait_value(u32 *addr, u32 value, u32 type, u32 timeout_us, func_0 func)
 {
     u32 count = 0;
     u32 mask  = value;
@@ -80,6 +80,10 @@ PUBLIC s32 wait_value(u32 *addr, u32 value, u32 type, u32 timeout_us)
 
         if (count == timeout_us) {
             break;
+        }
+
+        if (func != NULL) {
+            func();
         }
 
         udelay(1);

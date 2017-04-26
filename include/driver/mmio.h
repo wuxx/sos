@@ -4,7 +4,7 @@
 #include <types.h>
 
 #define readb(addr)  (*((u8*)addr))
-#define writeb(data, addr) (*((u8*)addr) = data)
+#define writeb(addr, data) (*((volatile u8*)addr) = data)
 
 #define get_bit(x, bit_index) ((x >> bit_index) & 0x1)
 

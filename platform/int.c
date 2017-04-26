@@ -409,13 +409,13 @@ PUBLIC s32 reset()
 PUBLIC s32 panic()
 {
     u32 lr = __get_lr();
-    PRINT_EMG("in %s, cpu_mode: [%s]; lr: [%x]; current_task_id: %d\n\n", 
+    PRINT_EMG("in %s, cpu_mode: [%s]; lr: [%x]; current_task_id: %d\n\n/", 
             __func__, get_cpu_mode(NULL), lr, current_task != NULL ? current_task->id: -1);
-    dump_log();
+    /* dump_log(); */
     PRINT_EMG("current_context: \n");
     dump_ctx(current_context);
-    dump_tcb_all();
-    dump_scb_all();
+    /* dump_tcb_all();
+    dump_scb_all(); */
     lockup();
     while(1);
 }

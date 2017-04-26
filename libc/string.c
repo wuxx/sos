@@ -103,6 +103,24 @@ void *memset(void *s, s32 c, u32 size)
     return s;
 }
 
+s32 memcmp(void *s1, void *s2, u32 n)
+{
+    u8 *c1, *c2;
+    u32 i;
+    s32 rv = 0;
+
+    c1 = s1;
+    c2 = s2;
+
+    for(i = 0; i < n; i++) {
+        if ((rv = (c1[i] - c2[i])) != 0) {
+            break;
+        }
+    }
+
+    return rv;
+}
+
 void *memcpy(void *dst, void *src, u32 size)
 {
     u32 i;

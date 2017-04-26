@@ -16,6 +16,6 @@ u64 get_syscounter();
 void udelay(u32 us);
 void mdelay(u32 ms);
 void clk_delay(u32 cycle);
-s32 wait_value(u32 *addr, u32 value, u32 type, u32 timeout_us);
+s32 wait_value(u32 *addr, u32 value, u32 type, u32 timeout_us, func_0 func);
 s32 timer_init();
 #endif /* __TIMER_H__ */

@@ -89,6 +89,7 @@ PRIVATE s32 coretimer_init()
 
 s32 os_main(u32 sp)
 {
+    u8 buf[512];
     struct __os_task__ *ptask;
 
     int_init();
@@ -97,6 +98,11 @@ s32 os_main(u32 sp)
     mmc_init();
 
     PRINT_INFO("%s\n", sys_banner);
+
+#define DEFAULT_MMC_DEVNUM (0)
+    struct mmc *mmc = find_mmc_device(DEFAULT_MMC_DEVNUM);
+    mmc->block_dev.block_read(DEFAULT_MMC_DEVNUM, 0, 1, buf);
+    dump_mem(buf,  sizeof(buf) / 4);
 
     coretimer_init();
     task_init();
