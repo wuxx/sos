@@ -1,5 +1,5 @@
-#       $(DRIVER_DIR)/usb/eth/usb_ether.c       \
-        $(DRIVER_DIR)/usb/eth/smsc95xx.c        \
+#        $(DRIVER_DIR)/usb/eth/smsc95xx.c        \
+        $(DRIVER_DIR)/usb/eth/usb_ether.c       \
         $(DRIVER_DIR)/usb/host/dwc_otg.c        \
         $(DRIVER_DIR)/usb/host/dwc_otg-hcd.c
 

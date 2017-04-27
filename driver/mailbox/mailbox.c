@@ -22,12 +22,13 @@
 
 #define TIMEOUT (100 * 1000) /* 100mS in uS */
 
-PRIVATE s32 read_reg()
+static s32 read_reg()
 {
 	struct bcm2835_mbox_regs *regs =
 		(struct bcm2835_mbox_regs *)BCM2835_MBOX_PHYSADDR;
 
-    readl(&regs->read);
+    readl((u32)(&(regs->read)));
+    return 0;
 }
 
 int bcm2835_mbox_call_raw(u32 chan, u32 send, u32 *recv)

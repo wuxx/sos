@@ -204,7 +204,7 @@ struct bcm2835_timer_regs {
 #define ALLOC_ALIGN_BUFFER(type, name, size, align)         \
         char __##name[ROUND(size * sizeof(type), align) + (align - 1)]; \
                                     \
-    type *name = (type *) ALIGN((uintptr_t)__##name, align)
+    type *name = (type *) ALIGN((u32)__##name, align)
 #define ALLOC_CACHE_ALIGN_BUFFER(type, name, size)          \
         ALLOC_ALIGN_BUFFER(type, name, size, ARCH_DMA_MINALIGN)
 
@@ -216,16 +216,11 @@ struct bcm2835_timer_regs {
 
 #define mmc_host_is_spi(mmc)    ((mmc)->host_caps & MMC_MODE_SPI)
 
-typedef unsigned long int uintptr_t;
-typedef unsigned int  uint;
-typedef unsigned long ulong;
-typedef unsigned short ushort;
-
 struct mmc_cmd {
-    ushort cmdidx;
-    uint resp_type;
-    uint cmdarg;
-    uint response[4];
+    u16 cmdidx;
+    u32 resp_type;
+    u32 cmdarg;
+    u32 response[4];
 };
 
 struct mmc_data {
@@ -233,9 +228,9 @@ struct mmc_data {
         char *dest;
         const char *src; /* src buffers don't get written to */
     };
-    uint flags;
-    uint blocks;
-    uint blocksize;
+    u32 flags;
+    u32 blocks;
+    u32 blocksize;
 };
 
 typedef struct block_dev_desc {
@@ -254,17 +249,9 @@ typedef struct block_dev_desc {
     char        vendor [40+1];  /* IDE model, SCSI Vendor */
     char        product[20+1];  /* IDE Serial no, SCSI product */
     char        revision[8+1];  /* firmware revision */
-    unsigned long   (*block_read)(int dev,
-            unsigned long start,
-            unsigned long blkcnt,
-            void *buffer);
-    unsigned long   (*block_write)(int dev,
-            unsigned long start,
-            unsigned long blkcnt,
-            const void *buffer);
-    unsigned long   (*block_erase)(int dev,
-            unsigned long start,
-            unsigned long blkcnt);
+    u32   (*block_read)(s32 dev, u32 start, u32 blkcnt, void *buffer);
+    u32   (*block_write)(s32 dev, u32 start, u32 blkcnt, const void *buffer);
+    u32   (*block_erase)(int dev, u32 start, u32 blkcnt);
     void        *priv;      /* driver private struct pointer */
 }block_dev_desc_t;
 
@@ -333,27 +320,27 @@ struct mmc {
     struct list_head link;
     char name[32];
     void *priv;
-    uint voltages;
-    uint version;
-    uint has_init;
-    uint f_min;
-    uint f_max;
+    u32 voltages;
+    u32 version;
+    u32 has_init;
+    u32 f_min;
+    u32 f_max;
     int high_capacity;
-    uint bus_width;
-    uint clock;
-    uint card_caps;
-    uint host_caps;
-    uint ocr;
-    uint scr[2];
-    uint csd[4];
-    uint cid[4];
-    ushort rca;
+    u32 bus_width;
+    u32 clock;
+    u32 card_caps;
+    u32 host_caps;
+    u32 ocr;
+    u32 scr[2];
+    u32 csd[4];
+    u32 cid[4];
+    u16 rca;
     char part_config;
     char part_num;
-    uint tran_speed;
-    uint read_bl_len;
-    uint write_bl_len;
-    uint erase_grp_size;
+    u32 tran_speed;
+    u32 read_bl_len;
+    u32 write_bl_len;
+    u32 erase_grp_size;
     u64 capacity;
     block_dev_desc_t block_dev;
     int (*send_cmd)(struct mmc *mmc,
@@ -361,9 +348,11 @@ struct mmc {
     void (*set_ios)(struct mmc *mmc);
     int (*init)(struct mmc *mmc);
     int (*getcd)(struct mmc *mmc);
-    uint b_max;
+    u32 b_max;
 };
 
-int mmc_init(void);
+s32 mmc_init(void);
+s32 mmc_register(struct mmc *mmc);
+struct mmc *find_mmc_device(int dev_num);
 
 #endif /* __MMC_H__ */

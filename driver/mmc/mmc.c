@@ -86,7 +86,7 @@ static int mmc_set_blocklen(struct mmc *mmc, int len)
     return mmc_send_cmd(mmc, &cmd, NULL); 
 }
 
-static int mmc_read_blocks(struct mmc *mmc, void *dst, ulong start,
+static int mmc_read_blocks(struct mmc *mmc, void *dst, u32 start,
                        unsigned long blkcnt)
 {
     struct mmc_cmd cmd;
@@ -170,10 +170,10 @@ static int mmc_send_status(struct mmc *mmc, int timeout)
     return 0;
 }
 
-static ulong mmc_erase_t(struct mmc *mmc, ulong start, unsigned long blkcnt)
+static u32 mmc_erase_t(struct mmc *mmc, u32 start, unsigned long blkcnt)
 {
     struct mmc_cmd cmd;
-    ulong end;
+    u32 end;
     int err, start_cmd, end_cmd;
 
     if (mmc->high_capacity)
@@ -222,8 +222,8 @@ err_out:
     return err;
 }
 
-static ulong
-mmc_write_blocks(struct mmc *mmc, ulong start, unsigned long blkcnt, const void*src)
+static u32
+mmc_write_blocks(struct mmc *mmc, u32 start, unsigned long blkcnt, const void*src)
 {
     struct mmc_cmd cmd;
     struct mmc_data data;
@@ -296,8 +296,7 @@ struct mmc *find_mmc_device(int dev_num)
 }
 
 
-static ulong
-mmc_bwrite(int dev_num, ulong start, unsigned long blkcnt, const void*src)
+static u32 mmc_bwrite(s32 dev_num, u32 start, u32 blkcnt, const void*src)
 {
     unsigned long cur, blocks_todo = blkcnt;
 
@@ -320,8 +319,7 @@ mmc_bwrite(int dev_num, ulong start, unsigned long blkcnt, const void*src)
     return blkcnt;
 }
 
-static unsigned long
-mmc_berase(int dev_num, unsigned long start, unsigned long blkcnt)
+static u32 mmc_berase(s32 dev_num, u32 start, u32 blkcnt)
 {
     int err = 0;
     struct mmc *mmc = find_mmc_device(dev_num);
@@ -355,7 +353,7 @@ mmc_berase(int dev_num, unsigned long start, unsigned long blkcnt)
     return blk;
 }
 
-static ulong mmc_bread(int dev_num, ulong start, unsigned long blkcnt, void *dst)
+static u32 mmc_bread(s32 dev_num, u32 start, u32 blkcnt, void *dst)
 {
     unsigned long cur, blocks_todo = blkcnt;
 
@@ -387,7 +385,7 @@ static ulong mmc_bread(int dev_num, ulong start, unsigned long blkcnt, void *dst
     return blkcnt;
 }
 
-int mmc_register(struct mmc *mmc)
+s32 mmc_register(struct mmc *mmc)
 {
     /* Setup the universal parts of the block interface just once */
     mmc->block_dev.if_type = IF_TYPE_MMC;
@@ -478,10 +476,10 @@ static int mmc_switch(struct mmc *mmc, u8 set, u8 index, u8 value)
 
 }
 
-static uint __be32_to_cpu(uint x)
+static u32 __be32_to_cpu(u32 x)
 {
     u8 *pc;
-    uint rv; 
+    u32 rv; 
 
     pc = (u8 *)&x;
 
@@ -630,8 +628,8 @@ static int sd_change_freq(struct mmc *mmc)
 {
     int err;
     struct mmc_cmd cmd;
-    ALLOC_ALIGN_BUFFER(uint, scr, 2, 64);
-    ALLOC_ALIGN_BUFFER(uint, switch_status, 16, 64);
+    ALLOC_ALIGN_BUFFER(u32, scr, 2, 64);
+    ALLOC_ALIGN_BUFFER(u32, switch_status, 16, 64);
     struct mmc_data data;
     int timeout;
 
@@ -769,14 +767,14 @@ static void mmc_set_ios(struct mmc *mmc)
     mmc->set_ios(mmc);
 }
 
-static void mmc_set_bus_width(struct mmc *mmc, uint width)
+static void mmc_set_bus_width(struct mmc *mmc, u32 width)
 {
     mmc->bus_width = width;
 
     mmc_set_ios(mmc);
 }
 
-void mmc_set_clock(struct mmc *mmc, uint clock)
+void mmc_set_clock(struct mmc *mmc, u32 clock)
 {
     if (clock > mmc->f_max)
         clock = mmc->f_max;
@@ -973,7 +971,7 @@ static inline u64 lldiv(u64 dividend, u32 divisor)
 static int mmc_startup(struct mmc *mmc)
 {
     int err, width;
-    uint mult, freq;
+    u32 mult, freq;
     u64 cmult, csize, capacity;
     struct mmc_cmd cmd;
     ALLOC_ALIGN_BUFFER(u8, ext_csd, 512, 64);
@@ -1329,7 +1327,7 @@ void print_mmc_devices(char separator)
     PRINT_ERR("\n");
 }
 
-int mmc_init()
+s32 mmc_init()
 {
     struct mmc *mmc;
     INIT_LIST_HEAD (&mmc_devices);
@@ -1340,4 +1338,5 @@ int mmc_init()
     driver_mmc_init(find_mmc_device(0));
     PRINT_ERR("lba: %x\n", mmc->block_dev.lba);
     print_mmc_devices(',');
+    return 0;
 }

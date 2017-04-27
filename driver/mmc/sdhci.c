@@ -465,20 +465,20 @@ int add_sdhci(struct sdhci_host *host, u32 max_clk, u32 min_clk)
 /* 400KHz is max freq for card ID etc. Use that as min */
 #define MIN_FREQ 400000
 
-static uint twoticks_delay;
+static u32 twoticks_delay;
 
-ulong get_timer(ulong base)
+u32 get_timer(u32 base)
 {
     struct bcm2835_timer_regs *regs =
         (struct bcm2835_timer_regs *)BCM2835_TIMER_PHYSADDR;
 
-    return readl(&regs->clo) - base;
+    return readl((u32)(&regs->clo)) - base;
 }      
 
 static inline void bcm2835_sdhci_raw_writel(struct sdhci_host *host, u32 val,
 						int reg)
 {
-	static ulong last_write;
+	static u32 last_write;
 
 	/*
 	 * The Arasan has a bugette whereby it may lose the content of
@@ -491,13 +491,13 @@ static inline void bcm2835_sdhci_raw_writel(struct sdhci_host *host, u32 val,
 	while (get_timer(last_write) < twoticks_delay)
 		;
 
-	writel(host->ioaddr + reg, val);
+	writel((u32)(host->ioaddr + reg), val);
 	last_write = get_timer(0);
 }
 
 static inline u32 bcm2835_sdhci_raw_readl(struct sdhci_host *host, int reg)
 {
-	return readl(host->ioaddr + reg);
+	return readl((u32)(host->ioaddr + reg));
 }
 
 static void bcm2835_sdhci_writel(struct sdhci_host *host, u32 val, int reg)

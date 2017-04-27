@@ -63,8 +63,9 @@ static void i2c_lld_safety_timeout(void *p)
 /*===========================================================================*/
 
 volatile u32 i2c_done = 0;
-void i2c_irq_handler(I2CDriver *i2cp) 
+s32 i2c_irq_handler(u32 arg)
 {
+  I2CDriver *i2cp = (I2CDriver *)arg;
   bscdevice_t *device = i2cp->device;
   u32 status = device->status;
 
@@ -88,6 +89,7 @@ void i2c_irq_handler(I2CDriver *i2cp)
       i2cp->rxbuf[i2cp->rxidx++] = device->dataFifo;
   }
   i2c_done = 1;
+  return 0;
 }
 
 /*===========================================================================*/

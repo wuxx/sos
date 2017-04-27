@@ -19,7 +19,6 @@
  * MA 02111-1307 USA
  */
 
-#include <common.h>
 #include <usb.h>
 
 #include "usb_ether.h"

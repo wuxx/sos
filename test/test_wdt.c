@@ -7,8 +7,6 @@
 
 s32 test_wdt_all(u32 argc, char **argv)
 {
-    u64 sc;
-    u32 clo, chi;
     s32 ret = 0;
     u32 i, arg1;
     i    = atoi(argv[2]);

@@ -281,7 +281,7 @@ struct sdhci_host {
 
 	void (*set_control_reg)(struct sdhci_host *host);
 	void (*set_clock)(int dev_index, unsigned int div);
-	uint	voltages;
+	u32	voltages;
 };
 
 #ifdef CONFIG_MMC_SDHCI_IO_ACCESSORS
@@ -291,7 +291,7 @@ static inline void sdhci_writel(struct sdhci_host *host, u32 val, int reg)
 	if ((host->ops->write_l))
 		host->ops->write_l(host, val, reg);
 	else
-		writel(host->ioaddr + reg, val);
+		writel((u32)(host->ioaddr + reg), val);
 }
 
 static inline void sdhci_writew(struct sdhci_host *host, u16 val, int reg)
@@ -299,7 +299,7 @@ static inline void sdhci_writew(struct sdhci_host *host, u16 val, int reg)
 	if ((host->ops->write_w))
 		host->ops->write_w(host, val, reg);
 	else
-		writel(host->ioaddr + reg, val); /* FIXME: */
+		writel((u32)(host->ioaddr + reg), val); /* FIXME: */
 }
 
 static inline void sdhci_writeb(struct sdhci_host *host, u8 val, int reg)
@@ -315,7 +315,7 @@ static inline u32 sdhci_readl(struct sdhci_host *host, int reg)
 	if ((host->ops->read_l))
 		return host->ops->read_l(host, reg);
 	else
-		return readl(host->ioaddr + reg);
+		return readl((u32)(host->ioaddr + reg));
 }
 
 static inline u16 sdhci_readw(struct sdhci_host *host, int reg)
@@ -323,7 +323,7 @@ static inline u16 sdhci_readw(struct sdhci_host *host, int reg)
 	if ((host->ops->read_w))
 		return host->ops->read_w(host, reg);
 	else
-		return readl(host->ioaddr + reg);
+		return readl((u32)(host->ioaddr + reg));
 }
 
 static inline u8 sdhci_readb(struct sdhci_host *host, int reg)
@@ -338,7 +338,7 @@ static inline u8 sdhci_readb(struct sdhci_host *host, int reg)
 
 static inline void sdhci_writel(struct sdhci_host *host, u32 val, int reg)
 {
-	writel(host->ioaddr + reg, val);
+	writel((u32)(host->ioaddr + reg), val);
 }
 
 static inline void sdhci_writew(struct sdhci_host *host, u16 val, int reg)
@@ -352,12 +352,12 @@ static inline void sdhci_writeb(struct sdhci_host *host, u8 val, int reg)
 }
 static inline u32 sdhci_readl(struct sdhci_host *host, int reg)
 {
-	return readl(host->ioaddr + reg);
+	return readl((u32)(host->ioaddr + reg));
 }
 
 static inline u16 sdhci_readw(struct sdhci_host *host, int reg)
 {
-	return readl(host->ioaddr + reg);
+	return readl((u32)(host->ioaddr + reg));
 }
 
 static inline u8 sdhci_readb(struct sdhci_host *host, int reg)
