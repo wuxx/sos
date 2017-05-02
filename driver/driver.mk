@@ -9,6 +9,7 @@ DRIVER_SRCS = \
         $(DRIVER_DIR)/i2c/i2c.c                 \
         $(DRIVER_DIR)/watchdog/watchdog.c       \
         $(DRIVER_DIR)/mailbox/mailbox.c         \
+        $(DRIVER_DIR)/dram/dram.c               \
         $(DRIVER_DIR)/mmc/mmc.c                 \
         $(DRIVER_DIR)/mmc/sdhci.c               \
         $(DRIVER_DIR)/pwm/pwm.c                 \

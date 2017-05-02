@@ -1,4 +1,5 @@
 #include <libc.h>
+#include "common.h"
 #include "mailbox.h"
 #include "sdhci.h"
 #include "mmc.h"
@@ -1329,6 +1330,7 @@ void print_mmc_devices(char separator)
 
 s32 mmc_init()
 {
+    u8 buf[512];
     struct mmc *mmc;
     INIT_LIST_HEAD (&mmc_devices);
     curr_dev_num = 0;
@@ -1338,5 +1340,10 @@ s32 mmc_init()
     driver_mmc_init(find_mmc_device(0));
     PRINT_ERR("lba: %x\n", mmc->block_dev.lba);
     print_mmc_devices(',');
+
+#define DEFAULT_MMC_DEVNUM (0)
+    mmc = find_mmc_device(DEFAULT_MMC_DEVNUM);
+    mmc->block_dev.block_read(DEFAULT_MMC_DEVNUM, 0, 1, buf);
+    dump_mem(buf, sizeof(buf) / 4);
     return 0;
 }

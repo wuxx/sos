@@ -200,18 +200,6 @@ struct bcm2835_timer_regs {
 #define BCM2835_TIMER_CS_M1 (1 << 1)
 #define BCM2835_TIMER_CS_M0 (1 << 0)
 
-
-#define ALLOC_ALIGN_BUFFER(type, name, size, align)         \
-        char __##name[ROUND(size * sizeof(type), align) + (align - 1)]; \
-                                    \
-    type *name = (type *) ALIGN((u32)__##name, align)
-#define ALLOC_CACHE_ALIGN_BUFFER(type, name, size)          \
-        ALLOC_ALIGN_BUFFER(type, name, size, ARCH_DMA_MINALIGN)
-
-#define ROUND(a,b)      (((a) + (b) - 1) & ~((b) - 1)) 
-#define ALIGN(x,a)      __ALIGN_MASK((x),(typeof(x))(a)-1)
-#define __ALIGN_MASK(x,mask)    (((x)+(mask))&~(mask))
-
 #define IF_TYPE_MMC     6
 
 #define mmc_host_is_spi(mmc)    ((mmc)->host_caps & MMC_MODE_SPI)
