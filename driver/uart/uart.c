@@ -7,8 +7,7 @@
 #include "gpio.h"
 #include "timer.h"
 
-#define UART0       /* pl011 uart */
-/*#define UART1*/   /* mini uart, need debug. */
+#define UART_PL011       /* pl011 uart */
 
 #define UART_IO_SIZE 256
 

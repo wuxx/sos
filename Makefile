@@ -7,8 +7,8 @@ CFLAGS = $(cflags)
 HOST_IS_ARM = $(shell uname -m | grep "arm")
 
 #$(warning HOST_IS_ARM: $(HOST_IS_ARM))
-ifeq ("", $(HOST_IS_ARM))
-    TOOLCHAIN_DIR=$(ROOT)/.compiler
+ifeq ("", "$(HOST_IS_ARM)")
+    TOOLCHAIN_DIR=~/gcc-arm-none-eabi-5_4-2016q3
     CROSS_COMPILE=$(TOOLCHAIN_DIR)/bin/arm-none-eabi-
     LIBGCC = $(shell find $(TOOLCHAIN_DIR)/ | grep "armv6-m\/libgcc\.a")
 endif
@@ -72,8 +72,9 @@ TARGET_SECINFO = $(BUILD)/$(TARGET).secinfo #section info
 
 LDS = $(ROOT)/$(TARGET).ld
 
-#-march=armv6
-CFLAGS  += -mcpu=arm1176jzf-s -nostdlib -funwind-tables -fno-builtin -mno-thumb-interwork -mfloat-abi=soft -Wall -O3 -g -I$(INCLUDE_DIR)
+#CFLAGS  += -mcpu=arm1176jzf-s
+CFLAGS  += -mtune=arm1176jzf-s
+CFLAGS  += -nostdlib -funwind-tables -fno-builtin -Wall -O3 -g -I$(INCLUDE_DIR)
 ASFLAGS += 
 
 LDFLAGS = -T $(LDS) -Map $(TARGET_MAP) -nostdlib -nostartfiles $(LIBGCC) 

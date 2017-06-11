@@ -11,14 +11,19 @@ U-Boot> go 0x200000 <br>
 (U-Boot> fatload mmc 0:1 0x8000 kernel.img.linux) <br>
 (U-Boot> bootz 0x8000) <br>
 
+3. u-boot net up
+(U-Boot> usb start) <br>
+(U-Boot> env set ipaddr 192.168.x.x) <br>
+(U-Boot> ping 192.168.x.x) <br>
 
-3. more information about rpi <br>
+
+4. more information about rpi <br>
 https://www.raspberrypi.org/documentation/hardware/raspberrypi/schematics/ <br>
 
-4. arm inline asm <br>
+5. arm inline asm <br>
 http://www.ethernut.de/en/documents/arm-inline-asm.html<br>
 
-5. from linux kernel document<br>
+6. interrupt infomation from linux kernel document<br>
 The interrupt sources are as follows:<br>
 Bank 0: <br>
 0: ARM_TIMER <br>
