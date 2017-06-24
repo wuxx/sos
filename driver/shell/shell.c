@@ -66,10 +66,10 @@ PRIVATE s32 cmd_exec()
     para3 = atoi(argv[4]);
     para4 = atoi(argv[5]);
 
-    func = (func_4)addr;
+    func = (func_4)(addr | 0x1); /* thumb-2 instruction */
 
     ret = func(para1, para2, para3, para4);
-    PRINT_EMG("execute 0x%x (0x%x 0x%x 0x%x 0x%x)return 0x%x\n", addr, para1, para2, para3, para4, ret);
+    PRINT_EMG("execute 0x%x (0x%x 0x%x 0x%x 0x%x) return 0x%x\n", addr, para1, para2, para3, para4, ret);
     return ret;
 }
 

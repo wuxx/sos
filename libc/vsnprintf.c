@@ -25,7 +25,7 @@ PRIVATE u32 buf_puts(char *buf, u32 size, u32 *offset, char *s)
 PUBLIC char * itoa(char *buf, u32 x, u32 radix)
 {
     s32 i;
-    memset(buf, 0, 10);
+    memset(buf, '0', 10);
 
     for(i=9;i>=0;i--) {
         switch (radix) {
